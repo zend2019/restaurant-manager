@@ -1,5 +1,6 @@
+package main.java.BL.Contract;
 
-class User{
+class User {
 
     public String UserName;
     public String LastName;
