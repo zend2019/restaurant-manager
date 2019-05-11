@@ -1,7 +1,10 @@
+package main.java.BL.Contract;
 
-class User{
-
-    public String UserName;
+public abstract class User {
+    public String FirstName;
     public String LastName;
-
+    public String Age;
+    public String DateOfBirth;
+    public String UserName;
+    public String phoneNmuber;
 }
