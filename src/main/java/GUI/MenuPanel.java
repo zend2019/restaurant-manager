@@ -6,8 +6,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class MenuPanel extends JPanel {
-    private JButton inventory;
-    private JButton orders;
+    public JButton inventory;
+    public JButton orders;
     private JButton providers;
     private JButton reports;
     private JButton settings;
@@ -23,36 +23,6 @@ public class MenuPanel extends JPanel {
         reports = new JButton("Reports");
         settings = new JButton("settings");
 
-        //TODO: Clicking will lead to corresponding page
-        inventory.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                System.out.println("Inventory clicked");
-            }
-        });
-
-        orders.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                System.out.println("Orders clicked");
-            }
-        });
-
-        providers.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                System.out.println("Providers clicked");
-            }
-        });
-
-        reports.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                System.out.println("Reports clicked");
-            }
-        });
-
-        settings.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                System.out.println("Settings clicked");
-            }
-        });
 
         setLayout(new GridBagLayout());
         GridBagConstraints gc = new GridBagConstraints();
@@ -72,7 +42,7 @@ public class MenuPanel extends JPanel {
         gc.weighty = 0.5;
 
         gc.gridx = 0;
-        gc.gridy = 1;
+        gc.gridy ++;
         gc.anchor = GridBagConstraints.CENTER;
         add(orders, gc);
 
@@ -81,7 +51,7 @@ public class MenuPanel extends JPanel {
         gc.weighty = 0.5;
 
         gc.gridx = 0;
-        gc.gridy = 2;
+        gc.gridy ++;
         gc.anchor = GridBagConstraints.CENTER;
         add(providers,gc);
 
@@ -90,7 +60,7 @@ public class MenuPanel extends JPanel {
         gc.weighty = 0.5;
 
         gc.gridx = 0;
-        gc.gridy = 3;
+        gc.gridy ++;
         gc.anchor = GridBagConstraints.CENTER;
         add(reports,gc);
 
@@ -99,7 +69,7 @@ public class MenuPanel extends JPanel {
         gc.weighty = 0.5;
 
         gc.gridx = 0;
-        gc.gridy = 4;
+        gc.gridy ++;
         gc.anchor = GridBagConstraints.CENTER;
         add(settings,gc);
     }
