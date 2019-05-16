@@ -43,7 +43,7 @@ public class MainForm extends JFrame {
         add(menuPanel, BorderLayout.WEST);
         add(containerPanel,BorderLayout.CENTER);
 
-        setSize(800,600);
+        setSize(900,700);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
 
