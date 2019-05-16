@@ -8,7 +8,9 @@ import java.awt.event.ActionListener;
 public class MainForm extends JFrame {
     private JPanel containerPanel;
     private InventoryPanel inventoryPanel;
-    private OrdersSearchPanel ordersPanel;
+    private OrdersSearchPanel ordersSearchPanel;
+    private OrdersAddPanel ordersAddPanel;
+    private JTabbedPane OrdersTabs;
     private MenuPanel menuPanel;
     private CardLayout cl;
 
@@ -17,13 +19,18 @@ public class MainForm extends JFrame {
         cl = new CardLayout();
         containerPanel = new JPanel();
         inventoryPanel = new InventoryPanel();
-        ordersPanel = new OrdersSearchPanel();
+        ordersSearchPanel = new OrdersSearchPanel();
+        ordersAddPanel = new OrdersAddPanel();
+        OrdersTabs = new JTabbedPane();
         menuPanel = new MenuPanel();
 
      //////////////// set the layout ////////////////
+        OrdersTabs.add("Search Orders", ordersSearchPanel);
+        OrdersTabs.add("Add Order",ordersAddPanel);
+
         containerPanel.setLayout(cl);
         containerPanel.add(inventoryPanel,"Inventory");
-        containerPanel.add(ordersPanel,"Orders");
+        containerPanel.add(OrdersTabs,"Orders");
         cl.show(containerPanel,"Inventory");
 
      ////////////// Menu items listeners ////////////////

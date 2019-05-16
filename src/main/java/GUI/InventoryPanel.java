@@ -3,16 +3,16 @@ package main.java.GUI;
 import javax.swing.*;
 import java.awt.*;
 
-public class InventoryPanel extends JPanel {
+public class InventoryPanel extends IWorkPanel {
     private JLabel inventoryPage;
     private JLabel providerLabel;
     private JLabel categoryLabel;
     private JLabel itemNameLabel;
-    private JLabel quantityLabel;
+    private JLabel unitsLabel;
     private JComboBox providersList;
     private JComboBox categoryList;
     private JTextField itemNameTF;
-    private JTextField quantityTF;
+    private JTextField unitsTF;
     private JButton searchButton;
     private JButton addButton;
     private JTable inventoryTable;
@@ -20,7 +20,7 @@ public class InventoryPanel extends JPanel {
     private JPanel searchPanel;
     private JPanel tablePanel;
 
-    private String[] columnNames = {"SKU","Item name","Category","Provider","Quantity","Date received"};
+    private String[] columnNames = {"SKU","Item name","Category","Provider","Units","Date received"};
     private String[][] testData ={{"555","Shubi","kabubi","shabubi","2","20.8.15"},{"123","Halo","this is dog","kuku","5","555"}};
 
     public InventoryPanel(){
@@ -30,16 +30,17 @@ public class InventoryPanel extends JPanel {
         setMainLayout();
     }
 
-    private void initialization(){
+    @Override
+    protected void initialization(){
         //inventoryPage = new JLabel("Inventory");
         providerLabel = new JLabel("Provider: ");
         categoryLabel = new JLabel("Category: ");
         itemNameLabel = new JLabel("Item Name: ");
-        quantityLabel = new JLabel("Quantity: ");
+        unitsLabel = new JLabel("Units: ");
         providersList = new JComboBox();
         categoryList = new JComboBox();
         itemNameTF = new JTextField(10);
-        quantityTF = new JTextField(10);
+        unitsTF = new JTextField(10);
         searchButton = new JButton("Search");
         addButton = new JButton("Add");
         inventoryTable = new JTable(testData,columnNames);
@@ -48,7 +49,8 @@ public class InventoryPanel extends JPanel {
         tablePanel = new JPanel();
     }
 
-    private void setMainLayout(){
+    @Override
+    protected void setMainLayout(){
         setLayout(new GridBagLayout());
         GridBagConstraints gcMainPanel = new GridBagConstraints();
         gcMainPanel.fill = GridBagConstraints.HORIZONTAL;
@@ -72,7 +74,8 @@ public class InventoryPanel extends JPanel {
         add(tablePanel, gcMainPanel);
     }
 
-    private void setTableLayout(){
+    @Override
+    protected void setTableLayout(){
         tablePanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 
         tablePanel.setLayout(new GridBagLayout());
@@ -88,7 +91,8 @@ public class InventoryPanel extends JPanel {
         tablePanel.add(scrollTable,gcTablePanel);
     }
 
-    private void setSearchPanelLayout(){
+    @Override
+    protected void setSearchPanelLayout(){
         /////// Set combo-box ///////
         DefaultComboBoxModel providersModel = new DefaultComboBoxModel();
         providersModel.addElement("provider 1");
@@ -153,24 +157,22 @@ public class InventoryPanel extends JPanel {
 
         gcSearchPanel.gridx = 2;
         gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_END;
-        searchPanel.add(quantityLabel, gcSearchPanel);
+        searchPanel.add(unitsLabel, gcSearchPanel);
 
         gcSearchPanel.gridx = 3;
         gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_START;
-        searchPanel.add(quantityTF, gcSearchPanel);
+        searchPanel.add(unitsTF, gcSearchPanel);
 
         gcSearchPanel.gridx = 4;
         gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_START;
         searchPanel.add(searchButton, gcSearchPanel);
 
-        ///// align button sizes //////
-        Dimension buttonSize = searchButton.getPreferredSize();
-        addButton.setPreferredSize(buttonSize);
-
-        ///// align combo box sizes //////
-        Dimension comboSize = itemNameTF.getPreferredSize();
-        providersList.setPreferredSize(comboSize);
-        categoryList.setPreferredSize(comboSize);
+        ///// align fields sizes //////
+        Dimension fieldSize = itemNameTF.getPreferredSize();
+        providersList.setPreferredSize(fieldSize);
+        categoryList.setPreferredSize(fieldSize);
+        addButton.setPreferredSize(fieldSize);
+        searchButton.setPreferredSize(fieldSize);
 
     }
 }
