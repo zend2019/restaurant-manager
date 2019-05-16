@@ -17,13 +17,46 @@ public class InventoryPanel extends JPanel {
     private JButton addButton;
     private JTable inventoryTable;
     private JScrollPane scrollTable;
+    private JPanel searchPanel = new JPanel();
+    private JPanel tablePanel = new JPanel();
 
     private String[] columnNames = {"SKU","Item name","Category","Provider","Quantity","Date received"};
-    private String[][] testData ={{"555","Shubi","kabubi","shabubi","2","20.8.15"}};
+    private String[][] testData ={{"555","Shubi","kabubi","shabubi","2","20.8.15"},{"123","Halo","this is dog","kuku","5","555"}};
 
     public InventoryPanel(){
-        /////// Initialization ///////
-        inventoryPage = new JLabel("Inventory");
+        initialization();
+
+        /////// Set main layout ///////
+        setLayout(new GridBagLayout());
+        GridBagConstraints gcMainPanel = new GridBagConstraints();
+        gcMainPanel.fill = GridBagConstraints.HORIZONTAL;
+
+        setSearchPanelLayout();
+        setTableLayout();
+
+        gcMainPanel.ipady = 50;
+        gcMainPanel.gridy = 0;
+        gcMainPanel.weightx = 0.5;
+        gcMainPanel.weighty = 0.1;
+
+        gcMainPanel.gridx = 0;
+        gcMainPanel.anchor = GridBagConstraints.PAGE_START;
+        add(searchPanel, gcMainPanel);
+
+        gcMainPanel.ipady = 0;
+        gcMainPanel.gridy ++;
+        gcMainPanel.weightx = 0.5;
+        gcMainPanel.weighty = 0.1;
+
+        gcMainPanel.gridx = 0;
+        gcMainPanel.anchor = GridBagConstraints.CENTER;
+        add(tablePanel, gcMainPanel);
+
+
+    }
+
+    private void initialization(){
+        //inventoryPage = new JLabel("Inventory");
         providerLabel = new JLabel("Provider: ");
         categoryLabel = new JLabel("Category: ");
         itemNameLabel = new JLabel("Item Name: ");
@@ -36,8 +69,24 @@ public class InventoryPanel extends JPanel {
         addButton = new JButton("Add");
         inventoryTable = new JTable(testData,columnNames);
         scrollTable = new JScrollPane(inventoryTable,JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        //scrollTable.setBounds(50,50,300,100);
+    }
 
+    private void setTableLayout(){
+        tablePanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+
+        tablePanel.setLayout(new GridBagLayout());
+        GridBagConstraints gcTablePanel = new GridBagConstraints();
+        gcTablePanel.fill = GridBagConstraints.HORIZONTAL;
+
+        gcTablePanel.gridx = 0;
+        gcTablePanel.gridy = 0;
+        gcTablePanel.weightx = 1;
+        gcTablePanel.weighty = 0.1;
+
+        tablePanel.add(scrollTable,gcTablePanel);
+    }
+
+    private void setSearchPanelLayout(){
         /////// Set combo-box ///////
         DefaultComboBoxModel providersModel = new DefaultComboBoxModel();
         providersModel.addElement("provider 1");
@@ -46,85 +95,70 @@ public class InventoryPanel extends JPanel {
         categoryModel.addElement("category 1");
         categoryList.setModel(categoryModel);
 
-        /////// Set layout ///////
-        setLayout(new GridBagLayout());
-        GridBagConstraints gc = new GridBagConstraints();
-        gc.fill = GridBagConstraints.NONE;
+        searchPanel.setBorder(BorderFactory.createTitledBorder("Inventory"));
+        searchPanel.setLayout(new GridBagLayout());
+        GridBagConstraints gcSearchPanel = new GridBagConstraints();
+        gcSearchPanel.fill = GridBagConstraints.CENTER;
 
         /////// First row ///////
-        gc.gridy = 0;
-        gc.weightx = 1;
-        gc.weighty = 0.1;
+        gcSearchPanel.insets = new Insets(5,5,5,5);
+        gcSearchPanel.gridy = 0;
+        gcSearchPanel.weightx = 1;
+        gcSearchPanel.weighty = 0.1;
 
-        gc.gridx = 0;
-        gc.anchor = GridBagConstraints.CENTER;
-        inventoryPage.setFont(new Font("Tahoma",Font.PLAIN,20));
-        add(inventoryPage,gc);
+        gcSearchPanel.gridx = 0;
+        //gc.anchor = GridBagConstraints.CENTER;
+        //inventoryPage.setFont(new Font("Tahoma",Font.PLAIN,20));
+        //searchPanel.add(inventoryPage,gc);
 
-        /////// Next row ///////
-        gc.gridy ++;
-        gc.weightx = 1;
-        gc.weighty = 0.1;
+        /////// Next row //////
+        gcSearchPanel.gridy ++;
+        gcSearchPanel.weightx = 0.5;
+        gcSearchPanel.weighty = 0.1;
+        gcSearchPanel.gridx = 0;
+        gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_END;
+        searchPanel.add(providerLabel, gcSearchPanel);
 
-        gc.gridx = 0;
-        gc.anchor = GridBagConstraints.FIRST_LINE_END;
-        add(providerLabel, gc);
+        gcSearchPanel.gridx = 1;
+        gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_START;
+        searchPanel.add(providersList, gcSearchPanel);
 
-        gc.gridx = 1;
-        gc.anchor = GridBagConstraints.FIRST_LINE_START;
-        add(providersList, gc);
+        gcSearchPanel.gridx = 2;
+        gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_END;
+        searchPanel.add(categoryLabel, gcSearchPanel);
 
-        gc.gridx = 2;
-        gc.anchor = GridBagConstraints.FIRST_LINE_END;
-        add(categoryLabel, gc);
+        gcSearchPanel.gridx = 3;
+        gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_START;
+        searchPanel.add(categoryList, gcSearchPanel);
 
-        gc.gridx = 3;
-        gc.anchor = GridBagConstraints.FIRST_LINE_START;
-        add(categoryList, gc);
-
-        gc.gridx = 4;
-        gc.anchor = GridBagConstraints.FIRST_LINE_START;
-        add(addButton, gc);
-
-        /////// Next row ///////
-        gc.gridy ++;
-
-        gc.weightx = 1;
-        gc.weighty = 0.1;
-
-        gc.gridx = 0;
-        gc.anchor = GridBagConstraints.FIRST_LINE_END;
-        add(itemNameLabel, gc);
-
-        gc.gridx = 1;
-        gc.anchor = GridBagConstraints.FIRST_LINE_START;
-        add(itemNameTF, gc);
-
-        gc.gridx = 2;
-        gc.anchor = GridBagConstraints.FIRST_LINE_END;
-        add(quantityLabel, gc);
-
-        gc.gridx = 3;
-        gc.anchor = GridBagConstraints.FIRST_LINE_START;
-        add(quantityTF, gc);
-
-        gc.gridx = 4;
-        gc.anchor = GridBagConstraints.FIRST_LINE_START;
-        add(searchButton, gc);
+        gcSearchPanel.gridx = 4;
+        gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_START;
+        searchPanel.add(addButton, gcSearchPanel);
 
         /////// Next row ///////
-        gc.gridy ++;
+        gcSearchPanel.gridy ++;
 
-        gc.weightx = 1;
-        gc.weighty = 0.1;
-        gc.gridx = 0;
-        gc.gridwidth = 30;
-        gc.gridheight = 3;
-        gc.anchor = GridBagConstraints.FIRST_LINE_START;
-        add(scrollTable,gc);
+        gcSearchPanel.weightx = 0.5;
+        gcSearchPanel.weighty = 0.1;
 
-        /////// Next row ///////
-        gc.gridy ++;
+        gcSearchPanel.gridx = 0;
+        gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_END;
+        searchPanel.add(itemNameLabel, gcSearchPanel);
 
+        gcSearchPanel.gridx = 1;
+        gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_START;
+        searchPanel.add(itemNameTF, gcSearchPanel);
+
+        gcSearchPanel.gridx = 2;
+        gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_END;
+        searchPanel.add(quantityLabel, gcSearchPanel);
+
+        gcSearchPanel.gridx = 3;
+        gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_START;
+        searchPanel.add(quantityTF, gcSearchPanel);
+
+        gcSearchPanel.gridx = 4;
+        gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_START;
+        searchPanel.add(searchButton, gcSearchPanel);
     }
 }
