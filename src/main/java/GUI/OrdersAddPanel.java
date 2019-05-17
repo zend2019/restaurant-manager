@@ -31,7 +31,7 @@ public class OrdersAddPanel extends IWorkPanel{
     private String[] itemsColumnNames = {"SKU","Item name","Category","Provider","Available units","Cost per Item","Expected delivery","Action"};
     private String[] orderColumnNames = {"SKU","Item name","Category","Provider","Units","Cost per Item","Expected delivery","Action"};
 
-    private String[][] testData ={{"555","Shubi","kabubi","shabubi","2","20.8.15","2","20.8.15"},{"123","Halo","this is dog","kuku","5","555","2","20.8.15"}};
+    private String[][] testData ={{"555","Shubi","kabubi","shabubi","2","20.8.15","2","Edit\\Add"},{"123","Halo","this is dog","kuku","5","555","2","Edit\\Add"}};
 
     public OrdersAddPanel(){
         initialization();
@@ -57,8 +57,8 @@ public class OrdersAddPanel extends IWorkPanel{
         placeOrderButton = new JButton("Place Order");
         itemsTable = new JTable(testData,itemsColumnNames);
         orderTable = new JTable(testData,orderColumnNames);
-        scrollItemsTable = new JScrollPane(itemsTable,JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        scrollOrderTable = new JScrollPane(orderTable,JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollItemsTable = new JScrollPane(itemsTable);
+        scrollOrderTable = new JScrollPane(orderTable);
         searchPanel = new JPanel();
         itemsTablePanel = new JPanel();
         orderTablePanel = new JPanel();
@@ -73,13 +73,13 @@ public class OrdersAddPanel extends IWorkPanel{
         GridBagConstraints gcMainPanel = new GridBagConstraints();
         gcMainPanel.fill = GridBagConstraints.HORIZONTAL;
 
-        gcMainPanel.ipady = 50;
+        gcMainPanel.ipady = 5;
         gcMainPanel.gridy = 0;
         gcMainPanel.weightx = 0.5;
         gcMainPanel.weighty = 0.1;
 
         gcMainPanel.gridx = 0;
-        gcMainPanel.anchor = GridBagConstraints.NORTH;
+        gcMainPanel.anchor = GridBagConstraints.PAGE_START;
         add(searchPanel, gcMainPanel);
 
         gcMainPanel.ipady = 0;
@@ -87,9 +87,8 @@ public class OrdersAddPanel extends IWorkPanel{
         gcMainPanel.weightx = 0.5;
         gcMainPanel.weighty = 0.1;
 
-        gcMainPanel.gridheight = 2;
         gcMainPanel.gridx = 0;
-        gcMainPanel.anchor = GridBagConstraints.CENTER;
+        gcMainPanel.anchor = GridBagConstraints.LINE_START;
         add(tablesPanel, gcMainPanel);
 
         gcMainPanel.ipady = 0;
@@ -97,9 +96,9 @@ public class OrdersAddPanel extends IWorkPanel{
         gcMainPanel.weightx = 0.5;
         gcMainPanel.weighty = 0.1;
 
-        gcMainPanel.gridheight = 1;
+        //gcMainPanel.gridheight = 1;
         gcMainPanel.gridx = 0;
-        gcMainPanel.anchor = GridBagConstraints.SOUTH;
+        gcMainPanel.anchor = GridBagConstraints.PAGE_END;
         add(placeOrderPanel, gcMainPanel);
     }
 
@@ -109,11 +108,12 @@ public class OrdersAddPanel extends IWorkPanel{
         setOrderTable();
 
         tablesPanel.setLayout(new GridBagLayout());
-        tablesPanel.setBorder(BorderFactory.createLineBorder(Color.BLUE));
+        //tablesPanel.setBorder(BorderFactory.createLineBorder(Color.BLUE));
         //tablesPanel.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
         GridBagConstraints gcTablesPanel = new GridBagConstraints();
         gcTablesPanel.fill = GridBagConstraints.BOTH;
 
+        gcTablesPanel.ipady = 10;
         gcTablesPanel.gridx = 0;
         gcTablesPanel.gridy = 0;
         gcTablesPanel.weightx = 1;
@@ -128,10 +128,13 @@ public class OrdersAddPanel extends IWorkPanel{
     }
 
     protected void setItemsTable(){
-        itemsTablePanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        Dimension dim = new Dimension(300,200);
+        scrollItemsTable.setPreferredSize(dim);
+
+        itemsTablePanel.setBorder(BorderFactory.createTitledBorder("Browse items"));
 
         itemsTablePanel.setLayout(new GridBagLayout());
-        itemsTablePanel.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
+        //itemsTablePanel.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
         GridBagConstraints gcTablePanel = new GridBagConstraints();
         gcTablePanel.fill = GridBagConstraints.HORIZONTAL;
 
@@ -139,14 +142,17 @@ public class OrdersAddPanel extends IWorkPanel{
         gcTablePanel.gridy = 0;
         gcTablePanel.weightx = 1;
         gcTablePanel.weighty = 0.1;
-        //gcTablePanel.anchor = GridBagConstraints.FIRST_LINE_START;
-        itemsTablePanel.add(itemsTable,gcTablePanel);
+        gcTablePanel.anchor = GridBagConstraints.FIRST_LINE_START;
+        itemsTablePanel.add(scrollItemsTable,gcTablePanel);
     }
     protected void setOrderTable(){
-        orderTablePanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        Dimension dim = new Dimension(300,200);
+        scrollOrderTable.setPreferredSize(dim);
+
+        orderTablePanel.setBorder(BorderFactory.createTitledBorder("Current order"));
 
         orderTablePanel.setLayout(new GridBagLayout());
-        orderTablePanel.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
+        //orderTablePanel.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
         GridBagConstraints gcTablePanel = new GridBagConstraints();
         gcTablePanel.fill = GridBagConstraints.HORIZONTAL;
 
@@ -154,8 +160,8 @@ public class OrdersAddPanel extends IWorkPanel{
         gcTablePanel.gridy = 0;
         gcTablePanel.weightx = 1;
         gcTablePanel.weighty = 0.1;
-
-        orderTablePanel.add(orderTable,gcTablePanel);
+        gcTablePanel.anchor = GridBagConstraints.FIRST_LINE_START;
+        orderTablePanel.add(scrollOrderTable,gcTablePanel);
     }
 
     @Override
