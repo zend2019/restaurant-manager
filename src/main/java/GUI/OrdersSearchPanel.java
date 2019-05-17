@@ -51,7 +51,7 @@ public class OrdersSearchPanel extends IWorkPanel {
         GridBagConstraints gcMainPanel = new GridBagConstraints();
         gcMainPanel.fill = GridBagConstraints.HORIZONTAL;
 
-        gcMainPanel.ipady = 50;
+        gcMainPanel.ipady = 5;
         gcMainPanel.gridy = 0;
         gcMainPanel.weightx = 0.5;
         gcMainPanel.weighty = 0.1;
