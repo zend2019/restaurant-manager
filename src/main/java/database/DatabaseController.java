@@ -2,26 +2,26 @@ package main.java.database;
 
 import main.java.BL.Contract.*;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+import static java.sql.Types.NULL;
+
 
 public class DatabaseController {
 
     public static void main(String[] args) throws ParseException {
-        //Adding simple User test
+////        Adding simple User test
 //        User user = new User();
-//        user.setId(1);
 //        user.setFirstName("test");
 //        user.setLastName("dla");
-//        user.setAge("11");
+//        user.setAge(11);
 //        user.setDateOfBirth("1/1/1993");
 //        user.setPhoneNmuber("0547504868");
+//        user.setUserName("zvikalehxxxxxx");
 //        addUser(user);
 
         //Adding simple Restaurant
@@ -57,28 +57,28 @@ public class DatabaseController {
 //        order.setDeliveryDate(new SimpleDateFormat("dd/MM/yyyy").parse("01/01/1993"));
 //        order.setTotalAmount(22.56);
 //        addOrder(order);
+        getUserById(1);
     }
 
     public static void addUser(User user) {
         int id = user.getId();
         String firstName = user.getFirstName();
         String lastName = user.getLastName();
-        String age = user.getAge();
+        int age = user.getAge();
         String dateOfBirth = user.getDateOfBirth();
         String username = user.getUserName();
         String phoneNumber = user.getPhoneNmuber();
 
-        String sql = "INSERT INTO user(id,first_name,last_name,age,date_of_birth,username,phone_number) VALUES(?,?,?,?,?,?,?)";
+        String sql = "INSERT INTO user(first_name,last_name,age,date_of_birth,username,phone_number) VALUES(?,?,?,?,?,?)";
         Connection conn = DatabaseAccessManager.getConnection();
         try {
             PreparedStatement pstmt = conn.prepareStatement(sql);
-            pstmt.setInt(1, id);
-            pstmt.setString(2, firstName);
-            pstmt.setString(3, lastName);
-            pstmt.setString(4, age);
-            pstmt.setString(5, dateOfBirth);
-            pstmt.setString(6, username);
-            pstmt.setString(7, phoneNumber);
+            pstmt.setString(1, firstName);
+            pstmt.setString(2, lastName);
+            pstmt.setInt(3, age);
+            pstmt.setString(4, dateOfBirth);
+            pstmt.setString(5, username);
+            pstmt.setString(6, phoneNumber);
             pstmt.executeUpdate();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -174,4 +174,35 @@ public class DatabaseController {
             DatabaseAccessManager.closeConnection(conn);
         }
     }
+
+    public static User getUserById(int id) {
+        User user = new User();
+        String sql = "SELECT * FROM user WHERE id = " + id;
+        Connection conn = DatabaseAccessManager.getConnection();
+        try {
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
+//            while (rs.next()) {
+            user.setId(rs.getInt("id"));
+            user.setFirstName(rs.getString("first_name"));
+            user.setLastName(rs.getString("last_name"));
+            user.setAge(rs.getInt("age"));
+            user.setDateOfBirth(rs.getString("date_of_birth"));
+            user.setUserName(rs.getString("username"));
+            user.setPhoneNmuber(rs.getString("phone_number"));
+//        }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            DatabaseAccessManager.closeConnection(conn);
+        }
+        return user;
+    }
+    /*
+     SQLite Reset Primary Key Field (mostly will be used for auto autoincrement for ids) run the following queries:
+    delete from your_table;
+    delete from sqlite_sequence where name='your_table';
+     */
 }
+
+
