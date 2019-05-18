@@ -1,23 +1,30 @@
 package main.java.GUI;
 
 import com.toedter.calendar.JDateChooser;
+import main.java.BL.Contract.Category;
+import main.java.BL.Contract.Product;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import static java.lang.Integer.valueOf;
+
 public class InventoryPanel extends IWorkPanel {
+    private Product product;
     private JLabel providerLabel;
     private JLabel categoryLabel;
     private JLabel itemNameLabel;
-    private JLabel unitsLabel;
+    private JLabel availableUnitsLabel;
+    private JLabel expectedUnitsLabel;
     private JLabel dateLabel;
     private JLabel priceLabel;
     private JComboBox providersList;
     private JComboBox categoryList;
     private JTextField itemNameTF;
-    private JTextField unitsTF;
+    private JTextField availableUnitsTF;
+    private JTextField expectedUnitsTF;
     private JTextField priceTF;
     private JDateChooser dateChooser;
     private JButton searchButton;
@@ -35,6 +42,7 @@ public class InventoryPanel extends IWorkPanel {
         setSearchPanelLayout();
         setTableLayout();
         setMainLayout();
+        setActionListeners();
     }
 
     @Override
@@ -42,13 +50,15 @@ public class InventoryPanel extends IWorkPanel {
         providerLabel = new JLabel("Provider: ");
         categoryLabel = new JLabel("Category: ");
         itemNameLabel = new JLabel("Item Name: ");
-        unitsLabel = new JLabel("Units: ");
+        availableUnitsLabel = new JLabel("Available units: ");
+        expectedUnitsLabel = new JLabel("Expected units: ");
         dateLabel = new JLabel("Expiration date: ");
         priceLabel = new JLabel("Price: ");
         providersList = new JComboBox();
         categoryList = new JComboBox();
         itemNameTF = new JTextField(10);
-        unitsTF = new JTextField(10);
+        availableUnitsTF = new JTextField(10);
+        expectedUnitsTF = new JTextField(10);
         priceTF = new JTextField(10);
         dateChooser = new JDateChooser();
         searchButton = new JButton("Search");
@@ -86,7 +96,7 @@ public class InventoryPanel extends IWorkPanel {
 
     @Override
     protected void setTableLayout(){
-        Dimension dim = new Dimension(300,500);
+        Dimension dim = new Dimension(300,450);
         scrollTable.setPreferredSize(dim);
 
         tablePanel.setLayout(new GridBagLayout());
@@ -164,11 +174,12 @@ public class InventoryPanel extends IWorkPanel {
 
         gcSearchPanel.gridx = 2;
         gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_END;
-        searchPanel.add(unitsLabel, gcSearchPanel);
+        searchPanel.add(priceLabel, gcSearchPanel);
 
         gcSearchPanel.gridx = 3;
         gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_START;
-        searchPanel.add(unitsTF, gcSearchPanel);
+        searchPanel.add(priceTF, gcSearchPanel);
+
 
         gcSearchPanel.gridx = 4;
         gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_START;
@@ -182,24 +193,32 @@ public class InventoryPanel extends IWorkPanel {
 
         gcSearchPanel.gridx = 0;
         gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_END;
-        searchPanel.add(priceLabel, gcSearchPanel);
+        searchPanel.add(availableUnitsLabel, gcSearchPanel);
 
         gcSearchPanel.gridx = 1;
         gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_START;
-        searchPanel.add(priceTF, gcSearchPanel);
+        searchPanel.add(availableUnitsTF, gcSearchPanel);
 
         gcSearchPanel.gridx = 2;
         gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_END;
-        searchPanel.add(dateLabel, gcSearchPanel);
+        searchPanel.add(expectedUnitsLabel, gcSearchPanel);
 
         gcSearchPanel.gridx = 3;
         gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_START;
-        searchPanel.add(dateChooser, gcSearchPanel);
+        searchPanel.add(expectedUnitsTF, gcSearchPanel);
 
         /////// Next row ///////
         gcSearchPanel.gridy ++;
         gcSearchPanel.weightx = 0.5;
         gcSearchPanel.weighty = 0.1;
+
+        gcSearchPanel.gridx = 0;
+        gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_END;
+        searchPanel.add(dateLabel, gcSearchPanel);
+
+        gcSearchPanel.gridx = 1;
+        gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_START;
+        searchPanel.add(dateChooser, gcSearchPanel);
 
         ///// align fields sizes //////
         Dimension fieldSize = itemNameTF.getPreferredSize();
@@ -216,9 +235,24 @@ public class InventoryPanel extends IWorkPanel {
         addButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //unitsTF.getText();
+                //TODO: add empty field validations
+                //product = getProductProperties();
             }
         });
 
     }
+
+    protected Product getProductProperties(){
+        Product product = new Product();
+        //set item ID
+        product.setProvider((String) providersList.getSelectedItem());
+        //product.setCategory((Category) categoryList.getSelectedItem());
+        product.setProductName(itemNameTF.getText());
+        product.setCurrentProductAmount(valueOf(availableUnitsTF.getText()));
+        product.setPrice(priceTF.getText());
+        product.setExpirationDate(dateChooser.getDate());
+        return product;
+    }
+
+   // protected Product
 }

@@ -2,7 +2,7 @@ package main.java.BL.Contract;
 
 public enum Category {
     dairy,
-    meet,
+    meat,
     fruits,
     vegtable,
     uniform,
