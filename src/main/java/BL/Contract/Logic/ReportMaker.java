@@ -5,7 +5,8 @@ import main.java.BL.Contract.Report;
 
 import java.util.List;
 
-public class ReportMaker implements IReportMaker {
+public class ReportMaker implements IReportMaker{
+
     @Override
     public Report dailyReportMaker(List<Product> products) {
         return null;

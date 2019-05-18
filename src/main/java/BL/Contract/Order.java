@@ -50,4 +50,15 @@ public class Order {
         this.totalAmount = totalAmount;
     }
 
+    public OrderStatus getOrderStatus() {
+        return orderStatus;
+    }
+
+    public void setOrderStatus(OrderStatus orderStatus) {
+        this.orderStatus = orderStatus;
+    }
+
+    private OrderStatus orderStatus;
+
+
 }
