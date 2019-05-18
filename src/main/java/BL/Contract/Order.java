@@ -3,6 +3,13 @@ package main.java.BL.Contract;
 import java.util.Date;
 
 public class Order {
+
+    private Date deliveryDate;
+    private int orderId;
+    private String productType;
+    private Provider provider;
+    private Double totalAmount;
+
     public Date getDeliveryDate() {
         return deliveryDate;
     }
@@ -11,11 +18,11 @@ public class Order {
         this.deliveryDate = deliveryDate;
     }
 
-    public String getOrderId() {
+    public int getOrderId() {
         return orderId;
     }
 
-    public void setOrderId(String orderId) {
+    public void setOrderId(int orderId) {
         this.orderId = orderId;
     }
 
@@ -42,12 +49,5 @@ public class Order {
     public void setTotalAmount(Double totalAmount) {
         this.totalAmount = totalAmount;
     }
-
-    private Date deliveryDate;
-    private String orderId;
-    private String productType;
-    private Provider provider;
-    private Double totalAmount;
-
 
 }

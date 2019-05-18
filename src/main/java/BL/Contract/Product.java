@@ -3,6 +3,15 @@ package main.java.BL.Contract;
 import java.util.Date;
 
 public class Product {
+
+    private String productName;
+    private String price;
+    private Date expirationDate;
+    private Integer productId;
+    private Integer currentpProductAmount;
+    private Integer requiredAmount;
+    private String provider;
+
     public String getProductName() {
         return productName;
     }
@@ -59,12 +68,5 @@ public class Product {
         this.provider = provider;
     }
 
-    private String productName;
-    private String price;
-    private Date expirationDate;
-    private Integer productId;
-    private Integer currentpProductAmount;
-    private Integer requiredAmount;
-    private String provider;
 
 }

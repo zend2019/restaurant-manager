@@ -3,6 +3,12 @@ package main.java.BL.Contract;
 import java.util.List;
 
 public class Provider extends User {
+
+    private String companyName;
+    private List<Integer> productType;
+    private String contactName;
+    private Integer providerId;
+
     public String getCompanyName() {
         return companyName;
     }
@@ -34,10 +40,4 @@ public class Provider extends User {
     public void setProviderId(Integer providerId) {
         this.providerId = providerId;
     }
-
-    private String companyName;
-    private List<Integer> productType;
-    private String contactName;
-    private Integer providerId;
-
 }
