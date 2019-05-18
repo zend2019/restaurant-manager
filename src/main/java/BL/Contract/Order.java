@@ -9,6 +9,7 @@ public class Order {
     private String productType;
     private Provider provider;
     private Double totalAmount;
+    private OrderStatus orderStatus;
 
     public Date getDeliveryDate() {
         return deliveryDate;
@@ -50,6 +51,7 @@ public class Order {
         this.totalAmount = totalAmount;
     }
 
+
     public OrderStatus getOrderStatus() {
         return orderStatus;
     }
@@ -57,16 +59,6 @@ public class Order {
     public void setOrderStatus(OrderStatus orderStatus) {
         this.orderStatus = orderStatus;
     }
-
-    private OrderStatus orderStatus;
-    public OrderStatus getOrderStatus() {
-        return orderStatus;
-    }
-
-    public void setOrderStatus(OrderStatus orderStatus) {
-        this.orderStatus = orderStatus;
-    }
-
 
 
 }
