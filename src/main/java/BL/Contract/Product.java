@@ -51,12 +51,12 @@ public class Product {
         this.requiredAmount = requiredAmount;
     }
 
-    public String getProvider() {
-        return provider;
+    public String getProviderId() {
+        return providerId;
     }
 
-    public void setProvider(String provider) {
-        this.provider = provider;
+    public void setProviderId(String providerId) {
+        this.providerId = providerId;
     }
 
     public Category getCategory() {
@@ -73,6 +73,6 @@ public class Product {
     private Integer productId;
     private Integer currentProductAmount;
     private Integer requiredAmount;
-    private String provider;
+    private String providerId;
     private Category category;
 }

@@ -39,5 +39,14 @@ public class Provider extends User {
     private List<Integer> productType;
     private String contactName;
     private Integer providerId;
+    public Integer getRating() {
+        return rating;
+    }
+
+    public void setRating(Integer rating) {
+        this.rating = rating;
+    }
+
+    private Integer rating;
 
 }

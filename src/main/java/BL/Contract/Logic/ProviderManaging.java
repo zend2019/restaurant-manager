@@ -14,7 +14,14 @@ public class ProviderManaging implements IProviderManaging {
     }
 
     @Override
-    public void editProvider(Provider provider,int providerId) {
+    public void editProvider(Provider provider, int providerId) {
 
     }
+
+    @Override
+    public void getRatingProvider(int providerId) {
+
+    }
+
+
 }

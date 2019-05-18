@@ -5,5 +5,6 @@ public enum Category {
     meet,
     fruits,
     vegtable,
-    uniform,
+    sweets,
+    uniform
 }

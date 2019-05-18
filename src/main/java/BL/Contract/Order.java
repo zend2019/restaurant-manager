@@ -11,11 +11,11 @@ public class Order {
         this.deliveryDate = deliveryDate;
     }
 
-    public String getOrderId() {
+    public Integer getOrderId() {
         return orderId;
     }
 
-    public void setOrderId(String orderId) {
+    public void setOrderId(Integer orderId) {
         this.orderId = orderId;
     }
 
@@ -51,12 +51,27 @@ public class Order {
         this.orderStatus = orderStatus;
     }
 
-    private Date deliveryDate;
-    private String orderId;
-    private String productType;
-    private Provider provider;
+
+
+    public void setOrderId(int orderId) {
+        this.orderId = orderId;
+    }
+
     private Double totalAmount;
     private OrderStatus orderStatus;
+    private Date deliveryDate;
+    private int orderId;
+    private String productType;
+    private Provider provider;
 
+    public int getRating() {
+        return rating;
+    }
+
+    public void setRating(int rating) {
+        this.rating = rating;
+    }
+
+    private int rating;
 
 }
