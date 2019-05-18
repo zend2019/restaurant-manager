@@ -9,12 +9,12 @@ public class ProviderManaging implements IProviderManaging {
     }
 
     @Override
-    public void deleteProvider(Provider providerId) {
+    public void deleteProvider(int providerId) {
 
     }
 
     @Override
-    public void editProvider(Provider provider) {
+    public void editProvider(Provider provider,int providerId) {
 
     }
 }

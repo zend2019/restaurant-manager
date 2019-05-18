@@ -43,11 +43,20 @@ public class Order {
         this.totalAmount = totalAmount;
     }
 
+    public OrderStatus getOrderStatus() {
+        return orderStatus;
+    }
+
+    public void setOrderStatus(OrderStatus orderStatus) {
+        this.orderStatus = orderStatus;
+    }
+
     private Date deliveryDate;
     private String orderId;
     private String productType;
     private Provider provider;
     private Double totalAmount;
+    private OrderStatus orderStatus;
 
 
 }
