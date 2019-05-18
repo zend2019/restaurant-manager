@@ -3,7 +3,7 @@ import main.java.BL.Contract.Provider;
 
 public interface IProviderManaging {
     void addProvider(Provider provider);
-    void deleteProvider(Provider providerId);
-    void editProvider(Provider provider);
+    void deleteProvider(int providerId);
+    void editProvider(Provider provider,int providerId);
 
 }

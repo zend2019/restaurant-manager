@@ -35,12 +35,12 @@ public class Product {
         this.productId = productId;
     }
 
-    public Integer getCurrentpProductAmount() {
-        return currentpProductAmount;
+    public Integer getCurrentProductAmount() {
+        return currentProductAmount;
     }
 
-    public void setCurrentpProductAmount(Integer currentpProductAmount) {
-        this.currentpProductAmount = currentpProductAmount;
+    public void setCurrentProductAmount(Integer currentProductAmount) {
+        this.currentProductAmount = currentProductAmount;
     }
 
     public Integer getRequiredAmount() {
@@ -59,12 +59,20 @@ public class Product {
         this.provider = provider;
     }
 
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
+    }
+
     private String productName;
     private String price;
     private Date expirationDate;
     private Integer productId;
-    private Integer currentpProductAmount;
+    private Integer currentProductAmount;
     private Integer requiredAmount;
     private String provider;
-
+    private Category category;
 }
