@@ -1,6 +1,6 @@
 package main.java.BL.Contract;
 
-public abstract class User {
+public class User {
 
     private int id;
     private String FirstName;
