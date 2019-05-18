@@ -96,7 +96,6 @@ public class OrdersAddPanel extends IWorkPanel{
         gcMainPanel.weightx = 0.5;
         gcMainPanel.weighty = 0.1;
 
-        //gcMainPanel.gridheight = 1;
         gcMainPanel.gridx = 0;
         gcMainPanel.anchor = GridBagConstraints.PAGE_END;
         add(placeOrderPanel, gcMainPanel);
@@ -108,8 +107,6 @@ public class OrdersAddPanel extends IWorkPanel{
         setOrderTable();
 
         tablesPanel.setLayout(new GridBagLayout());
-        //tablesPanel.setBorder(BorderFactory.createLineBorder(Color.BLUE));
-        //tablesPanel.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
         GridBagConstraints gcTablesPanel = new GridBagConstraints();
         gcTablesPanel.fill = GridBagConstraints.BOTH;
 
@@ -273,5 +270,10 @@ public class OrdersAddPanel extends IWorkPanel{
         Dimension fieldSize = unitsTF.getPreferredSize();
         orderSumFieldLabel.setPreferredSize(fieldSize);
         placeOrderButton.setPreferredSize(fieldSize);
+    }
+
+    @Override
+    protected void setActionListeners(){
+
     }
 }

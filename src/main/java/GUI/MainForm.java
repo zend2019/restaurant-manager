@@ -63,7 +63,7 @@ public class MainForm extends JFrame {
 
     private void setScreenSize() {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        setSize(screenSize.width/2, screenSize.height/2);
+        setSize((int) (screenSize.width*0.9), (int) (screenSize.height*0.9));
     }
 
 }

@@ -1,18 +1,25 @@
 package main.java.GUI;
 
+import com.toedter.calendar.JDateChooser;
+
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class InventoryPanel extends IWorkPanel {
-    private JLabel inventoryPage;
     private JLabel providerLabel;
     private JLabel categoryLabel;
     private JLabel itemNameLabel;
     private JLabel unitsLabel;
+    private JLabel dateLabel;
+    private JLabel priceLabel;
     private JComboBox providersList;
     private JComboBox categoryList;
     private JTextField itemNameTF;
     private JTextField unitsTF;
+    private JTextField priceTF;
+    private JDateChooser dateChooser;
     private JButton searchButton;
     private JButton addButton;
     private JTable inventoryTable;
@@ -20,8 +27,8 @@ public class InventoryPanel extends IWorkPanel {
     private JPanel searchPanel;
     private JPanel tablePanel;
 
-    private String[] columnNames = {"SKU","Item name","Category","Provider","Units","Date received"};
-    private String[][] testData ={{"555","Shubi","kabubi","shabubi","2","20.8.15"},{"123","Halo","this is dog","kuku","5","555"}};
+    private String[] columnNames = {"ID","Item name","Category","Provider","Available Units","Expected Units","Expiration date"};
+    private String[][] testData ={{"555","Shubi","kabubi","shabubi","2","4","20.8.15"}};
 
     public InventoryPanel(){
         initialization();
@@ -32,15 +39,18 @@ public class InventoryPanel extends IWorkPanel {
 
     @Override
     protected void initialization(){
-        //inventoryPage = new JLabel("Inventory");
         providerLabel = new JLabel("Provider: ");
         categoryLabel = new JLabel("Category: ");
         itemNameLabel = new JLabel("Item Name: ");
         unitsLabel = new JLabel("Units: ");
+        dateLabel = new JLabel("Expiration date: ");
+        priceLabel = new JLabel("Price: ");
         providersList = new JComboBox();
         categoryList = new JComboBox();
         itemNameTF = new JTextField(10);
         unitsTF = new JTextField(10);
+        priceTF = new JTextField(10);
+        dateChooser = new JDateChooser();
         searchButton = new JButton("Search");
         addButton = new JButton("Add");
         inventoryTable = new JTable(testData,columnNames);
@@ -70,13 +80,14 @@ public class InventoryPanel extends IWorkPanel {
         gcMainPanel.weighty = 0.1;
 
         gcMainPanel.gridx = 0;
-        gcMainPanel.anchor = GridBagConstraints.CENTER;
+        gcMainPanel.anchor = GridBagConstraints.LINE_START;
         add(tablePanel, gcMainPanel);
     }
 
     @Override
     protected void setTableLayout(){
-        tablePanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        Dimension dim = new Dimension(300,500);
+        scrollTable.setPreferredSize(dim);
 
         tablePanel.setLayout(new GridBagLayout());
         tablePanel.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
@@ -111,11 +122,7 @@ public class InventoryPanel extends IWorkPanel {
         gcSearchPanel.gridy = 0;
         gcSearchPanel.weightx = 1;
         gcSearchPanel.weighty = 0.1;
-
         gcSearchPanel.gridx = 0;
-        //gc.anchor = GridBagConstraints.CENTER;
-        //inventoryPage.setFont(new Font("Tahoma",Font.PLAIN,20));
-        //searchPanel.add(inventoryPage,gc);
 
         /////// Next row //////
         gcSearchPanel.gridy ++;
@@ -167,12 +174,51 @@ public class InventoryPanel extends IWorkPanel {
         gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_START;
         searchPanel.add(searchButton, gcSearchPanel);
 
+        /////// Next row ///////
+        gcSearchPanel.gridy ++;
+
+        gcSearchPanel.weightx = 0.5;
+        gcSearchPanel.weighty = 0.1;
+
+        gcSearchPanel.gridx = 0;
+        gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_END;
+        searchPanel.add(priceLabel, gcSearchPanel);
+
+        gcSearchPanel.gridx = 1;
+        gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_START;
+        searchPanel.add(priceTF, gcSearchPanel);
+
+        gcSearchPanel.gridx = 2;
+        gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_END;
+        searchPanel.add(dateLabel, gcSearchPanel);
+
+        gcSearchPanel.gridx = 3;
+        gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_START;
+        searchPanel.add(dateChooser, gcSearchPanel);
+
+        /////// Next row ///////
+        gcSearchPanel.gridy ++;
+        gcSearchPanel.weightx = 0.5;
+        gcSearchPanel.weighty = 0.1;
+
         ///// align fields sizes //////
         Dimension fieldSize = itemNameTF.getPreferredSize();
         providersList.setPreferredSize(fieldSize);
         categoryList.setPreferredSize(fieldSize);
         addButton.setPreferredSize(fieldSize);
         searchButton.setPreferredSize(fieldSize);
+        dateChooser.setPreferredSize(fieldSize);
+
+    }
+
+    @Override
+    protected void setActionListeners(){
+        addButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                //unitsTF.getText();
+            }
+        });
 
     }
 }

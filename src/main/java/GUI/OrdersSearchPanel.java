@@ -1,5 +1,7 @@
 package main.java.GUI;
 
+import com.toedter.calendar.JDateChooser;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -8,18 +10,23 @@ public class OrdersSearchPanel extends IWorkPanel {
     private JLabel categoryLabel;
     private JLabel itemNameLabel;
     private JLabel orderIdLabel;
+    private JLabel orderStatusLabel;
+    private JLabel deliveryDateLabel;
     private JComboBox providersList;
     private JComboBox categoryList;
     private JComboBox itemList;
     private JTextField orderIdTF;
+    private JCheckBox openOrderCB;
+    private JCheckBox closedOrderCB;
+    private JDateChooser deliveryDateChooser;
     private JButton searchOrderButton;
     private JTable ordersTable;
     private JScrollPane scrollTable;
     private JPanel searchPanel;
     private JPanel tablePanel;
 
-    private String[] columnNames = {"Order ID","Items quantity","Cost","Date received"};
-    private String[][] testData ={{"555","5","999","10.05.19"},{"123","6","502","15.05.19"}};
+    private String[] columnNames = {"Order ID","Units","Cost","Delivery status","Delivery Date"};
+    private String[][] testData ={{"555","5","999","Closed","10.05.19"}};
 
     public OrdersSearchPanel(){
             initialization();
@@ -34,9 +41,14 @@ public class OrdersSearchPanel extends IWorkPanel {
         categoryLabel = new JLabel("Category: ");
         itemNameLabel = new JLabel("Item name: ");
         orderIdLabel = new JLabel("Order ID: ");
+        orderStatusLabel = new JLabel("Order status: ");
+        deliveryDateLabel = new JLabel("Delivery date: ");
         providersList = new JComboBox();
         categoryList = new JComboBox();
         itemList = new JComboBox();
+        openOrderCB = new JCheckBox("Open");
+        closedOrderCB = new JCheckBox("Closed");
+        deliveryDateChooser = new JDateChooser();
         orderIdTF = new JTextField(10);
         searchOrderButton = new JButton("Search order");
         ordersTable = new JTable(testData,columnNames);
@@ -66,13 +78,14 @@ public class OrdersSearchPanel extends IWorkPanel {
         gcMainPanel.weighty = 0.1;
 
         gcMainPanel.gridx = 0;
-        gcMainPanel.anchor = GridBagConstraints.CENTER;
+        gcMainPanel.anchor = GridBagConstraints.LINE_START;
         add(tablePanel, gcMainPanel);
     }
 
     @Override
     protected void setTableLayout() {
-        tablePanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        Dimension dim = new Dimension(300,450);
+        scrollTable.setPreferredSize(dim);
 
         tablePanel.setLayout(new GridBagLayout());
         tablePanel.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
@@ -151,9 +164,63 @@ public class OrdersSearchPanel extends IWorkPanel {
         gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_START;
         searchPanel.add(orderIdTF, gcSearchPanel);
 
-        gcSearchPanel.gridx = 4;
+        /////// Next row ///////
+        gcSearchPanel.gridy ++;
+
+        gcSearchPanel.weightx = 0.5;
+        gcSearchPanel.weighty = 0.1;
+
+        gcSearchPanel.gridx = 0;
+        gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_END;
+        searchPanel.add(itemNameLabel, gcSearchPanel);
+
+        gcSearchPanel.gridx = 1;
+        gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_START;
+        searchPanel.add(itemList, gcSearchPanel);
+
+        gcSearchPanel.gridx = 2;
+        gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_END;
+        searchPanel.add(deliveryDateLabel, gcSearchPanel);
+
+        gcSearchPanel.gridx = 3;
+        gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_START;
+        searchPanel.add(deliveryDateChooser, gcSearchPanel);
+
+        /////// Next row ///////
+        gcSearchPanel.gridy ++;
+
+        gcSearchPanel.weightx = 0.5;
+        gcSearchPanel.weighty = 0.1;
+
+        gcSearchPanel.gridx = 0;
+        gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_END;
+        searchPanel.add(orderIdLabel, gcSearchPanel);
+
+        gcSearchPanel.gridx = 1;
+        gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_START;
+        searchPanel.add(orderIdTF, gcSearchPanel);
+
+        gcSearchPanel.gridx = 2;
+        gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_END;
+        searchPanel.add(orderStatusLabel, gcSearchPanel);
+
+        gcSearchPanel.gridx = 3;
+        gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_START;
+        searchPanel.add(openOrderCB, gcSearchPanel);
+
+        /////// Next row ///////
+        gcSearchPanel.gridy ++;
+
+        gcSearchPanel.weightx = 0.5;
+        gcSearchPanel.weighty = 0.1;
+
+        gcSearchPanel.gridx = 1;
         gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_START;
         searchPanel.add(searchOrderButton, gcSearchPanel);
+
+        gcSearchPanel.gridx = 3;
+        gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_START;
+        searchPanel.add(closedOrderCB, gcSearchPanel);
 
         ///// align fields sizes //////
         Dimension fieldSize = orderIdTF.getPreferredSize();
@@ -161,6 +228,12 @@ public class OrdersSearchPanel extends IWorkPanel {
         categoryList.setPreferredSize(fieldSize);
         itemList.setPreferredSize(fieldSize);
         searchOrderButton.setPreferredSize(fieldSize);
+        deliveryDateChooser.setPreferredSize(fieldSize);
+    }
+
+    @Override
+    protected void setActionListeners(){
+
     }
 
 }
