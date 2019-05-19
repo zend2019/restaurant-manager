@@ -3,11 +3,13 @@ package main.java.GUI;
 import com.toedter.calendar.JDateChooser;
 import main.java.BL.Contract.Category;
 import main.java.BL.Contract.Product;
+import main.java.common.constants.Constants;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.HashMap;
 
 import static java.lang.Integer.valueOf;
 
@@ -34,8 +36,11 @@ public class InventoryPanel extends IWorkPanel {
     private JPanel searchPanel;
     private JPanel tablePanel;
 
+    //TEST FIELDS//
+    private HashMap searchParams = new HashMap();
     private String[] columnNames = {"ID","Item name","Category","Provider","Available Units","Expected Units","Expiration date"};
     private String[][] testData ={{"555","Shubi","kabubi","shabubi","2","4","20.8.15"}};
+    private String[] providers = {"1","2","3"};
 
     public InventoryPanel(){
         initialization();
@@ -115,11 +120,9 @@ public class InventoryPanel extends IWorkPanel {
     @Override
     protected void setSearchPanelLayout(){
         /////// Set combo-box ///////
-        DefaultComboBoxModel providersModel = new DefaultComboBoxModel();
-        providersModel.addElement("provider 1");
+        DefaultComboBoxModel providersModel = new DefaultComboBoxModel(providers);
         providersList.setModel(providersModel);
-        DefaultComboBoxModel categoryModel = new DefaultComboBoxModel();
-        categoryModel.addElement("category 1");
+        DefaultComboBoxModel categoryModel = new DefaultComboBoxModel(Category.values());
         categoryList.setModel(categoryModel);
 
         searchPanel.setBorder(BorderFactory.createTitledBorder("Inventory"));
@@ -220,6 +223,25 @@ public class InventoryPanel extends IWorkPanel {
         gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_START;
         searchPanel.add(dateChooser, gcSearchPanel);
 
+        //Validation labels
+        gcSearchPanel.gridx = 3;
+        gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_START;
+        searchPanel.add(Constants.ALL_FIELDS_REQUIRED,gcSearchPanel);
+        Constants.ALL_FIELDS_REQUIRED.setForeground(Color.red);
+        Constants.ALL_FIELDS_REQUIRED.setVisible(false);
+
+        searchPanel.add(Constants.ATLEAST_ONE_FIELD_REQUIRED,gcSearchPanel);
+        Constants.ATLEAST_ONE_FIELD_REQUIRED.setForeground(Color.red);
+        Constants.ATLEAST_ONE_FIELD_REQUIRED.setVisible(false);
+
+        searchPanel.add(Constants.ITEM_ADDED,gcSearchPanel);
+        Constants.ITEM_ADDED.setForeground(Color.green);
+        Constants.ITEM_ADDED.setVisible(false);
+
+        searchPanel.add(Constants.SEARCHING,gcSearchPanel);
+        Constants.SEARCHING.setForeground(Color.yellow);
+        Constants.SEARCHING.setVisible(false);
+
         ///// align fields sizes //////
         Dimension fieldSize = itemNameTF.getPreferredSize();
         providersList.setPreferredSize(fieldSize);
@@ -232,27 +254,111 @@ public class InventoryPanel extends IWorkPanel {
 
     @Override
     protected void setActionListeners(){
+        setAddButton();
+        setSearchButton();
+    }
+
+    private void setSearchButton(){
+        searchButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(checkAtleastOneNotEmpty()){
+                    setAllLabelsVisibility(false);
+                    searchParams = buildSearchParameters();
+                    Constants.SEARCHING.setVisible(true);
+                }
+                else{
+                    setAllLabelsVisibility(false);
+                    Constants.ATLEAST_ONE_FIELD_REQUIRED.setVisible(true);
+                }
+
+            }
+        });
+    }
+
+    private boolean checkAtleastOneNotEmpty(){
+        if(     !categoryList.getSelectedItem().equals(Category.None) ||
+                !itemNameTF.getText().equals(Constants.EMPTY_FIELD )||
+                !availableUnitsTF.getText().equals(Constants.EMPTY_FIELD )  ||
+                !expectedUnitsTF.getText().equals(Constants.EMPTY_FIELD )||
+                !priceTF.getText().equals(Constants.EMPTY_FIELD )||
+                dateChooser.getDate() != null
+        )
+            return true;
+
+        else
+            return false;
+    }
+
+    private HashMap buildSearchParameters(){
+        HashMap searchParams = new HashMap();
+        //TODO: Add Providers
+        if(!categoryList.getSelectedItem().equals(Category.None))
+            searchParams.put(Constants.CATEGORY,categoryList.getSelectedItem());
+        if(!itemNameTF.getText().equals(Constants.EMPTY_FIELD))
+            searchParams.put(Constants.ITEM_NAME,itemNameTF.getText());
+        if(!availableUnitsTF.getText().equals(Constants.EMPTY_FIELD))
+            searchParams.put(Constants.AVAILABLE_UNITS,availableUnitsTF.getText());
+        if(!expectedUnitsTF.getText().equals(Constants.EMPTY_FIELD))
+            searchParams.put(Constants.REQUIRED_UNITS,expectedUnitsTF.getText());
+        if(!priceTF.getText().equals(Constants.EMPTY_FIELD))
+            searchParams.put(Constants.PRICE,priceTF.getText());
+        if(dateChooser.getDate() != null){
+            searchParams.put(Constants.EXPIRATION_DATE,dateChooser.getDate());
+        }
+        return searchParams;
+    }
+
+    private void setAddButton(){
         addButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //TODO: add empty field validations
-                //product = getProductProperties();
+                if(!checkNoEmptyFields()){
+                    setAllLabelsVisibility(false);
+                    Constants.ALL_FIELDS_REQUIRED.setVisible(true);
+                }
+                else {
+                    setAllLabelsVisibility(false);
+                    product = getProductProperties();
+                    Constants.ITEM_ADDED.setVisible(true);
+                }
             }
         });
-
     }
 
-    protected Product getProductProperties(){
+    private boolean checkNoEmptyFields(){
+        //TODO: Add Providers: what is the default value?
+        if(     categoryList.getSelectedItem() != Category.None &&
+                !itemNameTF.getText().equals(Constants.EMPTY_FIELD) &&
+                !availableUnitsTF.getText().equals(Constants.EMPTY_FIELD) &&
+                !expectedUnitsTF.getText().equals(Constants.EMPTY_FIELD) &&
+                !priceTF.getText().equals(Constants.EMPTY_FIELD) &&
+                dateChooser.getDate() != null
+            )
+            return true;
+        else
+            return false;
+    }
+
+    private Product getProductProperties(){
         Product product = new Product();
-        //set item ID
-        product.setProvider((String) providersList.getSelectedItem());
-        //product.setCategory((Category) categoryList.getSelectedItem());
+        //TODO: Item ID ?
+        product.setProvider((String)providersList.getSelectedItem());
+        product.setCategory((Category)categoryList.getSelectedItem());
         product.setProductName(itemNameTF.getText());
         product.setCurrentProductAmount(valueOf(availableUnitsTF.getText()));
+        product.setRequiredAmount(valueOf(expectedUnitsTF.getText()));
         product.setPrice(priceTF.getText());
         product.setExpirationDate(dateChooser.getDate());
         return product;
     }
 
-   // protected Product
+    private void setAllLabelsVisibility(boolean visibility){
+        Constants.ALL_FIELDS_REQUIRED.setVisible(visibility);
+        Constants.ATLEAST_ONE_FIELD_REQUIRED.setVisible(visibility);
+        Constants.ITEM_ADDED.setVisible(visibility);
+        Constants.SEARCHING.setVisible(visibility);
+    }
+
+
 }
