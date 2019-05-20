@@ -1,16 +1,9 @@
 package main.java.BL.Contract;
 
 import java.util.Date;
+import java.util.List;
 
 public class Order {
-
-    private Date deliveryDate;
-    private int orderId;
-    private String productType;
-    private Provider provider;
-    private Double totalAmount;
-    private OrderStatus orderStatus;
-
     public Date getDeliveryDate() {
         return deliveryDate;
     }
@@ -19,28 +12,12 @@ public class Order {
         this.deliveryDate = deliveryDate;
     }
 
-    public int getOrderId() {
+    public Integer getOrderId() {
         return orderId;
     }
 
-    public void setOrderId(int orderId) {
+    public void setOrderId(Integer orderId) {
         this.orderId = orderId;
-    }
-
-    public String getProductType() {
-        return productType;
-    }
-
-    public void setProductType(String productType) {
-        this.productType = productType;
-    }
-
-    public Provider getProvider() {
-        return provider;
-    }
-
-    public void setProvider(Provider provider) {
-        this.provider = provider;
     }
 
     public Double getTotalAmount() {
@@ -51,7 +28,6 @@ public class Order {
         this.totalAmount = totalAmount;
     }
 
-
     public OrderStatus getOrderStatus() {
         return orderStatus;
     }
@@ -60,5 +36,37 @@ public class Order {
         this.orderStatus = orderStatus;
     }
 
+    public void setOrderId(int orderId) {
+        this.orderId = orderId;
+    }
+    public List<Integer> getProductIds() {
+        return productIds;
+    }
 
+    public void setProductIds(List<Integer> productIds) {
+        this.productIds = productIds;
+    }
+
+    private OrderStatus orderStatus;    public int getRating() {
+        return rating;
+    }
+
+    public void setRating(int rating) {
+        this.rating = rating;
+    }
+
+    private Date deliveryDate;
+    private int orderId;
+    private List<Integer> productIds;
+    private List<Integer> provider;
+    private Double totalAmount;
+    private int rating;
+
+    public List<Integer> getProvider() {
+        return provider;
+    }
+
+    public void setProvider(List<Integer> provider) {
+        this.provider = provider;
+    }
 }

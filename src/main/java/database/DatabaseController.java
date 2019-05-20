@@ -1,10 +1,12 @@
 package main.java.database;
 
 import main.java.BL.Contract.*;
+import main.java.common.CommonUtils;
 
 import java.sql.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -13,15 +15,15 @@ import static java.sql.Types.NULL;
 
 public class DatabaseController {
 
+
     public static void main(String[] args) throws ParseException {
-////        Adding simple User test
+        //Adding simple User test
 //        User user = new User();
 //        user.setFirstName("test");
 //        user.setLastName("dla");
-//        user.setAge(11);
+//        user.setAge("11");
 //        user.setDateOfBirth("1/1/1993");
 //        user.setPhoneNmuber("0547504868");
-//        user.setUserName("zvikalehxxxxxx");
 //        addUser(user);
 
         //Adding simple Restaurant
@@ -64,21 +66,22 @@ public class DatabaseController {
         int id = user.getId();
         String firstName = user.getFirstName();
         String lastName = user.getLastName();
-        int age = user.getAge();
+        String age = Integer.toString(user.getAge());
         String dateOfBirth = user.getDateOfBirth();
         String username = user.getUserName();
         String phoneNumber = user.getPhoneNmuber();
 
-        String sql = "INSERT INTO user(first_name,last_name,age,date_of_birth,username,phone_number) VALUES(?,?,?,?,?,?)";
+        String sql = "INSERT INTO user(id,first_name,last_name,age,date_of_birth,username,phone_number) VALUES(?,?,?,?,?,?,?)";
         Connection conn = DatabaseAccessManager.getConnection();
         try {
             PreparedStatement pstmt = conn.prepareStatement(sql);
-            pstmt.setString(1, firstName);
-            pstmt.setString(2, lastName);
-            pstmt.setInt(3, age);
-            pstmt.setString(4, dateOfBirth);
-            pstmt.setString(5, username);
-            pstmt.setString(6, phoneNumber);
+            pstmt.setInt(1, id);
+            pstmt.setString(2, firstName);
+            pstmt.setString(3, lastName);
+            pstmt.setString(4, age);
+            pstmt.setString(5, dateOfBirth);
+            pstmt.setString(6, username);
+            pstmt.setString(7, phoneNumber);
             pstmt.executeUpdate();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -129,9 +132,9 @@ public class DatabaseController {
         String name = product.getProductName();
         String price = product.getPrice();
         String expirationDate = String.valueOf(product.getExpirationDate()); //todo string casting might cause issues...need to check
-        int currentAmount = product.getCurrentpProductAmount();
+        int currentAmount = product.getCurrentProductAmount();
         int requiredAmount = product.getRequiredAmount();
-        String provider = product.getProvider();
+        String provider = product.getProviderId();
         String sql = "INSERT INTO product(id,name,price,expiration_date,current_amount,required_amount,provider) VALUES(?,?,?,?,?,?,?)";
         Connection conn = DatabaseAccessManager.getConnection();
         try {
@@ -151,10 +154,58 @@ public class DatabaseController {
         }
     }
 
+
+    public static List<Product> getProductList(int providerId) {
+        String sql = "SELECT* FROM product WHERE providerId = ? ";
+        Connection conn = DatabaseAccessManager.getConnection();
+        List<Product> products = new ArrayList<>();
+
+        try {
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, providerId);
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+
+                Product product = new Product();
+                product.setProductId(Integer.parseInt(rs.getString("id")));
+                product.setProductName(rs.getString("name"));
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            DatabaseAccessManager.closeConnection(conn);
+        }
+        return products;
+    }
+
+    public static List<Product> GetProviderByCategory(int providerId) {
+        String sql = "SELECT* FROM product WHERE providerId = ? ";
+        Connection conn = DatabaseAccessManager.getConnection();
+        List<Product> products = new ArrayList<>();
+
+        try {
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, providerId);
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+
+                Product product = new Product();
+                product.setProductId(Integer.parseInt(rs.getString("id")));
+                product.setProductName(rs.getString("name"));
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            DatabaseAccessManager.closeConnection(conn);
+        }
+        return products;
+    }
+
+
     public static void addOrder(Order order) {
         int id = order.getOrderId();
-        String productType = order.getProductType();
-        Provider provider = order.getProvider();
+        String productType = CommonUtils.ConvertIntListToString(order.getProductIds()); //String.join(",",order.getProductIds());
+        String provider = CommonUtils.ConvertIntListToString(order.getProvider());
         Date deliveryDate = order.getDeliveryDate();
         Double totalAmount = order.getTotalAmount();
         String sql = "INSERT INTO orders(id,product_type,provider,delivery_date,total_amount) VALUES(?,?,?,?,?)";
@@ -163,7 +214,7 @@ public class DatabaseController {
             PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.setInt(1, id);
             pstmt.setString(2, productType);
-            pstmt.setObject(3, provider.getCompanyName());
+            pstmt.setObject(3, provider);
             pstmt.setString(4, String.valueOf(deliveryDate));
             pstmt.setDouble(5, totalAmount);
 
@@ -204,5 +255,3 @@ public class DatabaseController {
     delete from sqlite_sequence where name='your_table';
      */
 }
-
-
