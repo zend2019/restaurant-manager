@@ -1,14 +1,24 @@
 package main.java.GUI;
 
 import com.toedter.calendar.JDateChooser;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.ObservableList;
+import javafx.scene.control.TablePosition;
+import javafx.scene.control.TableView;
 import main.java.BL.Contract.Category;
 import main.java.BL.Contract.OrderStatus;
 import main.java.common.constants.Constants;
 
 import javax.swing.*;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.HashMap;
 
 public class OrdersSearchPanel extends IWorkPanel {
@@ -27,14 +37,24 @@ public class OrdersSearchPanel extends IWorkPanel {
     private JDateChooser deliveryDateChooser;
     private JButton searchOrderButton;
     private JTable ordersTable;
-    private JScrollPane scrollTable;
+    private JTable itemsTable;
+    private DefaultTableModel model;
+    private JScrollPane scrollOrdersTable;
+    private JScrollPane scrollItemsTable;
     private JPanel searchPanel;
-    private JPanel tablePanel;
+    private JPanel ordersTablePanel;
+    private JPanel itemsTablePanel;
+    private JPanel tablesPanel;
 
     //TEST FIELDS//
     private HashMap searchParams = new HashMap();
-    private String[] columnNames = {"Order ID","Units","Cost","Delivery status","Delivery Date"};
-    private String[][] testData ={{"555","5","999","Closed","10.05.19"}};
+    private String[] itemsColumnNames = {"ID","Item name","Category","Provider","Units","Cost","Expiration date"};
+    private String[][] items1TestData = {{"1313","kuku","dairy","Shufersal","5","451","15.12.2020"}
+                                        ,{"1314","lolo","meat","mega","57","41","21.01.2020"}};
+    private String[][] items2TestData = {{"1300","shubu","uniform","castro","5","200","N/A"}};
+    private String[] ordersColumnNames = {"Order ID","Units","Cost","Delivery status","Order Date","Delivery Date"};
+    private String[][] order1TestData ={{"555","2","999","Closed","10.05.19","15.05.19"}
+                                        ,{"44","1","23","Closed","11.05.19","14.05.19"}};
     private String[] providers = {"1","2","3"};
     private String[] items = {"","4","5","6"};
 
@@ -62,10 +82,15 @@ public class OrdersSearchPanel extends IWorkPanel {
         deliveryDateChooser = new JDateChooser();
         orderIdTF = new JTextField(10);
         searchOrderButton = new JButton("Search order");
-        ordersTable = new JTable(testData,columnNames);
-        scrollTable = new JScrollPane(ordersTable,JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        model = new DefaultTableModel(items2TestData, itemsColumnNames);
+        ordersTable = new JTable(order1TestData, ordersColumnNames);
+        itemsTable = new JTable(model);
+        scrollOrdersTable = new JScrollPane(ordersTable,JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollItemsTable = new JScrollPane(itemsTable,JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         searchPanel = new JPanel();
-        tablePanel = new JPanel();
+        ordersTablePanel = new JPanel();
+        itemsTablePanel = new JPanel();
+        tablesPanel = new JPanel();
     }
 
     @Override
@@ -90,16 +115,38 @@ public class OrdersSearchPanel extends IWorkPanel {
 
         gcMainPanel.gridx = 0;
         gcMainPanel.anchor = GridBagConstraints.LINE_START;
-        add(tablePanel, gcMainPanel);
+        add(tablesPanel, gcMainPanel);
     }
 
     @Override
     protected void setTableLayout() {
-        Dimension dim = new Dimension(300,450);
-        scrollTable.setPreferredSize(dim);
+        setItemsTable();
+        setOrderTable();
 
-        tablePanel.setLayout(new GridBagLayout());
-        tablePanel.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
+        tablesPanel.setLayout(new GridBagLayout());
+        GridBagConstraints gcTablesPanel = new GridBagConstraints();
+        gcTablesPanel.fill = GridBagConstraints.BOTH;
+
+        gcTablesPanel.ipady = 10;
+        gcTablesPanel.gridx = 0;
+        gcTablesPanel.gridy = 0;
+        gcTablesPanel.weightx = 1;
+        gcTablesPanel.weighty = 1;
+        tablesPanel.add(ordersTablePanel,gcTablesPanel);
+
+        gcTablesPanel.gridx = 0;
+        gcTablesPanel.gridy = 1;
+        gcTablesPanel.weightx = 1;
+        gcTablesPanel.weighty = 1;
+        tablesPanel.add(itemsTablePanel,gcTablesPanel);
+    }
+
+    private void setOrderTable() {
+        Dimension dim = new Dimension(300,200);
+        scrollOrdersTable.setPreferredSize(dim);
+
+        ordersTablePanel.setLayout(new GridBagLayout());
+        ordersTablePanel.setBorder(BorderFactory.createTitledBorder("Browse orders"));
         GridBagConstraints gcTablePanel = new GridBagConstraints();
         gcTablePanel.fill = GridBagConstraints.HORIZONTAL;
 
@@ -107,8 +154,25 @@ public class OrdersSearchPanel extends IWorkPanel {
         gcTablePanel.gridy = 0;
         gcTablePanel.weightx = 1;
         gcTablePanel.weighty = 0.1;
+        gcTablePanel.anchor = GridBagConstraints.FIRST_LINE_START;
+        ordersTablePanel.add(scrollOrdersTable,gcTablePanel);
+    }
 
-        tablePanel.add(scrollTable,gcTablePanel);
+    private void setItemsTable() {
+        Dimension dim = new Dimension(300,200);
+        scrollItemsTable.setPreferredSize(dim);
+
+        itemsTablePanel.setLayout(new GridBagLayout());
+        itemsTablePanel.setBorder(BorderFactory.createTitledBorder("Browse order items"));
+        GridBagConstraints gcTablePanel = new GridBagConstraints();
+        gcTablePanel.fill = GridBagConstraints.HORIZONTAL;
+
+        gcTablePanel.gridx = 0;
+        gcTablePanel.gridy = 0;
+        gcTablePanel.weightx = 1;
+        gcTablePanel.weighty = 0.1;
+        gcTablePanel.anchor = GridBagConstraints.FIRST_LINE_START;
+        itemsTablePanel.add(scrollItemsTable,gcTablePanel);
     }
 
     @Override
@@ -224,6 +288,25 @@ public class OrdersSearchPanel extends IWorkPanel {
     @Override
     protected void setActionListeners(){
         setSearchButton();
+        setOrderSelectFromTable();
+    }
+
+    private void setOrderSelectFromTable() {
+        ordersTable.getSelectionModel().addListSelectionListener(new ListSelectionListener(){
+            @Override
+            public void valueChanged(ListSelectionEvent event) {
+                String orderId = ordersTable.getValueAt(ordersTable.getSelectedRow(), 0).toString();
+                System.out.println(orderId);
+                //TODO: send orderId to SQL query builder -> get in return a 2D data array
+                //A test to see the data is changed upon setDataVector
+                if(orderId.equals("555")){
+                    model.setDataVector(items1TestData,itemsColumnNames);
+                }
+                else{
+                    model.setDataVector(items2TestData,itemsColumnNames);
+                }
+            }
+        });
     }
 
     private void setSearchButton() {

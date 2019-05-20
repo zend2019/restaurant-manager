@@ -64,7 +64,6 @@ public class OrdersAddPanel extends IWorkPanel{
         orderTablePanel = new JPanel();
         placeOrderPanel = new JPanel();
         tablesPanel = new JPanel();
-        //splitTables = new JSplitPane(JSplitPane.VERTICAL_SPLIT,itemsTablePanel,orderTablePanel);
     }
 
     @Override
@@ -131,7 +130,6 @@ public class OrdersAddPanel extends IWorkPanel{
         itemsTablePanel.setBorder(BorderFactory.createTitledBorder("Browse items"));
 
         itemsTablePanel.setLayout(new GridBagLayout());
-        //itemsTablePanel.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
         GridBagConstraints gcTablePanel = new GridBagConstraints();
         gcTablePanel.fill = GridBagConstraints.HORIZONTAL;
 
@@ -149,7 +147,6 @@ public class OrdersAddPanel extends IWorkPanel{
         orderTablePanel.setBorder(BorderFactory.createTitledBorder("Current order"));
 
         orderTablePanel.setLayout(new GridBagLayout());
-        //orderTablePanel.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
         GridBagConstraints gcTablePanel = new GridBagConstraints();
         gcTablePanel.fill = GridBagConstraints.HORIZONTAL;
 
