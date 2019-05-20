@@ -1,7 +1,6 @@
 package main.java.BL.Contract;
 
 import java.util.Date;
-import java.util.List;
 
 public class Order {
     public Date getDeliveryDate() {
@@ -12,12 +11,28 @@ public class Order {
         this.deliveryDate = deliveryDate;
     }
 
-    public Integer getOrderId() {
+    public String getOrderId() {
         return orderId;
     }
 
-    public void setOrderId(Integer orderId) {
+    public void setOrderId(String orderId) {
         this.orderId = orderId;
+    }
+
+    public String getProductType() {
+        return productType;
+    }
+
+    public void setProductType(String productType) {
+        this.productType = productType;
+    }
+
+    public Provider getProvider() {
+        return provider;
+    }
+
+    public void setProvider(Provider provider) {
+        this.provider = provider;
     }
 
     public Double getTotalAmount() {
@@ -36,43 +51,12 @@ public class Order {
         this.orderStatus = orderStatus;
     }
 
-    public void setOrderId(int orderId) {
-        this.orderId = orderId;
-    }
-
-    private OrderStatus orderStatus;
-
-    public int getRating() {
-        return rating;
-    }
-
-    public void setRating(int rating) {
-        this.rating = rating;
-    }
-
-    public List<String> getProductIds() {
-        return productIds;
-    }
-
-    public void setProductIds(List<String> productIds) {
-        this.productIds = productIds;
-    }
-
-    public List<String> getProvider() {
-        return provider;
-    }
-
-    public void setProvider(List<String> provider) {
-        this.provider = provider;
-    }
-
-
     private Date deliveryDate;
-    private int orderId;
-    private List<String> productIds;
-    private List<String> provider;
+    private String orderId;
+    private String productType;
+    private Provider provider;
     private Double totalAmount;
-    private int rating;
+    private OrderStatus orderStatus;
 
 
 }
