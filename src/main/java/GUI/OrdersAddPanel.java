@@ -1,8 +1,16 @@
 package main.java.GUI;
 
+import main.java.BL.Contract.Category;
+import main.java.BL.Contract.OrderStatus;
+import main.java.common.constants.Constants;
+
 import javax.swing.*;
 import javax.swing.border.BevelBorder;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.HashMap;
 
 public class OrdersAddPanel extends IWorkPanel{
     private JLabel providerLabel;
@@ -19,6 +27,7 @@ public class OrdersAddPanel extends IWorkPanel{
     private JButton placeOrderButton;
     private JTable itemsTable;
     private JTable orderTable;
+    private DefaultTableModel model;
     private JScrollPane scrollItemsTable;
     private JScrollPane scrollOrderTable;
     private JPanel searchPanel;
@@ -26,12 +35,15 @@ public class OrdersAddPanel extends IWorkPanel{
     private JPanel itemsTablePanel;
     private JPanel orderTablePanel;
     private JPanel placeOrderPanel;
-    private JSplitPane splitTables;
 
-    private String[] itemsColumnNames = {"SKU","Item name","Category","Provider","Available units","Cost per Item","Expected delivery","Action"};
-    private String[] orderColumnNames = {"SKU","Item name","Category","Provider","Units","Cost per Item","Expected delivery","Action"};
-
-    private String[][] testData ={{"555","Shubi","kabubi","shabubi","2","20.8.15","2","Edit\\Add"},{"123","Halo","this is dog","kuku","5","555","2","Edit\\Add"}};
+    //TEST FIELDS//
+    HashMap searchParams = new HashMap();
+    private String[] itemsColumnNames = {"ID","Item name","Category","Provider","Available units","Cost per Item","Expected delivery","Action"};
+    private String[] orderColumnNames = {"ID","Item name","Category","Provider","Units","Cost per Item","Expected delivery","Action"};
+    private String[][] testData ={{"555","Shubi","kabubi","shabubi","2","20.8.15","2","Edit\\Add"}
+                                    ,{"123","Halo","this is dog","kuku","5","20.8.18","2","Edit\\Add"}};
+    private String[] providers = {"1","2","3"};
+    private String[] items = {"","4","5","6"};
 
     public OrdersAddPanel(){
         initialization();
@@ -39,6 +51,7 @@ public class OrdersAddPanel extends IWorkPanel{
         setTableLayout();
         setPlaceOrderLayout();
         setMainLayout();
+        setActionListeners();
     }
 
     @Override
@@ -46,7 +59,7 @@ public class OrdersAddPanel extends IWorkPanel{
         providerLabel = new JLabel("Provider: ");
         categoryLabel = new JLabel("Category: ");
         itemNameLabel = new JLabel("Item name: ");
-        unitsLabel = new JLabel("Units: ");
+        unitsLabel = new JLabel("Available Units: ");
         orderSumLabel = new JLabel("Order Sum: ");
         orderSumFieldLabel = new JLabel("0");
         providersList = new JComboBox();
@@ -55,8 +68,9 @@ public class OrdersAddPanel extends IWorkPanel{
         unitsTF = new JTextField(10);
         searchItemButton = new JButton("Search Item");
         placeOrderButton = new JButton("Place Order");
+        model = new DefaultTableModel(testData,orderColumnNames);
         itemsTable = new JTable(testData,itemsColumnNames);
-        orderTable = new JTable(testData,orderColumnNames);
+        orderTable = new JTable(model);
         scrollItemsTable = new JScrollPane(itemsTable);
         scrollOrderTable = new JScrollPane(orderTable);
         searchPanel = new JPanel();
@@ -161,12 +175,12 @@ public class OrdersAddPanel extends IWorkPanel{
     @Override
     protected void setSearchPanelLayout() {
         /////// Set combo-box ///////
-        DefaultComboBoxModel providersModel = new DefaultComboBoxModel();
-        providersModel.addElement("provider 1");
+        DefaultComboBoxModel providersModel = new DefaultComboBoxModel(providers);
         providersList.setModel(providersModel);
-        DefaultComboBoxModel categoryModel = new DefaultComboBoxModel();
-        categoryModel.addElement("category 1");
+        DefaultComboBoxModel categoryModel = new DefaultComboBoxModel(Category.values());
         categoryList.setModel(categoryModel);
+        DefaultComboBoxModel itemsModel = new DefaultComboBoxModel(items);
+        itemList.setModel(itemsModel);
 
         searchPanel.setBorder(BorderFactory.createTitledBorder("Orders"));
         searchPanel.setLayout(new GridBagLayout());
@@ -176,14 +190,9 @@ public class OrdersAddPanel extends IWorkPanel{
 
         /////// First row ///////
         gcSearchPanel.gridy = 0;
-        gcSearchPanel.weightx = 1;
-        gcSearchPanel.weighty = 0.1;
-        gcSearchPanel.gridx = 0;
-
-        /////// Next row //////
-        gcSearchPanel.gridy ++;
         gcSearchPanel.weightx = 0.5;
         gcSearchPanel.weighty = 0.1;
+
         gcSearchPanel.gridx = 0;
         gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_END;
         searchPanel.add(providerLabel, gcSearchPanel);
@@ -199,6 +208,10 @@ public class OrdersAddPanel extends IWorkPanel{
         gcSearchPanel.gridx = 3;
         gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_START;
         searchPanel.add(categoryList, gcSearchPanel);
+
+        gcSearchPanel.gridx = 4;
+        gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_START;
+        searchPanel.add(searchItemButton, gcSearchPanel);
 
         /////// Next row ///////
         gcSearchPanel.gridy ++;
@@ -224,7 +237,9 @@ public class OrdersAddPanel extends IWorkPanel{
 
         gcSearchPanel.gridx = 4;
         gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_START;
-        searchPanel.add(searchItemButton, gcSearchPanel);
+        searchPanel.add(Constants.ATLEAST_ONE_FIELD_REQUIRED,gcSearchPanel);
+        Constants.ATLEAST_ONE_FIELD_REQUIRED.setForeground(Color.red);
+        Constants.ATLEAST_ONE_FIELD_REQUIRED.setVisible(false);
 
         ///// align fields sizes //////
         Dimension fieldSize = unitsTF.getPreferredSize();
@@ -271,11 +286,57 @@ public class OrdersAddPanel extends IWorkPanel{
 
     @Override
     protected void setActionListeners(){
+        setSearchButton();
+        setPlaceOrderButton();
+    }
 
+    private void setPlaceOrderButton() {
+
+    }
+
+    private void setSearchButton() {
+        searchItemButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(checkAtleastOneNotEmpty()){
+                    setValidationLabelsVisibility(false);
+                    searchParams = buildSearchParameters();
+                }
+                else{
+                    setValidationLabelsVisibility(false);
+                    Constants.ATLEAST_ONE_FIELD_REQUIRED.setVisible(true);
+                }
+
+            }
+        });
+    }
+
+    private HashMap buildSearchParameters() {
+        HashMap searchParams = new HashMap();
+        //TODO: Add Providers
+        if(!categoryList.getSelectedItem().equals(Category.None))
+            searchParams.put(Constants.CATEGORY,categoryList.getSelectedItem());
+        if(!itemList.getSelectedItem().equals(Constants.EMPTY_FIELD))
+            searchParams.put(Constants.ITEM_NAME,itemList.getSelectedItem());
+        if(!unitsTF.getText().equals(Constants.EMPTY_FIELD))
+            searchParams.put(Constants.AVAILABLE_UNITS,unitsTF.getText());
+        return searchParams;
+    }
+
+    private boolean checkAtleastOneNotEmpty(){
+        //TODO: Provider list
+        if(     !categoryList.getSelectedItem().equals(Category.None) ||
+                !itemList.getSelectedItem().equals(Constants.EMPTY_FIELD )||
+                !unitsTF.getText().equals(Constants.EMPTY_FIELD)
+        )
+            return true;
+
+        else
+            return false;
     }
 
     @Override
     protected void setValidationLabelsVisibility(boolean visibility) {
-
+        Constants.ATLEAST_ONE_FIELD_REQUIRED.setVisible(visibility);
     }
 }
