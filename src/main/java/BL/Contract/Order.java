@@ -1,6 +1,7 @@
 package main.java.BL.Contract;
 
 import java.util.Date;
+import java.util.List;
 
 public class Order {
     public Date getDeliveryDate() {
@@ -19,22 +20,6 @@ public class Order {
         this.orderId = orderId;
     }
 
-    public String getProductType() {
-        return productType;
-    }
-
-    public void setProductType(String productType) {
-        this.productType = productType;
-    }
-
-    public Provider getProvider() {
-        return provider;
-    }
-
-    public void setProvider(Provider provider) {
-        this.provider = provider;
-    }
-
     public Double getTotalAmount() {
         return totalAmount;
     }
@@ -51,20 +36,25 @@ public class Order {
         this.orderStatus = orderStatus;
     }
 
-
-
     public void setOrderId(int orderId) {
         this.orderId = orderId;
     }
+    public List<Integer> getProductIds() {
+        return productIds;
+    }
 
-    private Double totalAmount;
-    private OrderStatus orderStatus;
-    private Date deliveryDate;
-    private int orderId;
-    private String productType;
-    private Provider provider;
+    public void setProductIds(List<Integer> productIds) {
+        this.productIds = productIds;
+    }
 
-    public int getRating() {
+    public List<Provider> getProvider() {
+        return provider;
+    }
+
+    public void setProvider(List<Provider> provider) {
+        this.provider = provider;
+    }
+    private OrderStatus orderStatus;    public int getRating() {
         return rating;
     }
 
@@ -72,6 +62,13 @@ public class Order {
         this.rating = rating;
     }
 
+    private Date deliveryDate;
+    private int orderId;
+    private List<Integer> productIds;
+    private List<Provider> provider;
+    private Double totalAmount;
     private int rating;
+
+
 
 }

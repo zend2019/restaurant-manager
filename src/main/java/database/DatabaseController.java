@@ -4,9 +4,11 @@ import main.java.BL.Contract.*;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -150,6 +152,54 @@ public class DatabaseController {
             DatabaseAccessManager.closeConnection(conn);
         }
     }
+
+
+    public static List<Product> getProductList(int providerId) {
+        String sql = "SELECT* FROM product WHERE providerId = ? ";
+        Connection conn = DatabaseAccessManager.getConnection();
+        List<Product> products = new ArrayList<>();
+
+        try {
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, providerId);
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+
+                Product product = new Product();
+                product.setProductId(Integer.parseInt(rs.getString("id")));
+                product.setProductName(rs.getString("name"));
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            DatabaseAccessManager.closeConnection(conn);
+        }
+        return products;
+    }
+
+    public static List<Product> GetProviderByCategory(int providerId) {
+        String sql = "SELECT* FROM product WHERE providerId = ? ";
+        Connection conn = DatabaseAccessManager.getConnection();
+        List<Product> products = new ArrayList<>();
+
+        try {
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, providerId);
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+
+                Product product = new Product();
+                product.setProductId(Integer.parseInt(rs.getString("id")));
+                product.setProductName(rs.getString("name"));
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            DatabaseAccessManager.closeConnection(conn);
+        }
+        return products;
+    }
+
 
     public static void addOrder(Order order) {
         int id = order.getOrderId();

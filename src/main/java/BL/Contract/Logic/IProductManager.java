@@ -7,6 +7,6 @@ import main.java.BL.Contract.Provider;
 import java.util.List;
 
 public interface IProductManager {
-    List<Provider> GetProviderByCategory(Category category);
+
     List<Product> GetProductByProvider(Integer providerId);
 }

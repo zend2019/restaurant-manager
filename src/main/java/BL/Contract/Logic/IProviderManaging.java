@@ -1,4 +1,5 @@
 package main.java.BL.Contract.Logic;
+import main.java.BL.Contract.Category;
 import main.java.BL.Contract.Product;
 import main.java.BL.Contract.Provider;
 
@@ -9,4 +10,5 @@ public interface IProviderManaging {
     void deleteProvider(int providerId);
     void editProvider(Provider provider,int providerId);
     void getRatingProvider(int providerId);
+    List<Provider> GetProviderByCategory(Category category);
 }

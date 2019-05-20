@@ -10,10 +10,7 @@ import java.util.List;
 public class ProductManager implements IProductManager {
     private IRestaurantRepository resturantRepository;
 
-    @Override
-    public List<Provider> GetProviderByCategory(Category category) {
-        return resturantRepository.GetProviderByCategory(category);
-    }
+
 
     @Override
     public List<Product> GetProductByProvider(Integer providerId) {
