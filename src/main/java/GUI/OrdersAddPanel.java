@@ -1,7 +1,6 @@
 package main.java.GUI;
 
 import main.java.BL.Contract.Category;
-import main.java.BL.Contract.OrderStatus;
 import main.java.common.constants.Constants;
 
 import javax.swing.*;
@@ -10,6 +9,8 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.HashMap;
 
 public class OrdersAddPanel extends IWorkPanel{
@@ -35,13 +36,14 @@ public class OrdersAddPanel extends IWorkPanel{
     private JPanel itemsTablePanel;
     private JPanel orderTablePanel;
     private JPanel placeOrderPanel;
+    private EditItemDialog itemDialog;
 
     //TEST FIELDS//
     HashMap searchParams = new HashMap();
-    private String[] itemsColumnNames = {"ID","Item name","Category","Provider","Available units","Cost per Item","Expected delivery","Action"};
-    private String[] orderColumnNames = {"ID","Item name","Category","Provider","Units","Cost per Item","Expected delivery","Action"};
-    private String[][] testData ={{"555","Shubi","kabubi","shabubi","2","20.8.15","2","Edit\\Add"}
-                                    ,{"123","Halo","this is dog","kuku","5","20.8.18","2","Edit\\Add"}};
+    private String[] itemsColumnNames = {"ID","Item name","Category","Provider","Available units","Cost per Item","Expected delivery"};
+    private String[] orderColumnNames = {"ID","Item name","Category","Provider","Units","Cost per Item","Expected delivery"};
+    private String[][] testData ={{"555","Shubi","kabubi","shabubi","2","20.8.15","2"}
+                                    ,{"123","Halo","this is dog","kuku","5","20.8.18","2"}};
     private String[] providers = {"1","2","3"};
     private String[] items = {"","4","5","6"};
 
@@ -69,8 +71,14 @@ public class OrdersAddPanel extends IWorkPanel{
         searchItemButton = new JButton("Search Item");
         placeOrderButton = new JButton("Place Order");
         model = new DefaultTableModel(testData,orderColumnNames);
-        itemsTable = new JTable(testData,itemsColumnNames);
-        orderTable = new JTable(model);
+        itemsTable = new JTable(testData,itemsColumnNames){
+            public boolean isCellEditable(int row, int column){
+            return false;
+        }};
+        orderTable = new JTable(model){
+            public boolean isCellEditable(int row, int column){
+                return false;
+            }};
         scrollItemsTable = new JScrollPane(itemsTable);
         scrollOrderTable = new JScrollPane(orderTable);
         searchPanel = new JPanel();
@@ -78,6 +86,7 @@ public class OrdersAddPanel extends IWorkPanel{
         orderTablePanel = new JPanel();
         placeOrderPanel = new JPanel();
         tablesPanel = new JPanel();
+        itemDialog = new EditItemDialog((JFrame) SwingUtilities.getWindowAncestor(this));
     }
 
     @Override
@@ -288,8 +297,23 @@ public class OrdersAddPanel extends IWorkPanel{
     protected void setActionListeners(){
         setSearchButton();
         setPlaceOrderButton();
+        setEditUnitsListener();
     }
 
+    private void setEditUnitsListener(){
+        itemsTable.addMouseListener(new MouseAdapter() {
+            public void mousePressed(MouseEvent mouseEvent) {
+                JTable table =(JTable) mouseEvent.getSource();
+                Point point = mouseEvent.getPoint();
+                int row = table.rowAtPoint(point);
+                if (mouseEvent.getClickCount() == 2 && table.getSelectedRow() != -1) {
+                    String itemId = itemsTable.getValueAt(itemsTable.getSelectedRow(), 0).toString();
+                    System.out.println(itemId);
+                    itemDialog.setVisible(true);
+                }
+            }
+        });
+    }
     private void setPlaceOrderButton() {
 
     }
@@ -301,6 +325,7 @@ public class OrdersAddPanel extends IWorkPanel{
                 if(checkAtleastOneNotEmpty()){
                     setValidationLabelsVisibility(false);
                     searchParams = buildSearchParameters();
+                    //TODO: call method that will use the search params and return the right data
                 }
                 else{
                     setValidationLabelsVisibility(false);

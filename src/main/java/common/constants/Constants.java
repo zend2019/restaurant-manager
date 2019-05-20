@@ -13,6 +13,7 @@ public class Constants {
     public static final JLabel ATLEAST_ONE_FIELD_REQUIRED = new JLabel("At least One field is required");
     public static final JLabel ITEM_ADDED = new JLabel("Item was added");
     public static final JLabel SEARCHING = new JLabel("Searching...");
+    public static final JLabel EXCEED_LIMIT = new JLabel("Selection exceeded the limited amount");
 
     //Field names//
     public static final String EMPTY_FIELD = "";

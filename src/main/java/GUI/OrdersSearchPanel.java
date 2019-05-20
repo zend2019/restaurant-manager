@@ -316,6 +316,7 @@ public class OrdersSearchPanel extends IWorkPanel {
                 if(checkAtleastOneNotEmpty()){
                     setValidationLabelsVisibility(false);
                     searchParams = buildSearchParameters();
+                    //TODO: call method that will use the search params and return the right data
                 }
                 else{
                     setValidationLabelsVisibility(false);
