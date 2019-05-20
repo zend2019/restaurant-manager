@@ -27,7 +27,6 @@ public class OrderManager implements IOrderManager {
     @Override
     public Order GetOrder(int orderId) {
         return restaurantRepository.GetOrder(orderId);
-
     }
 
     @Override

@@ -7,6 +7,7 @@ import java.sql.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -128,7 +129,7 @@ public class DatabaseController {
     }
 
     public static void addProduct(Product product) {
-        int id = product.getProductId();
+        String id = product.getProductId();
         String name = product.getProductName();
         String price = product.getPrice();
         String expirationDate = String.valueOf(product.getExpirationDate()); //todo string casting might cause issues...need to check
@@ -139,7 +140,7 @@ public class DatabaseController {
         Connection conn = DatabaseAccessManager.getConnection();
         try {
             PreparedStatement pstmt = conn.prepareStatement(sql);
-            pstmt.setInt(1, id);
+            pstmt.setString(1, id);
             pstmt.setString(2, name);
             pstmt.setString(3, price);
             pstmt.setString(4, expirationDate);
@@ -167,7 +168,7 @@ public class DatabaseController {
             while (rs.next()) {
 
                 Product product = new Product();
-                product.setProductId(Integer.parseInt(rs.getString("id")));
+                product.setProductId(rs.getString("id"));
                 product.setProductName(rs.getString("name"));
             }
         } catch (SQLException e) {
@@ -190,7 +191,7 @@ public class DatabaseController {
             while (rs.next()) {
 
                 Product product = new Product();
-                product.setProductId(Integer.parseInt(rs.getString("id")));
+                product.setProductId(rs.getString("id"));
                 product.setProductName(rs.getString("name"));
             }
         } catch (SQLException e) {
@@ -204,11 +205,11 @@ public class DatabaseController {
 
     public static void addOrder(Order order) {
         int id = order.getOrderId();
-        String productType = CommonUtils.ConvertIntListToString(order.getProductIds()); //String.join(",",order.getProductIds());
-        String provider = CommonUtils.ConvertIntListToString(order.getProvider());
+        String productType = String.join(",",order.getProductIds()); //String.join(",",order.getProductIds());
+        String provider = String.join(",",order.getProvider());
         Date deliveryDate = order.getDeliveryDate();
         Double totalAmount = order.getTotalAmount();
-        String sql = "INSERT INTO orders(id,product_type,provider,delivery_date,total_amount) VALUES(?,?,?,?,?)";
+        String sql = "INSERT INTO orders(id,product_id,provider,delivery_date,total_amount) VALUES(?,?,?,?,?)";
         Connection conn = DatabaseAccessManager.getConnection();
         try {
             PreparedStatement pstmt = conn.prepareStatement(sql);
@@ -224,6 +225,30 @@ public class DatabaseController {
         } finally {
             DatabaseAccessManager.closeConnection(conn);
         }
+    }
+
+    public static Order getOrderById(int id) {
+        Order order = new Order();
+        String sql = "SELECT * FROM orders WHERE id = " + id;
+        Connection conn = DatabaseAccessManager.getConnection();
+        try {
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
+//            while (rs.next()) {
+            order.setOrderId(rs.getInt("id"));
+            List <String> d=new ArrayList<String>(Arrays.asList(rs.getString("product_id").split(",")));
+            order.setProductIds( new ArrayList<String>(Arrays.asList(rs.getString("product_id").split(","))));
+            order.setProvider( new ArrayList<String>(Arrays.asList(rs.getString("provider").split(","))));
+            order.setDeliveryDate(rs.getDate("delivery_date"));
+            order.setTotalAmount(rs.getDouble("total_amount"));
+
+//        }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            DatabaseAccessManager.closeConnection(conn);
+        }
+        return order;
     }
 
     public static User getUserById(int id) {

@@ -39,15 +39,10 @@ public class Order {
     public void setOrderId(int orderId) {
         this.orderId = orderId;
     }
-    public List<Integer> getProductIds() {
-        return productIds;
-    }
 
-    public void setProductIds(List<Integer> productIds) {
-        this.productIds = productIds;
-    }
+    private OrderStatus orderStatus;
 
-    private OrderStatus orderStatus;    public int getRating() {
+    public int getRating() {
         return rating;
     }
 
@@ -55,18 +50,29 @@ public class Order {
         this.rating = rating;
     }
 
-    private Date deliveryDate;
-    private int orderId;
-    private List<Integer> productIds;
-    private List<Integer> provider;
-    private Double totalAmount;
-    private int rating;
+    public List<String> getProductIds() {
+        return productIds;
+    }
 
-    public List<Integer> getProvider() {
+    public void setProductIds(List<String> productIds) {
+        this.productIds = productIds;
+    }
+
+    public List<String> getProvider() {
         return provider;
     }
 
-    public void setProvider(List<Integer> provider) {
+    public void setProvider(List<String> provider) {
         this.provider = provider;
     }
+
+
+    private Date deliveryDate;
+    private int orderId;
+    private List<String> productIds;
+    private List<String> provider;
+    private Double totalAmount;
+    private int rating;
+
+
 }
