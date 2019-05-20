@@ -276,4 +276,9 @@ public class OrdersAddPanel extends IWorkPanel{
     protected void setActionListeners(){
 
     }
+
+    @Override
+    protected void setValidationLabelsVisibility(boolean visibility) {
+
+    }
 }

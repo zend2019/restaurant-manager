@@ -263,12 +263,12 @@ public class InventoryPanel extends IWorkPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if(checkAtleastOneNotEmpty()){
-                    setAllLabelsVisibility(false);
+                    setValidationLabelsVisibility(false);
                     searchParams = buildSearchParameters();
                     Constants.SEARCHING.setVisible(true);
                 }
                 else{
-                    setAllLabelsVisibility(false);
+                    setValidationLabelsVisibility(false);
                     Constants.ATLEAST_ONE_FIELD_REQUIRED.setVisible(true);
                 }
 
@@ -289,6 +289,7 @@ public class InventoryPanel extends IWorkPanel {
         else
             return false;
     }
+
 
     private HashMap buildSearchParameters(){
         HashMap searchParams = new HashMap();
@@ -314,11 +315,11 @@ public class InventoryPanel extends IWorkPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if(!checkNoEmptyFields()){
-                    setAllLabelsVisibility(false);
+                    setValidationLabelsVisibility(false);
                     Constants.ALL_FIELDS_REQUIRED.setVisible(true);
                 }
                 else {
-                    setAllLabelsVisibility(false);
+                    setValidationLabelsVisibility(false);
                     product = getProductProperties();
                     Constants.ITEM_ADDED.setVisible(true);
                 }
@@ -353,12 +354,11 @@ public class InventoryPanel extends IWorkPanel {
         return product;
     }
 
-    private void setAllLabelsVisibility(boolean visibility){
+    @Override
+    protected void setValidationLabelsVisibility(boolean visibility){
         Constants.ALL_FIELDS_REQUIRED.setVisible(visibility);
         Constants.ATLEAST_ONE_FIELD_REQUIRED.setVisible(visibility);
         Constants.ITEM_ADDED.setVisible(visibility);
         Constants.SEARCHING.setVisible(visibility);
     }
-
-
 }

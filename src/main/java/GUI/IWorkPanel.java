@@ -8,4 +8,5 @@ public abstract class IWorkPanel extends JPanel{
     protected abstract void setTableLayout();
     protected abstract void setSearchPanelLayout();
     protected abstract void setActionListeners();
+    protected abstract void setValidationLabelsVisibility(boolean visibility);
 }
