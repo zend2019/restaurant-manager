@@ -6,6 +6,7 @@ import main.java.BL.Contract.Product;
 import main.java.common.constants.Constants;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -32,6 +33,7 @@ public class InventoryPanel extends IWorkPanel {
     private JButton searchButton;
     private JButton addButton;
     private JTable inventoryTable;
+    private DefaultTableModel model;
     private JScrollPane scrollTable;
     private JPanel searchPanel;
     private JPanel tablePanel;
@@ -39,8 +41,10 @@ public class InventoryPanel extends IWorkPanel {
     //TEST FIELDS//
     private HashMap searchParams = new HashMap();
     private String[] columnNames = {"ID","Item name","Category","Provider","Available Units","Expected Units","Expiration date"};
-    private String[][] testData ={{"555","Shubi","kabubi","shabubi","2","4","20.8.15"}};
+    private String[][] testData ={{"555","Shubi","kabubi","shabubi","2","4","20.08.15"}};
     private String[] providers = {"1","2","3"};
+    private String[][] searchTestData = {{"1124","Shubi","bubi","shabubi","2","4","05.06.75"},
+                                        {"4454","halo","this","is dog","5","66","21.09.16" }};
 
     public InventoryPanel(){
         initialization();
@@ -68,7 +72,8 @@ public class InventoryPanel extends IWorkPanel {
         dateChooser = new JDateChooser();
         searchButton = new JButton("Search");
         addButton = new JButton("Add");
-        inventoryTable = new JTable(testData,columnNames);
+        model = new DefaultTableModel(testData,columnNames);
+        inventoryTable = new JTable(model);
         scrollTable = new JScrollPane(inventoryTable,JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         searchPanel = new JPanel();
         tablePanel = new JPanel();
@@ -105,7 +110,7 @@ public class InventoryPanel extends IWorkPanel {
         scrollTable.setPreferredSize(dim);
 
         tablePanel.setLayout(new GridBagLayout());
-        tablePanel.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
+        tablePanel.setBorder(BorderFactory.createTitledBorder("Browse items"));
         GridBagConstraints gcTablePanel = new GridBagConstraints();
         gcTablePanel.fill = GridBagConstraints.HORIZONTAL;
 
@@ -113,7 +118,7 @@ public class InventoryPanel extends IWorkPanel {
         gcTablePanel.gridy = 0;
         gcTablePanel.weightx = 1;
         gcTablePanel.weighty = 0.1;
-
+        gcTablePanel.anchor = GridBagConstraints.FIRST_LINE_START;
         tablePanel.add(scrollTable,gcTablePanel);
     }
 
@@ -230,9 +235,10 @@ public class InventoryPanel extends IWorkPanel {
         Constants.ALL_FIELDS_REQUIRED.setForeground(Color.red);
         Constants.ALL_FIELDS_REQUIRED.setVisible(false);
 
-        searchPanel.add(Constants.ATLEAST_ONE_FIELD_REQUIRED,gcSearchPanel);
         Constants.ATLEAST_ONE_FIELD_REQUIRED.setForeground(Color.red);
         Constants.ATLEAST_ONE_FIELD_REQUIRED.setVisible(false);
+        searchPanel.add(Constants.ATLEAST_ONE_FIELD_REQUIRED,gcSearchPanel);
+
 
         searchPanel.add(Constants.ITEM_ADDED,gcSearchPanel);
         Constants.ITEM_ADDED.setForeground(Color.green);
@@ -265,11 +271,14 @@ public class InventoryPanel extends IWorkPanel {
                 if(checkAtleastOneNotEmpty()){
                     setValidationLabelsVisibility(false);
                     searchParams = buildSearchParameters();
+                    //TODO: pass the search parameters to sql query builder, return the list of items
                     Constants.SEARCHING.setVisible(true);
+                    model.setDataVector(searchTestData,columnNames); //Set the table with test data
                 }
                 else{
                     setValidationLabelsVisibility(false);
                     Constants.ATLEAST_ONE_FIELD_REQUIRED.setVisible(true);
+                    //Constants.ALL_FIELDS_REQUIRED.setVisible(true);
                 }
 
             }
