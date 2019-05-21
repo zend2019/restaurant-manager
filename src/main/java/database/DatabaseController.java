@@ -2,23 +2,18 @@ package main.java.database;
 
 import main.java.BL.Contract.*;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.Date;
-import java.util.List;
 
 
 public class DatabaseController {
 
+
     public static void main(String[] args) throws ParseException {
         //Adding simple User test
 //        User user = new User();
-//        user.setId(1);
 //        user.setFirstName("test");
 //        user.setLastName("dla");
 //        user.setAge("11");
@@ -59,13 +54,15 @@ public class DatabaseController {
 //        order.setDeliveryDate(new SimpleDateFormat("dd/MM/yyyy").parse("01/01/1993"));
 //        order.setTotalAmount(22.56);
 //        addOrder(order);
+//        getUserById(1);
+        getAllProviderCompanyName();
     }
 
     public static void addUser(User user) {
         int id = user.getId();
         String firstName = user.getFirstName();
         String lastName = user.getLastName();
-        String age = user.getAge();
+        String age = Integer.toString(user.getAge());
         String dateOfBirth = user.getDateOfBirth();
         String username = user.getUserName();
         String phoneNumber = user.getPhoneNmuber();
@@ -127,7 +124,7 @@ public class DatabaseController {
     }
 
     public static void addProduct(Product product) {
-        int id = product.getProductId();
+        String id = product.getProductId();
         String name = product.getProductName();
         String price = product.getPrice();
         String expirationDate = String.valueOf(product.getExpirationDate()); //todo string casting might cause issues...need to check
@@ -138,7 +135,7 @@ public class DatabaseController {
         Connection conn = DatabaseAccessManager.getConnection();
         try {
             PreparedStatement pstmt = conn.prepareStatement(sql);
-            pstmt.setInt(1, id);
+            pstmt.setString(1, id);
             pstmt.setString(2, name);
             pstmt.setString(3, price);
             pstmt.setString(4, expirationDate);
@@ -166,7 +163,7 @@ public class DatabaseController {
             while (rs.next()) {
 
                 Product product = new Product();
-                product.setProductId(Integer.parseInt(rs.getString("id")));
+                product.setProductId(rs.getString("id"));
                 product.setProductName(rs.getString("name"));
             }
         } catch (SQLException e) {
@@ -177,7 +174,7 @@ public class DatabaseController {
         return products;
     }
 
-    public static List<Product> GetProviderByCategory(int providerId) {
+    public static List<Product> getProductByProviderId(int providerId) {
         String sql = "SELECT* FROM product WHERE providerId = ? ";
         Connection conn = DatabaseAccessManager.getConnection();
         List<Product> products = new ArrayList<>();
@@ -189,7 +186,7 @@ public class DatabaseController {
             while (rs.next()) {
 
                 Product product = new Product();
-                product.setProductId(Integer.parseInt(rs.getString("id")));
+                product.setProductId(rs.getString("id"));
                 product.setProductName(rs.getString("name"));
             }
         } catch (SQLException e) {
@@ -201,19 +198,19 @@ public class DatabaseController {
     }
 
 
-    public static void addOrder(Order order) {
+    public static int addOrder(Order order) {
         int id = order.getOrderId();
-        String productType = order.getProductType();
-        Provider provider = order.getProvider();
+        String productType = String.join(",", order.getProductIds()); //String.join(",",order.getProductIds());
+        String provider = String.join(",", order.getProvider());
         Date deliveryDate = order.getDeliveryDate();
         Double totalAmount = order.getTotalAmount();
-        String sql = "INSERT INTO orders(id,product_type,provider,delivery_date,total_amount) VALUES(?,?,?,?,?)";
+        String sql = "INSERT INTO orders(id,product_id,provider,delivery_date,total_amount) VALUES(?,?,?,?,?)";
         Connection conn = DatabaseAccessManager.getConnection();
         try {
             PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.setInt(1, id);
             pstmt.setString(2, productType);
-            pstmt.setObject(3, provider.getCompanyName());
+            pstmt.setObject(3, provider);
             pstmt.setString(4, String.valueOf(deliveryDate));
             pstmt.setDouble(5, totalAmount);
 
@@ -223,5 +220,101 @@ public class DatabaseController {
         } finally {
             DatabaseAccessManager.closeConnection(conn);
         }
+        return id;
+    }
+
+    public static Order getOrderById(int id) {
+        Order order = new Order();
+        String sql = "SELECT * FROM orders WHERE id = " + id;
+        Connection conn = DatabaseAccessManager.getConnection();
+        try {
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
+//            while (rs.next()) {
+            order.setOrderId(rs.getInt("id"));
+            List<String> d = new ArrayList<String>(Arrays.asList(rs.getString("product_id").split(",")));
+            order.setProductIds(new ArrayList<String>(Arrays.asList(rs.getString("product_id").split(","))));
+            order.setProvider(new ArrayList<String>(Arrays.asList(rs.getString("provider").split(","))));
+            order.setDeliveryDate(rs.getDate("delivery_date"));
+            order.setTotalAmount(rs.getDouble("total_amount"));
+
+//        }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            DatabaseAccessManager.closeConnection(conn);
+        }
+        return order;
+    }
+
+    public static User getUserById(int id) {
+        User user = new User();
+        String sql = "SELECT * FROM user WHERE id = " + id;
+        Connection conn = DatabaseAccessManager.getConnection();
+        try {
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
+//            while (rs.next()) {
+            user.setId(rs.getInt("id"));
+            user.setFirstName(rs.getString("first_name"));
+            user.setLastName(rs.getString("last_name"));
+            user.setAge(rs.getInt("age"));
+            user.setDateOfBirth(rs.getString("date_of_birth"));
+            user.setUserName(rs.getString("username"));
+            user.setPhoneNmuber(rs.getString("phone_number"));
+//        }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            DatabaseAccessManager.closeConnection(conn);
+        }
+        return user;
+    }
+    /*
+     SQLite Reset Primary Key Field (mostly will be used for auto autoincrement for ids) run the following queries:
+    delete from your_table;
+    delete from sqlite_sequence where name='your_table';
+     */
+
+    public static Vector<String> getAllProviderCompanyName() {
+        Vector<String> providersNames = new Vector<>();
+        String sql = "SELECT distinct company_name FROM provider";
+        Connection conn = DatabaseAccessManager.getConnection();
+        try {
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
+            while (rs.next()) {
+                providersNames.add(rs.getString("company_name"));
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            DatabaseAccessManager.closeConnection(conn);
+        }
+        return providersNames;
+    }
+
+    public static void editOrder(int orderId, Order order) {
+    }
+
+    public static Order getOrder(int orderId) {
+    }
+
+    public static List<Product> getProductByProvider(Integer providerId) {
+    }
+
+    public static void editUser(User user, int userId) {
+    }
+
+    public static void deleteUser(int userId) {
+    }
+
+    public static List<Provider> getProviderByCategory(Category category) {
+    }
+
+    public static void deleteProvider(int providerId) {
+    }
+
+    public static void deditProvider(Provider provider, int providerId) {
     }
 }

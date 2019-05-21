@@ -3,6 +3,7 @@ package main.java.BL.Contract.Logic;
 import main.java.BL.Contract.User;
 import main.java.common.exceptions.RestaurantManagerException;
 import main.java.dataAccess.IRestaurantRepository;
+import main.java.database.DatabaseController;
 
 public class UserManager implements IUSerManager {
     private IRestaurantRepository resturantRepository;
@@ -14,28 +15,28 @@ public class UserManager implements IUSerManager {
 
     @Override
     public void AddUser(User user) {
-        User existingUser = resturantRepository.GetUser(user.getId());
+        User existingUser = DatabaseController.getUserById(user.getId());
         if (existingUser != null) {
             throw new RestaurantManagerException("User already exist.");
         }
-        resturantRepository.AddUser(user);
+        DatabaseController.addUser(user);
     }
 
     @Override
     public void UpdateUser(User user, int userId) {
-        User existingUser = resturantRepository.GetUser(user.getId());
+        User existingUser = DatabaseController.getUserById(user.getId());
         if (existingUser != null) {
             throw new RestaurantManagerException("User already exist.");
         }
-        resturantRepository.EditUser(user,userId);
+        DatabaseController.editUser(user,userId);
     }
 
     @Override
     public void DeleteUser(int userId) {
-        User existingUser = resturantRepository.GetUser(userId);
+        User existingUser = DatabaseController.getUserById(userId);
         if (existingUser != null) {
             throw new RestaurantManagerException("User already exist.");
         }
-        resturantRepository.DeleteUser(userId);
+        DatabaseController.deleteUser(userId);
     }
 }

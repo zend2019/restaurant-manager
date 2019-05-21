@@ -3,6 +3,13 @@ package main.java.BL.Contract;
 import java.util.List;
 
 public class Provider extends User {
+
+    private String companyName;
+    private List<Integer> productType;
+    private String contactName;
+    private String providerId;
+    private Integer rating;
+
     public String getCompanyName() {
         return companyName;
     }
@@ -27,18 +34,10 @@ public class Provider extends User {
         this.contactName = contactName;
     }
 
-    public Integer getProviderId() {
-        return providerId;
-    }
-
-    public void setProviderId(Integer providerId) {
+    public void setProviderId(String providerId) {
         this.providerId = providerId;
     }
 
-    private String companyName;
-    private List<Integer> productType;
-    private String contactName;
-    private Integer providerId;
     public Integer getRating() {
         return rating;
     }
@@ -47,6 +46,5 @@ public class Provider extends User {
         this.rating = rating;
     }
 
-    private Integer rating;
 
 }

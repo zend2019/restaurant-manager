@@ -39,22 +39,10 @@ public class Order {
     public void setOrderId(int orderId) {
         this.orderId = orderId;
     }
-    public List<Integer> getProductIds() {
-        return productIds;
-    }
 
-    public void setProductIds(List<Integer> productIds) {
-        this.productIds = productIds;
-    }
+    private OrderStatus orderStatus;
 
-    public List<Provider> getProvider() {
-        return provider;
-    }
-
-    public void setProvider(List<Provider> provider) {
-        this.provider = provider;
-    }
-    private OrderStatus orderStatus;    public int getRating() {
+    public int getRating() {
         return rating;
     }
 
@@ -62,13 +50,29 @@ public class Order {
         this.rating = rating;
     }
 
+    public List<String> getProductIds() {
+        return productIds;
+    }
+
+    public void setProductIds(List<String> productIds) {
+        this.productIds = productIds;
+    }
+
+    public List<String> getProvider() {
+        return provider;
+    }
+
+    public void setProvider(List<String> provider) {
+        this.provider = provider;
+    }
+
+
     private Date deliveryDate;
     private int orderId;
-    private List<Integer> productIds;
-    private List<Provider> provider;
+    private List<String> productIds;
+    private List<String> provider;
     private Double totalAmount;
     private int rating;
-
 
 
 }
