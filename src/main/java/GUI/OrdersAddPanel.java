@@ -46,6 +46,8 @@ public class OrdersAddPanel extends IWorkPanel{
                                     ,{"123","Halo","this is dog","kuku","5","20.8.18","2"}};
     private String[] providers = {"1","2","3"};
     private String[] items = {"","4","5","6"};
+    private String orderItem;
+    private int orderItemAmount;
 
     public OrdersAddPanel(){
         initialization();
@@ -298,6 +300,7 @@ public class OrdersAddPanel extends IWorkPanel{
         setSearchButton();
         setPlaceOrderButton();
         setEditUnitsListener();
+        setDialogListener();
     }
 
     private void setEditUnitsListener(){
@@ -307,10 +310,20 @@ public class OrdersAddPanel extends IWorkPanel{
                 Point point = mouseEvent.getPoint();
                 int row = table.rowAtPoint(point);
                 if (mouseEvent.getClickCount() == 2 && table.getSelectedRow() != -1) {
-                    String itemId = itemsTable.getValueAt(itemsTable.getSelectedRow(), 0).toString();
-                    System.out.println(itemId);
+                    orderItem = itemsTable.getValueAt(itemsTable.getSelectedRow(), 0).toString();
                     itemDialog.setVisible(true);
                 }
+            }
+        });
+    }
+
+    //Used tp pass information from Dialog back to the Panel
+    private void setDialogListener(){
+        itemDialog.setItemDialogListener(new DialogListener(){
+            @Override
+            public void setItemInOrder(int units) {
+                orderItemAmount = units;
+                System.out.println(orderItemAmount);
             }
         });
     }

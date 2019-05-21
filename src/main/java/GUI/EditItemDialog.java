@@ -4,16 +4,22 @@ import main.java.common.constants.Constants;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import static java.lang.Integer.valueOf;
 
 public class EditItemDialog extends JDialog {
     private JLabel numOfItemsLabel = new JLabel("Items to add? ");
     private JTextField numOfItemsTF = new JTextField();
     private JButton addButton = new JButton("Add");
     private int unitsToAdd;
+    private DialogListener dialogListener;
 
     public EditItemDialog(JFrame parent){
         super(parent,"Edit item",false);
         setLayout(parent);
+        setActionListeners();
     }
 
     private void setLayout(JFrame parent){
@@ -61,6 +67,26 @@ public class EditItemDialog extends JDialog {
     }
 
     private void setActionListeners(){
+        setAddButton();
+    }
 
+    private void setAddButton() {
+        addButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int itemsToAdd = valueOf(numOfItemsTF.getText());
+                //TODO: function that checks the items entered do not exceed limit
+                //TODO: deduct the number of items from the DB, update the table ? or should we update once full order is placed
+                if(dialogListener != null){
+                    dialogListener.setItemInOrder(itemsToAdd);
+                }
+                setVisible(false);
+            }
+        });
+    }
+
+    //Used tp pass information from Dialog back to the Panel
+    public void setItemDialogListener(DialogListener dialogListener) {
+        this.dialogListener = dialogListener;
     }
 }
