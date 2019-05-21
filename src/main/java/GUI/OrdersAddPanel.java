@@ -12,6 +12,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.HashMap;
+import java.util.Vector;
 
 public class OrdersAddPanel extends IWorkPanel{
     private JLabel providerLabel;
@@ -37,6 +38,7 @@ public class OrdersAddPanel extends IWorkPanel{
     private JPanel orderTablePanel;
     private JPanel placeOrderPanel;
     private EditItemDialog itemDialog;
+    private OrderPlacedDialog orderPlacedDialog;
 
     //TEST FIELDS//
     HashMap searchParams = new HashMap();
@@ -44,6 +46,7 @@ public class OrdersAddPanel extends IWorkPanel{
     private String[] orderColumnNames = {"ID","Item name","Category","Provider","Units","Cost per Item","Expected delivery"};
     private String[][] testData ={{"555","Shubi","kabubi","shabubi","2","20.8.15","2"}
                                     ,{"123","Halo","this is dog","kuku","5","20.8.18","2"}};
+    private String[] addOrderTest = {"11-22","milky","buku","kuku","5","2020","4"};
     private String[] providers = {"1","2","3"};
     private String[] items = {"","4","5","6"};
     private String orderItem;
@@ -89,6 +92,7 @@ public class OrdersAddPanel extends IWorkPanel{
         placeOrderPanel = new JPanel();
         tablesPanel = new JPanel();
         itemDialog = new EditItemDialog((JFrame) SwingUtilities.getWindowAncestor(this));
+        orderPlacedDialog = new OrderPlacedDialog((JFrame) SwingUtilities.getWindowAncestor(this));
     }
 
     @Override
@@ -152,7 +156,7 @@ public class OrdersAddPanel extends IWorkPanel{
         Dimension dim = new Dimension(300,200);
         scrollItemsTable.setPreferredSize(dim);
 
-        itemsTablePanel.setBorder(BorderFactory.createTitledBorder("Browse items"));
+        itemsTablePanel.setBorder(BorderFactory.createTitledBorder("Browse items - Double click the Item to add it to the order"));
 
         itemsTablePanel.setLayout(new GridBagLayout());
         GridBagConstraints gcTablePanel = new GridBagConstraints();
@@ -165,11 +169,12 @@ public class OrdersAddPanel extends IWorkPanel{
         gcTablePanel.anchor = GridBagConstraints.FIRST_LINE_START;
         itemsTablePanel.add(scrollItemsTable,gcTablePanel);
     }
+
     protected void setOrderTable(){
         Dimension dim = new Dimension(300,200);
         scrollOrderTable.setPreferredSize(dim);
 
-        orderTablePanel.setBorder(BorderFactory.createTitledBorder("Current order"));
+        orderTablePanel.setBorder(BorderFactory.createTitledBorder("Order details - Double click the Item to remove it from the order"));
 
         orderTablePanel.setLayout(new GridBagLayout());
         GridBagConstraints gcTablePanel = new GridBagConstraints();
@@ -324,11 +329,24 @@ public class OrdersAddPanel extends IWorkPanel{
             public void setItemInOrder(int units) {
                 orderItemAmount = units;
                 System.out.println(orderItemAmount);
+                //TODO: function that populates the item details based on itemId and units into Array or list
+                model.addRow(addOrderTest); //insert test data
             }
         });
     }
     private void setPlaceOrderButton() {
-
+        placeOrderButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Vector data = model.getDataVector();
+                //TODO: how do we create the order ID ??
+                //passing the order id to the dialog
+                orderPlacedDialog.setPlacedOrderId(123456); //test orderId
+                orderPlacedDialog.setVisible(true);
+                //TODO: populate the data vector to make according changes in the DB
+                //TODO: now the orders table should contain this orders details & order status is in process
+            }
+        });
     }
 
     private void setSearchButton() {

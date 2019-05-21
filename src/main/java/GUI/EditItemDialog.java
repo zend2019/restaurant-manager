@@ -13,7 +13,6 @@ public class EditItemDialog extends JDialog {
     private JLabel numOfItemsLabel = new JLabel("Items to add? ");
     private JTextField numOfItemsTF = new JTextField();
     private JButton addButton = new JButton("Add");
-    private int unitsToAdd;
     private DialogListener dialogListener;
 
     public EditItemDialog(JFrame parent){
@@ -80,7 +79,7 @@ public class EditItemDialog extends JDialog {
                 if(dialogListener != null){
                     dialogListener.setItemInOrder(itemsToAdd);
                 }
-                setVisible(false);
+                dispose();
             }
         });
     }
