@@ -1,15 +1,11 @@
 package main.java.database;
 
 import main.java.BL.Contract.*;
-import main.java.common.CommonUtils;
 
 import java.sql.*;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Date;
-
-import static java.sql.Types.NULL;
 
 
 public class DatabaseController {
@@ -178,7 +174,7 @@ public class DatabaseController {
         return products;
     }
 
-    public static List<Product> GetProviderByCategory(int providerId) {
+    public static List<Product> getProductByProviderId(int providerId) {
         String sql = "SELECT* FROM product WHERE providerId = ? ";
         Connection conn = DatabaseAccessManager.getConnection();
         List<Product> products = new ArrayList<>();
@@ -202,7 +198,7 @@ public class DatabaseController {
     }
 
 
-    public static void addOrder(Order order) {
+    public static int addOrder(Order order) {
         int id = order.getOrderId();
         String productType = String.join(",", order.getProductIds()); //String.join(",",order.getProductIds());
         String provider = String.join(",", order.getProvider());
@@ -224,6 +220,7 @@ public class DatabaseController {
         } finally {
             DatabaseAccessManager.closeConnection(conn);
         }
+        return id;
     }
 
     public static Order getOrderById(int id) {
@@ -295,5 +292,29 @@ public class DatabaseController {
             DatabaseAccessManager.closeConnection(conn);
         }
         return providersNames;
+    }
+
+    public static void editOrder(int orderId, Order order) {
+    }
+
+    public static Order getOrder(int orderId) {
+    }
+
+    public static List<Product> getProductByProvider(Integer providerId) {
+    }
+
+    public static void editUser(User user, int userId) {
+    }
+
+    public static void deleteUser(int userId) {
+    }
+
+    public static List<Provider> getProviderByCategory(Category category) {
+    }
+
+    public static void deleteProvider(int providerId) {
+    }
+
+    public static void deditProvider(Provider provider, int providerId) {
     }
 }

@@ -3,6 +3,7 @@ import main.java.BL.Contract.Order;
 import main.java.BL.Contract.OrderStatus;
 import main.java.common.exceptions.RestaurantManagerException;
 import main.java.dataAccess.IRestaurantRepository;
+import main.java.database.DatabaseController;
 
 public class OrderManager implements IOrderManager {
 
@@ -19,23 +20,23 @@ public class OrderManager implements IOrderManager {
         if (currentBudget < order.getTotalAmount()) {
             throw new RestaurantManagerException("Your order is above the current budget");
         }
-        int orderId = restaurantRepository.AddOrder(order);
+        int orderId = DatabaseController.addOrder(order);
 
         return orderId;
     }
 
     @Override
     public Order GetOrder(int orderId) {
-        return restaurantRepository.GetOrder(orderId);
+        return DatabaseController.getOrder(orderId);
     }
 
     @Override
     public void EditOrder(int orderId, Order order) {
 
-        Order existingOrder = restaurantRepository.GetOrder(orderId);
+        Order existingOrder = DatabaseController.getOrder(orderId);
         if (order == null)
             throw new RestaurantManagerException("User already exist.");
-        restaurantRepository.EditOrder(orderId, order);
+        DatabaseController.editOrder(orderId, order);
 
     }
 
@@ -48,9 +49,9 @@ public class OrderManager implements IOrderManager {
 
     @Override
     public void AddRatingPerOrder(int rating, int orderId) {
-        Order order = restaurantRepository.GetOrder(orderId);
+        Order order = DatabaseController.getOrder(orderId);
         order.setRating(rating);
-        restaurantRepository.EditOrder(orderId, order);
+        DatabaseController.editOrder(orderId, order);
 
     }
 }
