@@ -2,6 +2,7 @@ package main.java.GUI;
 
 import main.java.BL.Contract.Category;
 import main.java.common.constants.Constants;
+import main.java.common.constants.DatabaseConstants;
 
 import javax.swing.*;
 import javax.swing.border.BevelBorder;
@@ -406,7 +407,7 @@ public class OrdersAddPanel extends IWorkPanel{
         if(!categoryList.getSelectedItem().equals(Category.None))
             searchParams.put(Constants.CATEGORY,categoryList.getSelectedItem());
         if(!itemList.getSelectedItem().equals(Constants.EMPTY_FIELD))
-            searchParams.put(Constants.ITEM_NAME,itemList.getSelectedItem());
+            searchParams.put(DatabaseConstants.PRODUCT_TABLE_ITEM_NAME_COLUMN,itemList.getSelectedItem());
         if(!unitsTF.getText().equals(Constants.EMPTY_FIELD))
             searchParams.put(Constants.AVAILABLE_UNITS,unitsTF.getText());
         return searchParams;

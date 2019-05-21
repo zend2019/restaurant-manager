@@ -3,14 +3,19 @@ package main.java.GUI;
 import com.toedter.calendar.JDateChooser;
 import main.java.BL.Contract.Category;
 import main.java.BL.Contract.Product;
+import main.java.common.DateUtils;
+import main.java.common.StringUtils;
 import main.java.common.constants.Constants;
+import main.java.common.constants.DatabaseConstants;
+import main.java.database.DatabaseController;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Vector;
 
@@ -45,7 +50,7 @@ public class InventoryPanel extends IWorkPanel {
     private HashMap searchParams = new HashMap();
     private String[] columnNames = {"ID", "Item name", "Category", "Provider", "Available Units", "Expected Units", "Expiration date"};
     private String[][] testData = {{"555", "Shubi", "kabubi", "shabubi", "2", "4", "20.08.15"}};
-    private Vector<String> providers ;
+    private Vector<String> providers;
     private String[][] searchTestData = {{"1124", "Shubi", "bubi", "shabubi", "2", "4", "05.06.75"},
             {"4454", "halo", "this", "is dog", "5", "66", "21.09.16"}};
 
@@ -264,6 +269,7 @@ public class InventoryPanel extends IWorkPanel {
 
     private void setCurrentProvider() {
         providers = getAllProviderCompanyName();
+        providers.add(0, ""); //TODO: @ELINA fix in the hashmap isEmpty or something like..
     }
 
     @Override
@@ -278,10 +284,11 @@ public class InventoryPanel extends IWorkPanel {
             public void actionPerformed(ActionEvent e) {
                 if (checkAtleastOneNotEmpty()) {
                     setValidationLabelsVisibility(false);
-                    searchParams = buildSearchParameters();
+                    searchParams = buildSearchProductParameters();
+                    Vector<Product> x = DatabaseController.getListOfProviders(searchParams);
                     //TODO: pass the search parameters to sql query builder, return the list of items
                     Constants.SEARCHING.setVisible(true);
-                    model.setDataVector(searchTestData, columnNames); //Set the table with test data
+                    model.setDataVector(convertProductVectorToInventoryMatrix(x), columnNames); //Set the table with test data
                 } else {
                     setValidationLabelsVisibility(false);
                     Constants.ATLEAST_ONE_FIELD_REQUIRED.setVisible(true);
@@ -290,6 +297,24 @@ public class InventoryPanel extends IWorkPanel {
 
             }
         });
+    }
+
+    //{"ID", "Item name", "Category", "Provider", "Available Units", "Expected Units", "Expiration date"}
+    private String[][] convertProductVectorToInventoryMatrix(Vector<Product> productVector) {
+        String[][] matrix = new String[productVector.size()][Constants.INVENTORY_MATRIX_COLUMNS];
+        for (int i = 0; i < productVector.size(); i++) {
+            String[] array = {
+                    productVector.get(i).getProductId(),
+                    productVector.get(i).getProductName(),
+                    String.valueOf(productVector.get(i).getCategory()),
+                    productVector.get(i).getProviderId(),
+                    String.valueOf(productVector.get(i).getCurrentProductAmount()),
+                    String.valueOf(productVector.get(i).getRequiredAmount()),
+                    DateUtils.formatDateToString(productVector.get(i).getExpirationDate())
+            };
+            matrix[i] = array;
+        }
+        return matrix;
     }
 
     private boolean checkAtleastOneNotEmpty() {
@@ -307,21 +332,22 @@ public class InventoryPanel extends IWorkPanel {
     }
 
 
-    private HashMap buildSearchParameters() {
+    private HashMap buildSearchProductParameters() {
         HashMap searchParams = new HashMap();
         //TODO: Add Providers
+        //TODO: @ELINA add single quotes to hashmap value ('<X>' and not <X>)
         if (!categoryList.getSelectedItem().equals(Category.None))
             searchParams.put(Constants.CATEGORY, categoryList.getSelectedItem());
         if (!itemNameTF.getText().equals(Constants.EMPTY_FIELD))
-            searchParams.put(Constants.ITEM_NAME, itemNameTF.getText());
+            searchParams.put(DatabaseConstants.PRODUCT_TABLE_ITEM_NAME_COLUMN, StringUtils.getStringWithSingleQuotes(itemNameTF.getText()));
         if (!availableUnitsTF.getText().equals(Constants.EMPTY_FIELD))
-            searchParams.put(Constants.AVAILABLE_UNITS, availableUnitsTF.getText());
+            searchParams.put(Constants.AVAILABLE_UNITS, StringUtils.getStringWithSingleQuotes(availableUnitsTF.getText()));
         if (!expectedUnitsTF.getText().equals(Constants.EMPTY_FIELD))
-            searchParams.put(Constants.REQUIRED_UNITS, expectedUnitsTF.getText());
+            searchParams.put(Constants.REQUIRED_UNITS, StringUtils.getStringWithSingleQuotes(expectedUnitsTF.getText()));
         if (!priceTF.getText().equals(Constants.EMPTY_FIELD))
-            searchParams.put(Constants.PRICE, priceTF.getText());
+            searchParams.put(Constants.PRICE, StringUtils.getStringWithSingleQuotes(priceTF.getText()));
         if (dateChooser.getDate() != null) {
-            searchParams.put(Constants.EXPIRATION_DATE, dateChooser.getDate());
+            searchParams.put(Constants.EXPIRATION_DATE, DateUtils.formatDateToString(dateChooser.getDate()));
         }
         return searchParams;
     }
