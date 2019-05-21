@@ -8,6 +8,7 @@ import javafx.scene.control.TableView;
 import main.java.BL.Contract.Category;
 import main.java.BL.Contract.OrderStatus;
 import main.java.common.constants.Constants;
+import main.java.common.constants.DatabaseConstants;
 
 import javax.swing.*;
 import javax.swing.event.ChangeListener;
@@ -333,7 +334,7 @@ public class OrdersSearchPanel extends IWorkPanel {
         if(!categoryList.getSelectedItem().equals(Category.None))
             searchParams.put(Constants.CATEGORY,categoryList.getSelectedItem());
         if(!itemList.getSelectedItem().equals(Constants.EMPTY_FIELD))
-            searchParams.put(Constants.ITEM_NAME,itemList.getSelectedItem());
+            searchParams.put(DatabaseConstants.PRODUCT_TABLE_ITEM_NAME_COLUMN,itemList.getSelectedItem());
         if(!orderIdTF.getText().equals(Constants.EMPTY_FIELD))
             searchParams.put(Constants.ORDER_ID,orderIdTF.getText());
         if(deliveryDateChooser.getDate() != null)

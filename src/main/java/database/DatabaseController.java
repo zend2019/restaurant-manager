@@ -1,7 +1,8 @@
 package main.java.database;
 
 import main.java.BL.Contract.*;
-import main.java.common.CommonUtils;
+import main.java.common.DateUtils;
+import main.java.common.constants.DatabaseConstants;
 
 import java.sql.*;
 import java.text.ParseException;
@@ -9,7 +10,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Date;
 
-import static java.sql.Types.NULL;
+import static main.java.common.DateUtils.getDateByString;
 
 
 public class DatabaseController {
@@ -41,13 +42,13 @@ public class DatabaseController {
 
         //Adding product sample
 //        Product product = new Product();
-//        product.setProductId(1);
+//        product.setProductId("5");
 //        product.setProductName("yolo");
-//        product.setPrice("25");
-//        product.setExpirationDate(new SimpleDateFormat("dd/MM/yyyy").parse("01/01/1993"));
-//        product.setCurrentpProductAmount(21);
-//        product.setRequiredAmount(22);
-//        product.setProvider("Noga tm");
+//        product.setPrice("255");
+//        product.setExpirationDate(new SimpleDateFormat("dd/MM/yyyy").parse("01/01/2019"));
+//        product.setCurrentProductAmount(66);
+//        product.setRequiredAmount(55);
+//        product.setProviderId("5");
 //        addProduct(product);
 
 //        adding order sample
@@ -59,7 +60,14 @@ public class DatabaseController {
 //        order.setTotalAmount(22.56);
 //        addOrder(order);
 //        getUserById(1);
-        getAllProviderCompanyName();
+//        getAllProviderCompanyName();
+        HashMap hashMap = new HashMap();
+//        hashMap.put("id", "1");
+        hashMap.put("name", "'yolo'");
+//        hashMap.put("price", "25");
+//        hashMap.put("expiration_date", "'Fri Jan 01 00:00:00 IST 1993'");
+//        hashMap.put("current_amount", "21");
+        getListOfProviders(hashMap);
     }
 
     public static void addUser(User user) {
@@ -131,7 +139,7 @@ public class DatabaseController {
         String id = product.getProductId();
         String name = product.getProductName();
         String price = product.getPrice();
-        String expirationDate = String.valueOf(product.getExpirationDate()); //todo string casting might cause issues...need to check
+        String expirationDate = DateUtils.formatDateToString(product.getExpirationDate()); //todo string casting might cause issues...need to check
         int currentAmount = product.getCurrentProductAmount();
         int requiredAmount = product.getRequiredAmount();
         String provider = product.getProviderId();
@@ -168,7 +176,7 @@ public class DatabaseController {
 
                 Product product = new Product();
                 product.setProductId(rs.getString("id"));
-                product.setProductName(rs.getString("name"));
+                product.setProductName(rs.getString(DatabaseConstants.PRODUCT_TABLE_ITEM_NAME_COLUMN));
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -273,11 +281,56 @@ public class DatabaseController {
         }
         return user;
     }
+
     /*
      SQLite Reset Primary Key Field (mostly will be used for auto autoincrement for ids) run the following queries:
     delete from your_table;
     delete from sqlite_sequence where name='your_table';
      */
+    public static Vector<Product> getListOfProviders(HashMap hashMap) {
+        String sql = "SELECT* FROM product WHERE " + getDynamicWhereQueryBuilder(hashMap);
+        Connection conn = DatabaseAccessManager.getConnection();
+        Vector<Product> products = new Vector<>();
+
+        try {
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+
+                Product product = new Product();
+                product.setProductId(rs.getString("id"));
+                product.setProductName(rs.getString(DatabaseConstants.PRODUCT_TABLE_ITEM_NAME_COLUMN));
+                product.setPrice(rs.getString("price"));
+                product.setExpirationDate(DateUtils.getDateByString(rs.getString("expiration_date")));
+                product.setCurrentProductAmount(rs.getInt("current_amount"));
+                product.setRequiredAmount(rs.getInt("required_amount"));
+                product.setProviderId(rs.getString("provider"));
+                products.add(product);
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } catch (ParseException e) {
+            e.printStackTrace();
+        } finally {
+            DatabaseAccessManager.closeConnection(conn);
+        }
+        return products;
+    }
+
+    private static String getDynamicWhereQueryBuilder(HashMap hashMap) {
+        StringBuilder whereQuery;
+        Iterator it = hashMap.entrySet().iterator();
+        Map.Entry pair = (Map.Entry) it.next();
+        whereQuery = new StringBuilder(pair.getKey() + "=" + pair.getValue());
+        it.remove();
+        while (it.hasNext()) {
+            pair = (Map.Entry) it.next();
+            String andQuery = " AND " + pair.getKey() + "=" + pair.getValue();
+            whereQuery.append(andQuery);
+            it.remove();
+        }
+        return whereQuery.toString();
+    }
 
     public static Vector<String> getAllProviderCompanyName() {
         Vector<String> providersNames = new Vector<>();
