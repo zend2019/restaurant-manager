@@ -14,6 +14,8 @@ import java.awt.event.MouseEvent;
 import java.util.HashMap;
 import java.util.Vector;
 
+import static java.lang.Integer.valueOf;
+
 public class OrdersAddPanel extends IWorkPanel{
     private JLabel providerLabel;
     private JLabel categoryLabel;
@@ -39,6 +41,7 @@ public class OrdersAddPanel extends IWorkPanel{
     private JPanel placeOrderPanel;
     private EditItemDialog itemDialog;
     private OrderPlacedDialog orderPlacedDialog;
+    private Integer orderSum = 0;
 
     //TEST FIELDS//
     HashMap searchParams = new HashMap();
@@ -305,7 +308,8 @@ public class OrdersAddPanel extends IWorkPanel{
         setSearchButton();
         setPlaceOrderButton();
         setEditUnitsListener();
-        setDialogListener();
+        setAddItemDialogListener();
+        setRemoveItemFromOrderListener();
     }
 
     private void setEditUnitsListener(){
@@ -315,25 +319,54 @@ public class OrdersAddPanel extends IWorkPanel{
                 Point point = mouseEvent.getPoint();
                 int row = table.rowAtPoint(point);
                 if (mouseEvent.getClickCount() == 2 && table.getSelectedRow() != -1) {
-                    orderItem = itemsTable.getValueAt(itemsTable.getSelectedRow(), 0).toString();
+                    orderItem = itemsTable.getValueAt(row, 0).toString();
                     itemDialog.setVisible(true);
                 }
             }
         });
     }
 
-    //Used tp pass information from Dialog back to the Panel
-    private void setDialogListener(){
+    //Used to pass information from Dialog back to the Panel
+    private void setAddItemDialogListener(){
         itemDialog.setItemDialogListener(new DialogListener(){
             @Override
             public void setItemInOrder(int units) {
                 orderItemAmount = units;
                 System.out.println(orderItemAmount);
-                //TODO: function that populates the item details based on itemId and units into Array or list
-                model.addRow(addOrderTest); //insert test data
+                //TODO: function that populates the item details based on itemId and updated units into Array or list
+                model.addRow(addOrderTest); //insert test data to order table
+                orderSum += calculateItemSum(addOrderTest[4],addOrderTest[5]); //update the order sum by teh price (TODO: update the test data)
+                setOrderSumFieldLabel(); //updates the sum label
             }
         });
     }
+
+    private void setRemoveItemFromOrderListener(){
+        orderTable.addMouseListener(new MouseAdapter() {
+            public void mousePressed(MouseEvent mouseEvent) {
+                JTable table =(JTable) mouseEvent.getSource();
+                Point point = mouseEvent.getPoint();
+                int row = table.rowAtPoint(point);
+                if (mouseEvent.getClickCount() == 2 && table.getSelectedRow() != -1) {
+                    orderSum -= calculateItemSum(addOrderTest[4],addOrderTest[5]); //update the order sum by the price (TODO: update the test data)
+                    setOrderSumFieldLabel(); //updates the sum label
+                    model.removeRow(row);
+                }
+            }
+        });
+    }
+
+    //TODO: update according to the data that will be received
+    //TODO: consider moving to a utils class
+    private Integer calculateItemSum(String numOfItems, String itemPrice){
+        Integer numItems = valueOf(numOfItems), price = valueOf(itemPrice);
+        return numItems * price;
+    }
+
+    private void setOrderSumFieldLabel(){
+        orderSumFieldLabel.setText(orderSum.toString());
+    }
+
     private void setPlaceOrderButton() {
         placeOrderButton.addActionListener(new ActionListener() {
             @Override
