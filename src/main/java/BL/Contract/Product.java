@@ -27,13 +27,6 @@ public class Product {
         this.expirationDate = expirationDate;
     }
 
-    public Integer getProductId() {
-        return productId;
-    }
-
-    public void setProductId(Integer productId) {
-        this.productId = productId;
-    }
 
     public Integer getCurrentProductAmount() {
         return currentProductAmount;
@@ -51,12 +44,12 @@ public class Product {
         this.requiredAmount = requiredAmount;
     }
 
-    public String getProvider() {
-        return provider;
+    public String getProviderId() {
+        return providerId;
     }
 
-    public void setProvider(String provider) {
-        this.provider = provider;
+    public void setProviderId(String providerId) {
+        this.providerId = providerId;
     }
 
     public Category getCategory() {
@@ -67,12 +60,20 @@ public class Product {
         this.category = category;
     }
 
+    public String getProductId() {
+        return productId;
+    }
+
+    public void setProductId(String productId) {
+        this.productId = productId;
+    }
+
     private String productName;
     private String price;
     private Date expirationDate;
-    private Integer productId;
+    private String productId;
     private Integer currentProductAmount;
     private Integer requiredAmount;
-    private String provider;
+    private String providerId;
     private Category category;
 }
