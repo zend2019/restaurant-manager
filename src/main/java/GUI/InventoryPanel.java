@@ -10,9 +10,12 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Vector;
 
 import static java.lang.Integer.valueOf;
+import static main.java.database.DatabaseController.getAllProviderCompanyName;
 
 public class InventoryPanel extends IWorkPanel {
     private Product product;
@@ -40,13 +43,13 @@ public class InventoryPanel extends IWorkPanel {
 
     //TEST FIELDS//
     private HashMap searchParams = new HashMap();
-    private String[] columnNames = {"ID","Item name","Category","Provider","Available Units","Expected Units","Expiration date"};
-    private String[][] testData ={{"555","Shubi","kabubi","shabubi","2","4","20.08.15"}};
-    private String[] providers = {"1","2","3"};
-    private String[][] searchTestData = {{"1124","Shubi","bubi","shabubi","2","4","05.06.75"},
-                                        {"4454","halo","this","is dog","5","66","21.09.16" }};
+    private String[] columnNames = {"ID", "Item name", "Category", "Provider", "Available Units", "Expected Units", "Expiration date"};
+    private String[][] testData = {{"555", "Shubi", "kabubi", "shabubi", "2", "4", "20.08.15"}};
+    private Vector<String> providers ;
+    private String[][] searchTestData = {{"1124", "Shubi", "bubi", "shabubi", "2", "4", "05.06.75"},
+            {"4454", "halo", "this", "is dog", "5", "66", "21.09.16"}};
 
-    public InventoryPanel(){
+    public InventoryPanel() {
         initialization();
         setSearchPanelLayout();
         setTableLayout();
@@ -55,7 +58,7 @@ public class InventoryPanel extends IWorkPanel {
     }
 
     @Override
-    protected void initialization(){
+    protected void initialization() {
         providerLabel = new JLabel("Provider: ");
         categoryLabel = new JLabel("Category: ");
         itemNameLabel = new JLabel("Item Name: ");
@@ -72,15 +75,15 @@ public class InventoryPanel extends IWorkPanel {
         dateChooser = new JDateChooser();
         searchButton = new JButton("Search");
         addButton = new JButton("Add");
-        model = new DefaultTableModel(testData,columnNames);
+        model = new DefaultTableModel(testData, columnNames);
         inventoryTable = new JTable(model);
-        scrollTable = new JScrollPane(inventoryTable,JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollTable = new JScrollPane(inventoryTable, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         searchPanel = new JPanel();
         tablePanel = new JPanel();
     }
 
     @Override
-    protected void setMainLayout(){
+    protected void setMainLayout() {
         setLayout(new GridBagLayout());
         GridBagConstraints gcMainPanel = new GridBagConstraints();
         gcMainPanel.fill = GridBagConstraints.HORIZONTAL;
@@ -95,7 +98,7 @@ public class InventoryPanel extends IWorkPanel {
         add(searchPanel, gcMainPanel);
 
         gcMainPanel.ipady = 0;
-        gcMainPanel.gridy ++;
+        gcMainPanel.gridy++;
         gcMainPanel.weightx = 0.5;
         gcMainPanel.weighty = 0.1;
 
@@ -105,8 +108,8 @@ public class InventoryPanel extends IWorkPanel {
     }
 
     @Override
-    protected void setTableLayout(){
-        Dimension dim = new Dimension(300,450);
+    protected void setTableLayout() {
+        Dimension dim = new Dimension(300, 450);
         scrollTable.setPreferredSize(dim);
 
         tablePanel.setLayout(new GridBagLayout());
@@ -119,12 +122,13 @@ public class InventoryPanel extends IWorkPanel {
         gcTablePanel.weightx = 1;
         gcTablePanel.weighty = 0.1;
         gcTablePanel.anchor = GridBagConstraints.FIRST_LINE_START;
-        tablePanel.add(scrollTable,gcTablePanel);
+        tablePanel.add(scrollTable, gcTablePanel);
     }
 
     @Override
-    protected void setSearchPanelLayout(){
+    protected void setSearchPanelLayout() {
         /////// Set combo-box ///////
+        setCurrentProvider();//TODO: @ELINA should be adjusted live and not only when running the app first
         DefaultComboBoxModel providersModel = new DefaultComboBoxModel(providers);
         providersList.setModel(providersModel);
         DefaultComboBoxModel categoryModel = new DefaultComboBoxModel(Category.values());
@@ -134,7 +138,7 @@ public class InventoryPanel extends IWorkPanel {
         searchPanel.setLayout(new GridBagLayout());
         GridBagConstraints gcSearchPanel = new GridBagConstraints();
         gcSearchPanel.fill = GridBagConstraints.CENTER;
-        gcSearchPanel.insets = new Insets(5,5,5,5);
+        gcSearchPanel.insets = new Insets(5, 5, 5, 5);
 
         /////// First row ///////
         gcSearchPanel.gridy = 0;
@@ -143,7 +147,7 @@ public class InventoryPanel extends IWorkPanel {
         gcSearchPanel.gridx = 0;
 
         /////// Next row //////
-        gcSearchPanel.gridy ++;
+        gcSearchPanel.gridy++;
         gcSearchPanel.weightx = 0.5;
         gcSearchPanel.weighty = 0.1;
         gcSearchPanel.gridx = 0;
@@ -167,7 +171,7 @@ public class InventoryPanel extends IWorkPanel {
         searchPanel.add(addButton, gcSearchPanel);
 
         /////// Next row ///////
-        gcSearchPanel.gridy ++;
+        gcSearchPanel.gridy++;
 
         gcSearchPanel.weightx = 0.5;
         gcSearchPanel.weighty = 0.1;
@@ -194,7 +198,7 @@ public class InventoryPanel extends IWorkPanel {
         searchPanel.add(searchButton, gcSearchPanel);
 
         /////// Next row ///////
-        gcSearchPanel.gridy ++;
+        gcSearchPanel.gridy++;
 
         gcSearchPanel.weightx = 0.5;
         gcSearchPanel.weighty = 0.1;
@@ -216,7 +220,7 @@ public class InventoryPanel extends IWorkPanel {
         searchPanel.add(expectedUnitsTF, gcSearchPanel);
 
         /////// Next row ///////
-        gcSearchPanel.gridy ++;
+        gcSearchPanel.gridy++;
         gcSearchPanel.weightx = 0.5;
         gcSearchPanel.weighty = 0.1;
 
@@ -231,20 +235,20 @@ public class InventoryPanel extends IWorkPanel {
         //Validation labels
         gcSearchPanel.gridx = 3;
         gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_START;
-        searchPanel.add(Constants.ALL_FIELDS_REQUIRED,gcSearchPanel);
+        searchPanel.add(Constants.ALL_FIELDS_REQUIRED, gcSearchPanel);
         Constants.ALL_FIELDS_REQUIRED.setForeground(Color.red);
         Constants.ALL_FIELDS_REQUIRED.setVisible(false);
 
         Constants.ATLEAST_ONE_FIELD_REQUIRED.setForeground(Color.red);
         Constants.ATLEAST_ONE_FIELD_REQUIRED.setVisible(false);
-        searchPanel.add(Constants.ATLEAST_ONE_FIELD_REQUIRED,gcSearchPanel);
+        searchPanel.add(Constants.ATLEAST_ONE_FIELD_REQUIRED, gcSearchPanel);
 
 
-        searchPanel.add(Constants.ITEM_ADDED,gcSearchPanel);
+        searchPanel.add(Constants.ITEM_ADDED, gcSearchPanel);
         Constants.ITEM_ADDED.setForeground(Color.green);
         Constants.ITEM_ADDED.setVisible(false);
 
-        searchPanel.add(Constants.SEARCHING,gcSearchPanel);
+        searchPanel.add(Constants.SEARCHING, gcSearchPanel);
         Constants.SEARCHING.setForeground(Color.yellow);
         Constants.SEARCHING.setVisible(false);
 
@@ -258,24 +262,27 @@ public class InventoryPanel extends IWorkPanel {
 
     }
 
+    private void setCurrentProvider() {
+        providers = getAllProviderCompanyName();
+    }
+
     @Override
-    protected void setActionListeners(){
+    protected void setActionListeners() {
         setAddButton();
         setSearchButton();
     }
 
-    private void setSearchButton(){
+    private void setSearchButton() {
         searchButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(checkAtleastOneNotEmpty()){
+                if (checkAtleastOneNotEmpty()) {
                     setValidationLabelsVisibility(false);
                     searchParams = buildSearchParameters();
                     //TODO: pass the search parameters to sql query builder, return the list of items
                     Constants.SEARCHING.setVisible(true);
-                    model.setDataVector(searchTestData,columnNames); //Set the table with test data
-                }
-                else{
+                    model.setDataVector(searchTestData, columnNames); //Set the table with test data
+                } else {
                     setValidationLabelsVisibility(false);
                     Constants.ATLEAST_ONE_FIELD_REQUIRED.setVisible(true);
                     //Constants.ALL_FIELDS_REQUIRED.setVisible(true);
@@ -285,14 +292,14 @@ public class InventoryPanel extends IWorkPanel {
         });
     }
 
-    private boolean checkAtleastOneNotEmpty(){
-        if(     !categoryList.getSelectedItem().equals(Category.None) ||
-                !itemNameTF.getText().equals(Constants.EMPTY_FIELD )||
-                !availableUnitsTF.getText().equals(Constants.EMPTY_FIELD )  ||
-                !expectedUnitsTF.getText().equals(Constants.EMPTY_FIELD )||
-                !priceTF.getText().equals(Constants.EMPTY_FIELD )||
+    private boolean checkAtleastOneNotEmpty() {
+        if (!categoryList.getSelectedItem().equals(Category.None) ||
+                !itemNameTF.getText().equals(Constants.EMPTY_FIELD) ||
+                !availableUnitsTF.getText().equals(Constants.EMPTY_FIELD) ||
+                !expectedUnitsTF.getText().equals(Constants.EMPTY_FIELD) ||
+                !priceTF.getText().equals(Constants.EMPTY_FIELD) ||
                 dateChooser.getDate() != null
-        )
+                )
             return true;
 
         else
@@ -300,34 +307,33 @@ public class InventoryPanel extends IWorkPanel {
     }
 
 
-    private HashMap buildSearchParameters(){
+    private HashMap buildSearchParameters() {
         HashMap searchParams = new HashMap();
         //TODO: Add Providers
-        if(!categoryList.getSelectedItem().equals(Category.None))
-            searchParams.put(Constants.CATEGORY,categoryList.getSelectedItem());
-        if(!itemNameTF.getText().equals(Constants.EMPTY_FIELD))
-            searchParams.put(Constants.ITEM_NAME,itemNameTF.getText());
-        if(!availableUnitsTF.getText().equals(Constants.EMPTY_FIELD))
-            searchParams.put(Constants.AVAILABLE_UNITS,availableUnitsTF.getText());
-        if(!expectedUnitsTF.getText().equals(Constants.EMPTY_FIELD))
-            searchParams.put(Constants.REQUIRED_UNITS,expectedUnitsTF.getText());
-        if(!priceTF.getText().equals(Constants.EMPTY_FIELD))
-            searchParams.put(Constants.PRICE,priceTF.getText());
-        if(dateChooser.getDate() != null){
-            searchParams.put(Constants.EXPIRATION_DATE,dateChooser.getDate());
+        if (!categoryList.getSelectedItem().equals(Category.None))
+            searchParams.put(Constants.CATEGORY, categoryList.getSelectedItem());
+        if (!itemNameTF.getText().equals(Constants.EMPTY_FIELD))
+            searchParams.put(Constants.ITEM_NAME, itemNameTF.getText());
+        if (!availableUnitsTF.getText().equals(Constants.EMPTY_FIELD))
+            searchParams.put(Constants.AVAILABLE_UNITS, availableUnitsTF.getText());
+        if (!expectedUnitsTF.getText().equals(Constants.EMPTY_FIELD))
+            searchParams.put(Constants.REQUIRED_UNITS, expectedUnitsTF.getText());
+        if (!priceTF.getText().equals(Constants.EMPTY_FIELD))
+            searchParams.put(Constants.PRICE, priceTF.getText());
+        if (dateChooser.getDate() != null) {
+            searchParams.put(Constants.EXPIRATION_DATE, dateChooser.getDate());
         }
         return searchParams;
     }
 
-    private void setAddButton(){
+    private void setAddButton() {
         addButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(!checkNoEmptyFields()){
+                if (!checkNoEmptyFields()) {
                     setValidationLabelsVisibility(false);
                     Constants.ALL_FIELDS_REQUIRED.setVisible(true);
-                }
-                else {
+                } else {
                     setValidationLabelsVisibility(false);
                     product = getProductProperties();
                     Constants.ITEM_ADDED.setVisible(true);
@@ -336,25 +342,25 @@ public class InventoryPanel extends IWorkPanel {
         });
     }
 
-    private boolean checkNoEmptyFields(){
+    private boolean checkNoEmptyFields() {
         //TODO: Add Providers: what is the default value?
-        if(     categoryList.getSelectedItem() != Category.None &&
+        if (categoryList.getSelectedItem() != Category.None &&
                 !itemNameTF.getText().equals(Constants.EMPTY_FIELD) &&
                 !availableUnitsTF.getText().equals(Constants.EMPTY_FIELD) &&
                 !expectedUnitsTF.getText().equals(Constants.EMPTY_FIELD) &&
                 !priceTF.getText().equals(Constants.EMPTY_FIELD) &&
                 dateChooser.getDate() != null
-            )
+                )
             return true;
         else
             return false;
     }
 
-    private Product getProductProperties(){
+    private Product getProductProperties() {
         Product product = new Product();
         //TODO: Item ID ?
 //        product.setProvider((String)providersList.getSelectedItem());
-        product.setCategory((Category)categoryList.getSelectedItem());
+        product.setCategory((Category) categoryList.getSelectedItem());
         product.setProductName(itemNameTF.getText());
         product.setCurrentProductAmount(valueOf(availableUnitsTF.getText()));
         product.setRequiredAmount(valueOf(expectedUnitsTF.getText()));
@@ -364,7 +370,7 @@ public class InventoryPanel extends IWorkPanel {
     }
 
     @Override
-    protected void setValidationLabelsVisibility(boolean visibility){
+    protected void setValidationLabelsVisibility(boolean visibility) {
         Constants.ALL_FIELDS_REQUIRED.setVisible(visibility);
         Constants.ATLEAST_ONE_FIELD_REQUIRED.setVisible(visibility);
         Constants.ITEM_ADDED.setVisible(visibility);

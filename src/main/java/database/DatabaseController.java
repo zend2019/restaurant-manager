@@ -6,10 +6,8 @@ import main.java.common.CommonUtils;
 import java.sql.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.*;
 import java.util.Date;
-import java.util.List;
 
 import static java.sql.Types.NULL;
 
@@ -60,7 +58,8 @@ public class DatabaseController {
 //        order.setDeliveryDate(new SimpleDateFormat("dd/MM/yyyy").parse("01/01/1993"));
 //        order.setTotalAmount(22.56);
 //        addOrder(order);
-        getUserById(1);
+//        getUserById(1);
+        getAllProviderCompanyName();
     }
 
     public static void addUser(User user) {
@@ -205,8 +204,8 @@ public class DatabaseController {
 
     public static void addOrder(Order order) {
         int id = order.getOrderId();
-        String productType = String.join(",",order.getProductIds()); //String.join(",",order.getProductIds());
-        String provider = String.join(",",order.getProvider());
+        String productType = String.join(",", order.getProductIds()); //String.join(",",order.getProductIds());
+        String provider = String.join(",", order.getProvider());
         Date deliveryDate = order.getDeliveryDate();
         Double totalAmount = order.getTotalAmount();
         String sql = "INSERT INTO orders(id,product_id,provider,delivery_date,total_amount) VALUES(?,?,?,?,?)";
@@ -236,9 +235,9 @@ public class DatabaseController {
             ResultSet rs = stmt.executeQuery(sql);
 //            while (rs.next()) {
             order.setOrderId(rs.getInt("id"));
-            List <String> d=new ArrayList<String>(Arrays.asList(rs.getString("product_id").split(",")));
-            order.setProductIds( new ArrayList<String>(Arrays.asList(rs.getString("product_id").split(","))));
-            order.setProvider( new ArrayList<String>(Arrays.asList(rs.getString("provider").split(","))));
+            List<String> d = new ArrayList<String>(Arrays.asList(rs.getString("product_id").split(",")));
+            order.setProductIds(new ArrayList<String>(Arrays.asList(rs.getString("product_id").split(","))));
+            order.setProvider(new ArrayList<String>(Arrays.asList(rs.getString("provider").split(","))));
             order.setDeliveryDate(rs.getDate("delivery_date"));
             order.setTotalAmount(rs.getDouble("total_amount"));
 
@@ -279,4 +278,22 @@ public class DatabaseController {
     delete from your_table;
     delete from sqlite_sequence where name='your_table';
      */
+
+    public static Vector<String> getAllProviderCompanyName() {
+        Vector<String> providersNames = new Vector<>();
+        String sql = "SELECT distinct company_name FROM provider";
+        Connection conn = DatabaseAccessManager.getConnection();
+        try {
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
+            while (rs.next()) {
+                providersNames.add(rs.getString("company_name"));
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            DatabaseAccessManager.closeConnection(conn);
+        }
+        return providersNames;
+    }
 }
