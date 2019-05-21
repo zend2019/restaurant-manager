@@ -1,11 +1,11 @@
 package main.java.BL.Contract;
 
-public class User {
+public abstract class User {
 
     private int id;
     private String FirstName;
     private String LastName;
-    private int Age;
+    private String Age;
     private String DateOfBirth;
     private String UserName;
 
@@ -35,11 +35,11 @@ public class User {
         LastName = lastName;
     }
 
-    public int getAge() {
+    public String getAge() {
         return Age;
     }
 
-    public void setAge(int age) {
+    public void setAge(String age) {
         Age = age;
     }
 

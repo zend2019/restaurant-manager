@@ -9,7 +9,7 @@ import java.sql.*;
 
 public class DatabaseAccessManager {
 
-    public static Connection getConnection() {
+    private static Connection getConnection() {
         Connection conn;
         final String jdbcDriverName = EnvironmentUtils.getDbDriver();
         try {
@@ -26,7 +26,7 @@ public class DatabaseAccessManager {
      *
      * @param conn - connection to close
      */
-    public static void closeConnection(Connection conn) {
+    private static void closeConnection(Connection conn) {
         try {
             if (conn != null && !conn.isClosed()) {
                 conn.close();

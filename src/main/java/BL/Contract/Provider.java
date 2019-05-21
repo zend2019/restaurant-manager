@@ -27,24 +27,17 @@ public class Provider extends User {
         this.contactName = contactName;
     }
 
-    public void setProviderId(String providerId) {
-        this.providerId = providerId;
+    public Integer getProviderId() {
+        return providerId;
     }
 
+    public void setProviderId(Integer providerId) {
+        this.providerId = providerId;
+    }
 
     private String companyName;
     private List<Integer> productType;
     private String contactName;
-    private String providerId;
-
-    public Integer getRating() {
-        return rating;
-    }
-
-    public void setRating(Integer rating) {
-        this.rating = rating;
-    }
-
-    private Integer rating;
+    private Integer providerId;
 
 }
