@@ -24,7 +24,7 @@ public class ProviderManaging implements IProviderManaging {
 
     @Override
     public void editProvider(Provider provider, int providerId) {
-        DatabaseController.deditProvider(provider,providerId);
+        DatabaseController.editProvider(provider,providerId);
     }
 
     @Override

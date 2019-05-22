@@ -19,7 +19,6 @@ public class Constants {
     public static final String EMPTY_FIELD = "";
     public static final String ITEM_ID = "ItemId";
     public static final String CATEGORY = "Category";
-    public static final String ITEM_NAME = "Item_name";
     public static final String PRICE = "Price";
     public static final String AVAILABLE_UNITS = "Available_Units";
     public static final String REQUIRED_UNITS = "Required_Units";
@@ -27,4 +26,5 @@ public class Constants {
     public static final String DELIVERY_DATE = "Delivery_Date";
     public static final String ORDER_ID = "orderId";
     public static final String ORDER_STATUS = "Order_Status";
+    public static final int INVENTORY_MATRIX_COLUMNS = 7;
 }

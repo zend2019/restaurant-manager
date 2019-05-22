@@ -8,5 +8,5 @@ import java.util.List;
 
 public interface IProductManager {
 
-    List<Product> GetProductByProvider(Integer providerId);
+    List<Product> GetProductByProvider(String providerId);
 }

@@ -12,7 +12,7 @@ public class ProductManager implements IProductManager {
 
 
     @Override
-    public List<Product> GetProductByProvider(Integer providerId) {
+    public List<Product> GetProductByProvider(String providerId) {
         return DatabaseController.getProductByProvider(providerId);
     }
 }
