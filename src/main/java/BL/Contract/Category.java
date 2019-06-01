@@ -1,11 +1,12 @@
 package main.java.BL.Contract;
 
 public enum Category {
-    None,
     Dairy,
     Meat,
-    Fruits,
+    Fruit,
     Vegetable,
     Uniform,
     Office
 }
+
+//TODO: decide if to keep this enum, or use just the DB table

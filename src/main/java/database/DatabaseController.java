@@ -2,6 +2,7 @@ package main.java.database;
 
 import main.java.BL.Contract.*;
 import main.java.common.DateUtils;
+import main.java.common.StringUtils;
 import main.java.common.constants.DatabaseConstants;
 
 import java.sql.*;
@@ -9,7 +10,7 @@ import java.text.ParseException;
 import java.util.*;
 import java.util.Date;
 
-import static main.java.common.DateUtils.getDateByString;
+import static main.java.common.constants.DatabaseConstants.*;
 
 
 public class DatabaseController {
@@ -137,22 +138,25 @@ public class DatabaseController {
     public static void addProduct(Product product) {
         String id = product.getProductId();
         String name = product.getProductName();
+        int category = getCategoryIdByName(StringUtils.getStringWithSingleQuotes(product.getCategory().toString()));
         String price = product.getPrice();
         String expirationDate = DateUtils.formatDateToString(product.getExpirationDate()); //todo string casting might cause issues...need to check
         int currentAmount = product.getCurrentProductAmount();
         int requiredAmount = product.getRequiredAmount();
         String provider = product.getProviderId();
-        String sql = "INSERT INTO product(id,name,price,expiration_date,current_amount,required_amount,provider) VALUES(?,?,?,?,?,?,?)";
+        String sql = "INSERT INTO product(id,item_name,category,provider,price,expiration_date,current_amount,required_amount) VALUES(?,?,?,?,?,?,?,?)";
         Connection conn = DatabaseAccessManager.getConnection();
         try {
             PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, id);
             pstmt.setString(2, name);
-            pstmt.setString(3, price);
-            pstmt.setString(4, expirationDate);
-            pstmt.setInt(5, currentAmount);
-            pstmt.setInt(6, requiredAmount);
-            pstmt.setString(7, provider);
+            pstmt.setInt(3, category);
+            pstmt.setString(4, provider);
+            pstmt.setString(5, price);
+            pstmt.setString(6, expirationDate);
+            pstmt.setInt(7, currentAmount);
+            pstmt.setInt(8, requiredAmount);
+
             pstmt.executeUpdate();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -350,6 +354,24 @@ public class DatabaseController {
         return providersNames;
     }
 
+    public static Vector<String> getAllCategoryNames() {
+        Vector<String> categoryNames = new Vector<>();
+        String sql = "SELECT distinct "+ CATEGORIES_TABLE_CATEGORY_NAME_COLUMN +" FROM categories";
+        Connection conn = DatabaseAccessManager.getConnection();
+        try {
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
+            while (rs.next()) {
+                categoryNames.add(rs.getString(CATEGORIES_TABLE_CATEGORY_NAME_COLUMN));
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            DatabaseAccessManager.closeConnection(conn);
+        }
+        return categoryNames;
+    }
+
     public static void editOrder(int orderId, Order order) {
     }
 
@@ -414,6 +436,38 @@ public class DatabaseController {
         } finally {
             DatabaseAccessManager.closeConnection(conn);
         }
+    }
+
+    public static String getProviderIdByName(String providerName){
+        String providerId ="";
+        String sql = "SELECT "+ PROVIDER_TABLE_PROVIDER_ID_COLUMN +" FROM provider WHERE "+ PROVIDER_TABLE_COMPANY_NAME_COLUMN +"=" + providerName;
+        Connection conn = DatabaseAccessManager.getConnection();
+        try {
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            ResultSet rs = pstmt.executeQuery();
+            providerId = rs.getString(PROVIDER_TABLE_PROVIDER_ID_COLUMN);
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            DatabaseAccessManager.closeConnection(conn);
+        }
+        return providerId;
+    }
+
+    public static int getCategoryIdByName(String categoryName){
+        int categoryId = -1;
+        String sql = "SELECT "+ CATEGORIES_TABLE_CATEGORY_ID_COLUMN +" FROM categories WHERE "+ CATEGORIES_TABLE_CATEGORY_NAME_COLUMN +"=" + categoryName;
+        Connection conn = DatabaseAccessManager.getConnection();
+        try {
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            ResultSet rs = pstmt.executeQuery();
+            categoryId = rs.getInt(CATEGORIES_TABLE_CATEGORY_ID_COLUMN);
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            DatabaseAccessManager.closeConnection(conn);
+        }
+        return categoryId;
     }
 
     public static void editProvider(Provider provider, int providerId) {
