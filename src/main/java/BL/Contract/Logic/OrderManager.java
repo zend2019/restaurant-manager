@@ -27,13 +27,13 @@ public class OrderManager implements IOrderManager {
 
     @Override
     public Order GetOrder(int orderId) {
-        return DatabaseController.getOrder(orderId);
+        return DatabaseController.getOrderById(orderId);
     }
 
     @Override
     public void EditOrder(int orderId, Order order) {
 
-        Order existingOrder = DatabaseController.getOrder(orderId);
+        Order existingOrder = DatabaseController.getOrderById(orderId);
         if (order == null)
             throw new RestaurantManagerException("User already exist.");
         DatabaseController.editOrder(orderId, order);
@@ -49,7 +49,7 @@ public class OrderManager implements IOrderManager {
 
     @Override
     public void AddRatingPerOrder(int rating, int orderId) {
-        Order order = DatabaseController.getOrder(orderId);
+        Order order = DatabaseController.getOrderById(orderId);
         order.setRating(rating);
         DatabaseController.editOrder(orderId, order);
 
