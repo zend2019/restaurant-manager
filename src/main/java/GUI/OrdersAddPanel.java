@@ -1,8 +1,11 @@
 package main.java.GUI;
 
 import main.java.BL.Contract.Category;
+import main.java.common.StringUtils;
 import main.java.common.constants.Constants;
 import main.java.common.constants.DatabaseConstants;
+import main.java.common.constants.GUIConstants;
+import main.java.database.DatabaseController;
 
 import javax.swing.*;
 import javax.swing.border.BevelBorder;
@@ -403,21 +406,26 @@ public class OrdersAddPanel extends IWorkPanel{
 
     private HashMap buildSearchParameters() {
         HashMap searchParams = new HashMap();
-        //TODO: Add Providers
-        if(!categoryList.getSelectedItem().equals(Category.None))
-            searchParams.put(Constants.CATEGORY,categoryList.getSelectedItem());
-        if(!itemList.getSelectedItem().equals(Constants.EMPTY_FIELD))
+        //TODO: check columns are correct
+        if(!providersList.getSelectedItem().equals(GUIConstants.SELECT_FIELD))
+            searchParams.put(DatabaseConstants.PROVIDER_TABLE_PROVIDER_ID_COLUMN, StringUtils.getStringWithSingleQuotes(providersList.getSelectedItem().toString()));
+
+        if (!categoryList.getSelectedItem().equals(GUIConstants.SELECT_FIELD))
+            searchParams.put(DatabaseConstants.PRODUCT_TABLE_ITEM_CATEGORY_COLUMN, StringUtils.getStringWithSingleQuotes(categoryList.getSelectedItem().toString()));
+
+        if(!itemList.getSelectedItem().equals(GUIConstants.EMPTY_FIELD))
             searchParams.put(DatabaseConstants.PRODUCT_TABLE_ITEM_NAME_COLUMN,itemList.getSelectedItem());
-        if(!unitsTF.getText().equals(Constants.EMPTY_FIELD))
-            searchParams.put(Constants.AVAILABLE_UNITS,unitsTF.getText());
+
+        if(!unitsTF.getText().equals(GUIConstants.EMPTY_FIELD))
+            searchParams.put(DatabaseConstants.PRODUCT_TABLE_ITEM_CURRENT_AMOUNT_COLUMN,unitsTF.getText());
         return searchParams;
     }
 
     private boolean checkAtleastOneNotEmpty(){
         //TODO: Provider list
-        if(     !categoryList.getSelectedItem().equals(Category.None) ||
-                !itemList.getSelectedItem().equals(Constants.EMPTY_FIELD )||
-                !unitsTF.getText().equals(Constants.EMPTY_FIELD)
+        if(     !categoryList.getSelectedItem().equals(GUIConstants.SELECT_FIELD) ||
+                !itemList.getSelectedItem().equals(GUIConstants.EMPTY_FIELD )||
+                !unitsTF.getText().equals(GUIConstants.EMPTY_FIELD)
         )
             return true;
 

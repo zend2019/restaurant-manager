@@ -7,8 +7,10 @@ import javafx.scene.control.TablePosition;
 import javafx.scene.control.TableView;
 import main.java.BL.Contract.Category;
 import main.java.BL.Contract.OrderStatus;
+import main.java.common.StringUtils;
 import main.java.common.constants.Constants;
 import main.java.common.constants.DatabaseConstants;
+import main.java.common.constants.GUIConstants;
 
 import javax.swing.*;
 import javax.swing.event.ChangeListener;
@@ -330,27 +332,34 @@ public class OrdersSearchPanel extends IWorkPanel {
 
     private HashMap buildSearchParameters() {
         HashMap searchParams = new HashMap();
-        //TODO: Add Providers
-        if(!categoryList.getSelectedItem().equals(Category.None))
-            searchParams.put(Constants.CATEGORY,categoryList.getSelectedItem());
-        if(!itemList.getSelectedItem().equals(Constants.EMPTY_FIELD))
-            searchParams.put(DatabaseConstants.PRODUCT_TABLE_ITEM_NAME_COLUMN,itemList.getSelectedItem());
-        if(!orderIdTF.getText().equals(Constants.EMPTY_FIELD))
-            searchParams.put(Constants.ORDER_ID,orderIdTF.getText());
+        if(!providersList.getSelectedItem().equals(GUIConstants.SELECT_FIELD))
+            searchParams.put(DatabaseConstants.ORDERS_TABLE_PROVIDER_COLUMN, StringUtils.getStringWithSingleQuotes(providersList.getSelectedItem().toString()));
+
+        if (!categoryList.getSelectedItem().equals(GUIConstants.SELECT_FIELD))
+            searchParams.put(DatabaseConstants.PRODUCT_TABLE_ITEM_CATEGORY_COLUMN, StringUtils.getStringWithSingleQuotes(categoryList.getSelectedItem().toString()));
+
+        if(!itemList.getSelectedItem().equals(GUIConstants.EMPTY_FIELD)) //TODO: fix column names
+            searchParams.put(DatabaseConstants.ORDERS_TABLE_ORDER_ID_COLUMN,itemList.getSelectedItem());
+
+        if(!orderIdTF.getText().equals(GUIConstants.EMPTY_FIELD))
+            searchParams.put(DatabaseConstants.ORDERS_TABLE_ORDER_ID_COLUMN,orderIdTF.getText());
+
         if(deliveryDateChooser.getDate() != null)
-            searchParams.put(Constants.DELIVERY_DATE,deliveryDateChooser.getDate());
+            searchParams.put(DatabaseConstants.ORDERS_TABLE_DELIVERY_DATE_COLUMN,deliveryDateChooser.getDate());
+
         if(closedOrderCB.isSelected())
-            searchParams.put(Constants.ORDER_STATUS, OrderStatus.valueOf("delivered"));
+            searchParams.put(GUIConstants.ORDER_STATUS, OrderStatus.valueOf("delivered"));
+
         if(openOrderCB.isSelected())
-            searchParams.put(Constants.ORDER_STATUS,OrderStatus.valueOf("inProcess"));
+            searchParams.put(GUIConstants.ORDER_STATUS,OrderStatus.valueOf("inProcess"));
         return searchParams;
     }
 
     private boolean checkAtleastOneNotEmpty() {
-        //TODO: Provider list
-        if(     !categoryList.getSelectedItem().equals(Category.None) ||
-                !itemList.getSelectedItem().equals(Constants.EMPTY_FIELD )||
-                !orderIdTF.getText().equals(Constants.EMPTY_FIELD )||
+        if(     !providersList.getSelectedItem().equals(GUIConstants.SELECT_FIELD) ||
+                !categoryList.getSelectedItem().equals(GUIConstants.SELECT_FIELD) ||
+                !itemList.getSelectedItem().equals(GUIConstants.EMPTY_FIELD )||
+                !orderIdTF.getText().equals(GUIConstants.EMPTY_FIELD )||
                 deliveryDateChooser.getDate() != null ||
                 closedOrderCB.isSelected() ||
                 openOrderCB.isSelected()
