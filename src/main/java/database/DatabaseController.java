@@ -373,6 +373,24 @@ public class DatabaseController {
         return categoryNames;
     }
 
+    public static Vector<String> getAllProductsNames() {
+        Vector<String> productNames = new Vector<>();
+        String sql = "SELECT distinct "+ DatabaseConstants.PRODUCT_TABLE_ITEM_NAME_COLUMN +" FROM product";
+        Connection conn = DatabaseAccessManager.getConnection();
+        try {
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
+            while (rs.next()) {
+                productNames.add(rs.getString(DatabaseConstants.PRODUCT_TABLE_ITEM_NAME_COLUMN));
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            DatabaseAccessManager.closeConnection(conn);
+        }
+        return productNames;
+    }
+
     public static void editOrder(int orderId, Order order) {
     }
 
