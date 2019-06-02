@@ -9,7 +9,19 @@ public class GUIConstants {
     public static final JLabel ATLEAST_ONE_FIELD_REQUIRED = new JLabel("At least One field is required");
     public static final JLabel ITEM_ADDED = new JLabel("Item was added");
     public static final JLabel SEARCH_COMPLETED = new JLabel("Search completed");
+    public static final JLabel NO_RESULTS = new JLabel("No products matching the search");
     public static final JLabel EXCEED_LIMIT = new JLabel("Selection exceeded the limited amount");
+
+    //Label names//
+    public static final String PROVIDER = "Provider: ";
+    public static final String CATEGORY = "Category: ";
+    public static final String ITEM_NAME = "Item name: ";
+    public static final String AVAILABLE_AMOUNT = "Available amount: ";
+    public static final String REQUIRED_AMOUNT = "Required amount: ";
+    public static final String EXPIRATION_DATE = "Expiration date: ";
+    public static final String PRICE = "Price: ";
+    public static final String SEARCH = "Search";
+    public static final String ADD_PRODUCT = "Add Product";
 
     //Field options//
     public static final String SELECT_FIELD = "Select field";
