@@ -67,7 +67,7 @@ public class DatabaseController {
 //        hashMap.put("price", "25");
 //        hashMap.put("expiration_date", "'Fri Jan 01 00:00:00 IST 1993'");
 //        hashMap.put("current_amount", "21");
-        getListOfProviders(hashMap);
+        getListOfProducts(hashMap);
     }
 
     public static void addUser(User user) {
@@ -291,10 +291,10 @@ public class DatabaseController {
     delete from your_table;
     delete from sqlite_sequence where name='your_table';
      */
-    public static Vector<Product> getListOfProviders(HashMap hashMap) {
+    public static Vector<Product> getListOfProducts(HashMap hashMap) {
         String sql = "SELECT* FROM product WHERE " + getDynamicWhereQueryBuilder(hashMap);
         Connection conn = DatabaseAccessManager.getConnection();
-        Vector<Product> products = new Vector<>();
+        Vector<Product> productsList = new Vector<>();
 
         try {
             PreparedStatement pstmt = conn.prepareStatement(sql);
@@ -302,14 +302,15 @@ public class DatabaseController {
             while (rs.next()) {
 
                 Product product = new Product();
-                product.setProductId(rs.getString("id"));
+                product.setProductId(rs.getString(DatabaseConstants.PRODUCT_TABLE_ITEM_ID_COLUMN));
                 product.setProductName(rs.getString(DatabaseConstants.PRODUCT_TABLE_ITEM_NAME_COLUMN));
-                product.setPrice(rs.getString("price"));
-                product.setExpirationDate(DateUtils.getDateByString(rs.getString("expiration_date")));
-                product.setCurrentProductAmount(rs.getInt("current_amount"));
-                product.setRequiredAmount(rs.getInt("required_amount"));
-                product.setProviderId(rs.getString("provider"));
-                products.add(product);
+                product.setPrice(rs.getString(DatabaseConstants.PRODUCT_TABLE_ITEM_PRICE_COLUMN));
+                product.setCategory(Category.valueOf(rs.getString(DatabaseConstants.PRODUCT_TABLE_ITEM_CATEGORY_COLUMN)));
+                product.setExpirationDate(DateUtils.getDateByString(rs.getString(DatabaseConstants.PRODUCT_TABLE_ITEM_EXPIRATION_DATE_COLUMN)));
+                product.setCurrentProductAmount(rs.getInt(DatabaseConstants.PRODUCT_TABLE_ITEM_CURRENT_AMOUNT_COLUMN));
+                product.setRequiredAmount(rs.getInt(DatabaseConstants.PRODUCT_TABLE_ITEM_REQUIRED_AMOUNT_COLUMN));
+                product.setProviderId(rs.getString(DatabaseConstants.PRODUCT_TABLE_ITEM_PROVIDER_COLUMN));
+                productsList.add(product);
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -318,7 +319,7 @@ public class DatabaseController {
         } finally {
             DatabaseAccessManager.closeConnection(conn);
         }
-        return products;
+        return productsList;
     }
 
     private static String getDynamicWhereQueryBuilder(HashMap hashMap) {
@@ -452,6 +453,22 @@ public class DatabaseController {
             DatabaseAccessManager.closeConnection(conn);
         }
         return providerId;
+    }
+
+    public static String getProviderNameById(String providerId){
+        String providerName ="";
+        String sql = "SELECT "+ PROVIDER_TABLE_COMPANY_NAME_COLUMN +" FROM provider WHERE "+ PROVIDER_TABLE_PROVIDER_ID_COLUMN +"=" + providerId;
+        Connection conn = DatabaseAccessManager.getConnection();
+        try {
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            ResultSet rs = pstmt.executeQuery();
+            providerName = rs.getString(PROVIDER_TABLE_COMPANY_NAME_COLUMN);
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            DatabaseAccessManager.closeConnection(conn);
+        }
+        return providerName;
     }
 
     public static int getCategoryIdByName(String categoryName){
