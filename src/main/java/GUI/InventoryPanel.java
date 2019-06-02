@@ -18,10 +18,10 @@ import java.awt.event.ActionListener;
 import java.util.HashMap;
 import java.util.Vector;
 
+import static com.sun.org.apache.xml.internal.security.algorithms.JCEMapper.getProviderId;
 import static java.lang.Integer.valueOf;
 import static main.java.database.DatabaseController.getAllCategoryNames;
 import static main.java.database.DatabaseController.getAllProviderCompanyName;
-import static main.java.database.DatabaseController.getProviderIdByName;
 
 public class InventoryPanel extends IWorkPanel {
     private Product product;
@@ -61,13 +61,13 @@ public class InventoryPanel extends IWorkPanel {
 
     @Override
     protected void initialization() {
-        providerLabel = new JLabel("Provider: ");
-        categoryLabel = new JLabel("Category: ");
-        itemNameLabel = new JLabel("Item Name: ");
-        availableAmountLabel = new JLabel("Available amount: ");
-        currentAmountLabel = new JLabel("Required amount: ");
-        dateLabel = new JLabel("Expiration date: ");
-        priceLabel = new JLabel("Price: ");
+        providerLabel = new JLabel(GUIConstants.PROVIDER);
+        categoryLabel = new JLabel(GUIConstants.CATEGORY);
+        itemNameLabel = new JLabel(GUIConstants.ITEM_NAME);
+        availableAmountLabel = new JLabel(GUIConstants.AVAILABLE_AMOUNT);
+        currentAmountLabel = new JLabel(GUIConstants.REQUIRED_AMOUNT);
+        dateLabel = new JLabel(GUIConstants.EXPIRATION_DATE);
+        priceLabel = new JLabel(GUIConstants.PRICE);
         providersList = new JComboBox();
         categoryList = new JComboBox();
         itemNameTF = new JTextField(10);
@@ -75,8 +75,8 @@ public class InventoryPanel extends IWorkPanel {
         availableAmountTF = new JTextField(10);
         priceTF = new JTextField(10);
         dateChooser = new JDateChooser();
-        searchButton = new JButton("Search");
-        addButton = new JButton("Add Product");
+        searchButton = new JButton(GUIConstants.SEARCH);
+        addButton = new JButton(GUIConstants.ADD_PRODUCT);
         model = new DefaultTableModel(null, inventoryColumnNames);
         inventoryTable = new JTable(model);
         scrollTable = new JScrollPane(inventoryTable, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
@@ -255,6 +255,10 @@ public class InventoryPanel extends IWorkPanel {
         GUIConstants.SEARCH_COMPLETED.setVisible(false);
         searchPanel.add(GUIConstants.SEARCH_COMPLETED, gcSearchPanel);
 
+        GUIConstants.NO_RESULTS.setForeground(Color.blue);
+        GUIConstants.NO_RESULTS.setVisible(false);
+        searchPanel.add(GUIConstants.NO_RESULTS, gcSearchPanel);
+
         ///// align fields sizes //////
         Dimension fieldSize = itemNameTF.getPreferredSize();
         providersList.setPreferredSize(fieldSize);
@@ -287,22 +291,26 @@ public class InventoryPanel extends IWorkPanel {
             public void actionPerformed(ActionEvent e) {
                 if (checkAtleastOneNotEmpty()) {
                     setValidationLabelsVisibility(false);
-                    searchParams = buildSearchProductParameters();
-                    Vector<Product> x = DatabaseController.getListOfProviders(searchParams);
-                    //TODO: pass the search parameters to sql query builder, return the list of items
-                    Constants.SEARCHING.setVisible(true);
-                    model.setDataVector(convertProductVectorToInventoryMatrix(x), inventoryColumnNames); //Set the table with test data
+                    Vector<Product> x = DatabaseController.getListOfProducts(buildSearchProductParameters());
+                    if(x.size() == 0) {
+                        model.setDataVector(convertProductVectorToInventoryMatrix(x), inventoryColumnNames);
+                        GUIConstants.NO_RESULTS.setVisible(true);
+                    }
+                    else{
+                        setValidationLabelsVisibility(false);
+                        model.setDataVector(convertProductVectorToInventoryMatrix(x), inventoryColumnNames);
+                        GUIConstants.SEARCH_COMPLETED.setVisible(true);
+                    }
                 } else {
                     setValidationLabelsVisibility(false);
-                    Constants.ATLEAST_ONE_FIELD_REQUIRED.setVisible(true);
-                    //Constants.ALL_FIELDS_REQUIRED.setVisible(true);
+                    GUIConstants.ATLEAST_ONE_FIELD_REQUIRED.setVisible(true);
                 }
 
             }
         });
     }
 
-    //{"ID", "Item name", "Category", "Provider", "Available Amount", "Current Amount", "Expiration date"}
+    //{"ID", "Item name", "Category", "Provider", "Current amount", "Required amount", "Expiration date"};
     private String[][] convertProductVectorToInventoryMatrix(Vector<Product> productVector) {
         String[][] matrix = new String[productVector.size()][Constants.INVENTORY_MATRIX_COLUMNS];
         for (int i = 0; i < productVector.size(); i++) {
@@ -310,13 +318,14 @@ public class InventoryPanel extends IWorkPanel {
                     productVector.get(i).getProductId(),
                     productVector.get(i).getProductName(),
                     String.valueOf(productVector.get(i).getCategory()),
-                    productVector.get(i).getProviderId(),
+                    DatabaseController.getProviderNameById(productVector.get(i).getProviderId()),
                     String.valueOf(productVector.get(i).getCurrentProductAmount()),
                     String.valueOf(productVector.get(i).getRequiredAmount()),
                     DateUtils.formatDateToString(productVector.get(i).getExpirationDate())
             };
             matrix[i] = array;
         }
+
         return matrix;
     }
 
@@ -342,7 +351,7 @@ public class InventoryPanel extends IWorkPanel {
             searchParams.put(DatabaseConstants.PRODUCT_TABLE_ITEM_PROVIDER_COLUMN,StringUtils.getStringWithSingleQuotes(providersList.getSelectedItem().toString()));
 
         if (!categoryList.getSelectedItem().equals(GUIConstants.SELECT_FIELD))
-            searchParams.put(DatabaseConstants.PRODUCT_TABLE_ITEM_CATEGORY_COLUMN, DatabaseController.getCategoryIdByName(categoryList.getSelectedItem().toString()));
+            searchParams.put(DatabaseConstants.PRODUCT_TABLE_ITEM_CATEGORY_COLUMN, StringUtils.getStringWithSingleQuotes(categoryList.getSelectedItem().toString()));
 
         if (!itemNameTF.getText().equals(GUIConstants.EMPTY_FIELD))
             searchParams.put(DatabaseConstants.PRODUCT_TABLE_ITEM_NAME_COLUMN, StringUtils.getStringWithSingleQuotes(itemNameTF.getText()));
@@ -411,5 +420,6 @@ public class InventoryPanel extends IWorkPanel {
         GUIConstants.ATLEAST_ONE_FIELD_REQUIRED.setVisible(visibility);
         GUIConstants.ITEM_ADDED.setVisible(visibility);
         GUIConstants.SEARCH_COMPLETED.setVisible(visibility);
+        GUIConstants.NO_RESULTS.setVisible(visibility);
     }
 }
