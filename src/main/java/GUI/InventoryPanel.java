@@ -18,7 +18,6 @@ import java.awt.event.ActionListener;
 import java.util.HashMap;
 import java.util.Vector;
 
-import static com.sun.org.apache.xml.internal.security.algorithms.JCEMapper.getProviderId;
 import static java.lang.Integer.valueOf;
 import static main.java.database.DatabaseController.getAllCategoryNames;
 import static main.java.database.DatabaseController.getAllProviderCompanyName;
@@ -271,12 +270,12 @@ public class InventoryPanel extends IWorkPanel {
 
     private void setCurrentProvider() {
         providers = getAllProviderCompanyName();
-        providers.add(0, GUIConstants.SELECT_FIELD); //TODO: @ELINA fix in the hashmap isEmpty or something like..
+        providers.add(0, GUIConstants.SELECT_FIELD);
     }
 
     private void setCurrentCategories(){
         categories = getAllCategoryNames();
-        categories.add(0, GUIConstants.SELECT_FIELD); //TODO: @ELINA fix in the hashmap isEmpty or something like..
+        categories.add(0, GUIConstants.SELECT_FIELD);
     }
 
     @Override

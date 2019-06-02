@@ -1,11 +1,9 @@
 package main.java.GUI;
 
-import main.java.BL.Contract.Category;
 import main.java.common.StringUtils;
 import main.java.common.constants.Constants;
 import main.java.common.constants.DatabaseConstants;
 import main.java.common.constants.GUIConstants;
-import main.java.database.DatabaseController;
 
 import javax.swing.*;
 import javax.swing.border.BevelBorder;
@@ -19,6 +17,9 @@ import java.util.HashMap;
 import java.util.Vector;
 
 import static java.lang.Integer.valueOf;
+import static main.java.database.DatabaseController.getAllCategoryNames;
+import static main.java.database.DatabaseController.getAllProductsNames;
+import static main.java.database.DatabaseController.getAllProviderCompanyName;
 
 public class OrdersAddPanel extends IWorkPanel{
     private JLabel providerLabel;
@@ -46,6 +47,9 @@ public class OrdersAddPanel extends IWorkPanel{
     private EditItemDialog itemDialog;
     private OrderPlacedDialog orderPlacedDialog;
     private Integer orderSum = 0;
+    private Vector<String> providers;
+    private Vector<String> categories;
+    private Vector<String> items;
 
     //TEST FIELDS//
     HashMap searchParams = new HashMap();
@@ -54,8 +58,6 @@ public class OrdersAddPanel extends IWorkPanel{
     private String[][] testData ={{"555","Shubi","kabubi","shabubi","2","20.8.15","2"}
                                     ,{"123","Halo","this is dog","kuku","5","20.8.18","2"}};
     private String[] addOrderTest = {"11-22","milky","buku","kuku","5","2020","4"};
-    private String[] providers = {"1","2","3"};
-    private String[] items = {"","4","5","6"};
     private String orderItem;
     private int orderItemAmount;
 
@@ -70,19 +72,19 @@ public class OrdersAddPanel extends IWorkPanel{
 
     @Override
     protected void initialization() {
-        providerLabel = new JLabel("Provider: ");
-        categoryLabel = new JLabel("Category: ");
-        itemNameLabel = new JLabel("Item name: ");
-        unitsLabel = new JLabel("Available Units: ");
-        orderSumLabel = new JLabel("Order Sum: ");
-        orderSumFieldLabel = new JLabel("0");
+        providerLabel = new JLabel(GUIConstants.PROVIDER);
+        categoryLabel = new JLabel(GUIConstants.CATEGORY);
+        itemNameLabel = new JLabel(GUIConstants.ITEM_NAME);
+        unitsLabel = new JLabel(GUIConstants.AVAILABLE_AMOUNT);
+        orderSumLabel = new JLabel(GUIConstants.ORDER_SUM);
+        orderSumFieldLabel = new JLabel(GUIConstants.ZERO);
         providersList = new JComboBox();
         categoryList = new JComboBox();
         itemList = new JComboBox();
         unitsTF = new JTextField(10);
-        searchItemButton = new JButton("Search Item");
-        placeOrderButton = new JButton("Place Order");
-        model = new DefaultTableModel(testData,orderColumnNames);
+        searchItemButton = new JButton(GUIConstants.SEARCH);
+        placeOrderButton = new JButton(GUIConstants.PLACE_ORDER);
+        model = new DefaultTableModel(null,orderColumnNames);
         itemsTable = new JTable(testData,itemsColumnNames){
             public boolean isCellEditable(int row, int column){
             return false;
@@ -198,9 +200,12 @@ public class OrdersAddPanel extends IWorkPanel{
     @Override
     protected void setSearchPanelLayout() {
         /////// Set combo-box ///////
+        setCurrentProvider();//TODO: should be adjusted live and not only when running the app first
+        setCurrentCategories(); //TODO: same here
+        setCurrentItems();//TODO: same here
         DefaultComboBoxModel providersModel = new DefaultComboBoxModel(providers);
         providersList.setModel(providersModel);
-        DefaultComboBoxModel categoryModel = new DefaultComboBoxModel(Category.values());
+        DefaultComboBoxModel categoryModel = new DefaultComboBoxModel(categories);
         categoryList.setModel(categoryModel);
         DefaultComboBoxModel itemsModel = new DefaultComboBoxModel(items);
         itemList.setModel(itemsModel);
@@ -260,9 +265,18 @@ public class OrdersAddPanel extends IWorkPanel{
 
         gcSearchPanel.gridx = 4;
         gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_START;
-        searchPanel.add(Constants.ATLEAST_ONE_FIELD_REQUIRED,gcSearchPanel);
-        Constants.ATLEAST_ONE_FIELD_REQUIRED.setForeground(Color.red);
-        Constants.ATLEAST_ONE_FIELD_REQUIRED.setVisible(false);
+
+        GUIConstants.ATLEAST_ONE_FIELD_REQUIRED.setForeground(Color.red);
+        GUIConstants.ATLEAST_ONE_FIELD_REQUIRED.setVisible(false);
+        searchPanel.add(GUIConstants.ATLEAST_ONE_FIELD_REQUIRED,gcSearchPanel);
+
+        GUIConstants.SEARCH_COMPLETED.setForeground(Color.blue);
+        GUIConstants.SEARCH_COMPLETED.setVisible(false);
+        searchPanel.add(GUIConstants.SEARCH_COMPLETED, gcSearchPanel);
+
+        GUIConstants.NO_RESULTS.setForeground(Color.blue);
+        GUIConstants.NO_RESULTS.setVisible(false);
+        searchPanel.add(GUIConstants.NO_RESULTS, gcSearchPanel);
 
         ///// align fields sizes //////
         Dimension fieldSize = unitsTF.getPreferredSize();
@@ -270,6 +284,21 @@ public class OrdersAddPanel extends IWorkPanel{
         categoryList.setPreferredSize(fieldSize);
         itemList.setPreferredSize(fieldSize);
         searchItemButton.setPreferredSize(fieldSize);
+    }
+
+    private void setCurrentItems() {
+        items = getAllProductsNames();
+        items.add(0,GUIConstants.SELECT_FIELD);
+    }
+
+    private void setCurrentProvider() {
+        providers = getAllProviderCompanyName();
+        providers.add(0, GUIConstants.SELECT_FIELD);
+    }
+
+    private void setCurrentCategories(){
+        categories = getAllCategoryNames();
+        categories.add(0, GUIConstants.SELECT_FIELD);
     }
 
     protected void setPlaceOrderLayout(){
