@@ -242,9 +242,9 @@ public class InventoryPanel extends IWorkPanel {
         GUIConstants.ALL_FIELDS_REQUIRED.setVisible(false);
         searchPanel.add(GUIConstants.ALL_FIELDS_REQUIRED, gcSearchPanel);
 
+        searchPanel.add(GUIConstants.ATLEAST_ONE_FIELD_REQUIRED, gcSearchPanel);
         GUIConstants.ATLEAST_ONE_FIELD_REQUIRED.setForeground(Color.red);
         GUIConstants.ATLEAST_ONE_FIELD_REQUIRED.setVisible(false);
-        searchPanel.add(GUIConstants.ATLEAST_ONE_FIELD_REQUIRED, gcSearchPanel);
 
         GUIConstants.ITEM_ADDED.setForeground(Color.blue);
         GUIConstants.ITEM_ADDED.setVisible(false);
@@ -300,7 +300,8 @@ public class InventoryPanel extends IWorkPanel {
                         model.setDataVector(convertProductVectorToInventoryMatrix(x), inventoryColumnNames);
                         GUIConstants.SEARCH_COMPLETED.setVisible(true);
                     }
-                } else {
+                }
+                else {
                     setValidationLabelsVisibility(false);
                     GUIConstants.ATLEAST_ONE_FIELD_REQUIRED.setVisible(true);
                 }
@@ -308,6 +309,23 @@ public class InventoryPanel extends IWorkPanel {
             }
         });
     }
+
+    private void setAddButton() {
+        addButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (!checkNoEmptyFields()) {
+                    setValidationLabelsVisibility(false);
+                    GUIConstants.ALL_FIELDS_REQUIRED.setVisible(true);
+                } else {
+                    setValidationLabelsVisibility(false);
+                    DatabaseController.addProduct(getProductProperties());
+                    GUIConstants.ITEM_ADDED.setVisible(true);
+                }
+            }
+        });
+    }
+
 
     //{"ID", "Item name", "Category", "Provider", "Current amount", "Required amount", "Expiration date"};
     private String[][] convertProductVectorToInventoryMatrix(Vector<Product> productVector) {
@@ -347,7 +365,7 @@ public class InventoryPanel extends IWorkPanel {
     private HashMap buildSearchProductParameters() {
         HashMap searchParams = new HashMap();
         if(!providersList.getSelectedItem().equals(GUIConstants.SELECT_FIELD))
-            searchParams.put(DatabaseConstants.PRODUCT_TABLE_ITEM_PROVIDER_COLUMN,StringUtils.getStringWithSingleQuotes(providersList.getSelectedItem().toString()));
+            searchParams.put(DatabaseConstants.PRODUCT_TABLE_ITEM_PROVIDER_COLUMN,DatabaseController.getProviderIdByName(StringUtils.getStringWithSingleQuotes(providersList.getSelectedItem().toString())));
 
         if (!categoryList.getSelectedItem().equals(GUIConstants.SELECT_FIELD))
             searchParams.put(DatabaseConstants.PRODUCT_TABLE_ITEM_CATEGORY_COLUMN, StringUtils.getStringWithSingleQuotes(categoryList.getSelectedItem().toString()));
@@ -370,21 +388,6 @@ public class InventoryPanel extends IWorkPanel {
         return searchParams;
     }
 
-    private void setAddButton() {
-        addButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (!checkNoEmptyFields()) {
-                    setValidationLabelsVisibility(false);
-                    GUIConstants.ALL_FIELDS_REQUIRED.setVisible(true);
-                } else {
-                    setValidationLabelsVisibility(false);
-                    DatabaseController.addProduct(getProductProperties());
-                    GUIConstants.ITEM_ADDED.setVisible(true);
-                }
-            }
-        });
-    }
 
     private boolean checkNoEmptyFields() {
         if (    !providersList.getSelectedItem().equals(GUIConstants.SELECT_FIELD) &&
