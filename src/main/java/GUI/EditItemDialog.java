@@ -1,6 +1,7 @@
 package main.java.GUI;
 
 import main.java.common.constants.Constants;
+import main.java.common.constants.GUIConstants;
 
 import javax.swing.*;
 import java.awt.*;
@@ -11,6 +12,7 @@ import static java.lang.Integer.valueOf;
 
 public class EditItemDialog extends JDialog {
     private JLabel numOfItemsLabel = new JLabel("Items to add? ");
+    private JLabel exceedLimit = new JLabel(GUIConstants.EXCEED_LIMIT);
     private JTextField numOfItemsTF = new JTextField();
     private JButton addButton = new JButton("Add");
     private DialogListener dialogListener;
@@ -55,9 +57,9 @@ public class EditItemDialog extends JDialog {
         gcMain.gridwidth = 3;
         gcMain.gridx = 0;
         gcMain.anchor = GridBagConstraints.CENTER;
-        add(Constants.EXCEED_LIMIT,gcMain);
-        Constants.EXCEED_LIMIT.setForeground(Color.red);
-        Constants.EXCEED_LIMIT.setVisible(false);
+        add(exceedLimit,gcMain);
+        exceedLimit.setForeground(Color.red);
+        exceedLimit.setVisible(false);
 
         ///// align fields sizes //////
         Dimension dim = new Dimension(60,7);

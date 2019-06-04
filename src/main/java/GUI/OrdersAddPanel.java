@@ -28,6 +28,7 @@ public class OrdersAddPanel extends IWorkPanel{
     private JLabel unitsLabel;
     private JLabel orderSumLabel;
     private JLabel orderSumFieldLabel;
+    private JLabel oneRequired;
     private JComboBox providersList;
     private JComboBox categoryList;
     private JComboBox itemList;
@@ -78,6 +79,7 @@ public class OrdersAddPanel extends IWorkPanel{
         unitsLabel = new JLabel(GUIConstants.AVAILABLE_AMOUNT);
         orderSumLabel = new JLabel(GUIConstants.ORDER_SUM);
         orderSumFieldLabel = new JLabel(GUIConstants.ZERO);
+        oneRequired = new JLabel(GUIConstants.ATLEAST_ONE_FIELD_REQUIRED);
         providersList = new JComboBox();
         categoryList = new JComboBox();
         itemList = new JComboBox();
@@ -266,10 +268,11 @@ public class OrdersAddPanel extends IWorkPanel{
         gcSearchPanel.gridx = 4;
         gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_START;
 
-        GUIConstants.ATLEAST_ONE_FIELD_REQUIRED.setForeground(Color.red);
-        GUIConstants.ATLEAST_ONE_FIELD_REQUIRED.setVisible(false);
-        searchPanel.add(GUIConstants.ATLEAST_ONE_FIELD_REQUIRED,gcSearchPanel);
+        oneRequired.setForeground(Color.red);
+        oneRequired.setVisible(false);
+        searchPanel.add(oneRequired,gcSearchPanel);
 
+        /*
         GUIConstants.SEARCH_COMPLETED.setForeground(Color.blue);
         GUIConstants.SEARCH_COMPLETED.setVisible(false);
         searchPanel.add(GUIConstants.SEARCH_COMPLETED, gcSearchPanel);
@@ -277,7 +280,7 @@ public class OrdersAddPanel extends IWorkPanel{
         GUIConstants.NO_RESULTS.setForeground(Color.blue);
         GUIConstants.NO_RESULTS.setVisible(false);
         searchPanel.add(GUIConstants.NO_RESULTS, gcSearchPanel);
-
+*/
         ///// align fields sizes //////
         Dimension fieldSize = unitsTF.getPreferredSize();
         providersList.setPreferredSize(fieldSize);
@@ -426,7 +429,7 @@ public class OrdersAddPanel extends IWorkPanel{
                 }
                 else{
                     setValidationLabelsVisibility(false);
-                    Constants.ATLEAST_ONE_FIELD_REQUIRED.setVisible(true);
+                    oneRequired.setVisible(true);
                 }
 
             }
@@ -464,6 +467,6 @@ public class OrdersAddPanel extends IWorkPanel{
 
     @Override
     protected void setValidationLabelsVisibility(boolean visibility) {
-        Constants.ATLEAST_ONE_FIELD_REQUIRED.setVisible(visibility);
+        oneRequired.setVisible(visibility);
     }
 }
