@@ -322,6 +322,12 @@ public class DatabaseController {
         return productsList;
     }
 
+    //TODO: add by the query:
+    //SELECT order_id,product.provider,total_amount,order_status,delivery_date
+    //FROM ordered_items JOIN product ON product.id=ordered_items.item_id
+    //JOIN orders ON ordered_items.order_id=orders.id
+    //public static Vector<Order> getListOfOrders(HashMap hashMap){}
+
     private static String getDynamicWhereQueryBuilder(HashMap hashMap) {
         StringBuilder whereQuery;
         Iterator it = hashMap.entrySet().iterator();
