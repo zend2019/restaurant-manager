@@ -9,4 +9,5 @@ public class Constants {
 
     //Field names//
     public static final int INVENTORY_MATRIX_COLUMNS = 7;
+    public static final int ORDER_MATRIX_COLUMNS = 6;
 }

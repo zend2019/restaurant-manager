@@ -26,7 +26,9 @@ public class DatabaseConstants {
     public static final String ORDERS_TABLE_PRODUCT_TYPE_COLUMN = "product_type";
     public static final String ORDERS_TABLE_PROVIDER_COLUMN = "provider";
     public static final String ORDERS_TABLE_DELIVERY_DATE_COLUMN = "delivery_date";
+    public static final String ORDERS_TABLE_ORDER_DATE_COLUMN = "order_date";
     public static final String ORDERS_TABLE_TOTAL_AMOUNT_COLUMN = "total_amount";
+    public static final String ORDERS_TABLE_ORDER_STATUS_COLUMN = "order_status";
 
     //Ordered items table//
     public static final String ORDERED_ITEMS_TABLE_ID_COLUMN = "id";

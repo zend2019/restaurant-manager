@@ -1,7 +1,10 @@
 package main.java.GUI;
 
 import com.toedter.calendar.JDateChooser;
+import main.java.BL.Contract.Order;
 import main.java.BL.Contract.OrderStatus;
+import main.java.BL.Contract.Product;
+import main.java.common.DateUtils;
 import main.java.common.StringUtils;
 import main.java.common.constants.Constants;
 import main.java.common.constants.DatabaseConstants;
@@ -18,6 +21,7 @@ import java.awt.event.ActionListener;
 import java.util.HashMap;
 import java.util.Vector;
 
+import static java.lang.String.valueOf;
 import static main.java.database.DatabaseController.getAllCategoryNames;
 import static main.java.database.DatabaseController.getAllProviderCompanyName;
 
@@ -45,6 +49,7 @@ public class OrdersSearchPanel extends IWorkPanel {
     private JTable ordersTable;
     private JTable itemsTable;
     private DefaultTableModel itemsTableModel;
+    private DefaultTableModel ordersTableModel;
     private JScrollPane scrollOrdersTable;
     private JScrollPane scrollItemsTable;
     private JPanel searchPanel;
@@ -53,15 +58,15 @@ public class OrdersSearchPanel extends IWorkPanel {
     private JPanel tablesPanel;
     private Vector<String> providers;
     private Vector<String> categories;
-    private Vector<String> items;
+    //private Vector<String> items;
 
     //TEST FIELDS//
     private HashMap searchParams = new HashMap();
-    private String[] itemsColumnNames = {"ID","Item name","Category","Provider","Current amount","Cost","Expiration date"};
+    private String[] itemsColumnNames = {"ID","Item name","Category","Provider","Ordered Amount","Cost"};
     private String[][] items1TestData = {{"1313","kuku","dairy","Shufersal","5","451","15.12.2020"}
                                         ,{"1314","lolo","meat","mega","57","41","21.01.2020"}};
     private String[][] items2TestData = {{"1300","shubu","uniform","castro","5","200","N/A"}};
-    private String[] ordersColumnNames = {"Order ID","Provider ID","Total amount","Delivery status","Order Date","Delivery Date"};
+    private String[] ordersColumnNames = {"Order ID","Provider ID","Total amount","Order status","Order Date","Delivery Date"};
     private String[][] order1TestData ={{"555","2","999","Closed","10.05.19","15.05.19"}
                                         ,{"44","1","23","Closed","11.05.19","14.05.19"}};
 
@@ -96,8 +101,9 @@ public class OrdersSearchPanel extends IWorkPanel {
         orderIdTF = new JTextField(10);
         searchOrderButton = new JButton(GUIConstants.SEARCH_ORDER);
         itemsTableModel = new DefaultTableModel(null, itemsColumnNames);
-        ordersTable = new JTable(order1TestData, ordersColumnNames);
         itemsTable = new JTable(itemsTableModel);
+        ordersTableModel = new DefaultTableModel(null,ordersColumnNames);
+        ordersTable = new JTable(ordersTableModel);
         scrollOrdersTable = new JScrollPane(ordersTable,JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         scrollItemsTable = new JScrollPane(itemsTable,JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         searchPanel = new JPanel();
@@ -372,7 +378,22 @@ public class OrdersSearchPanel extends IWorkPanel {
                 if(checkAtleastOneNotEmpty()){
                     setValidationLabelsVisibility(false);
                     searchParams = buildSearchParameters();
-                    //TODO: call method that will use the search params and return the right data
+                    //TODO: method returns Vector<Order> by the query
+                    //SELECT order_id,product.provider,total_amount,order_status,delivery_date
+                    //FROM ordered_items JOIN product ON product.id=ordered_items.item_id
+                    //JOIN orders ON ordered_items.order_id=orders.id
+                    /*
+                    Vector<Order> x = DatabaseController.getListOfOrders(buildSearchProductParameters());
+                    if(x.size() == 0) {
+                        ordersTableModel.setDataVector(convertOrderVectorToOrderMatrix(x), ordersColumnNames);
+                        noResults.setVisible(true);
+                    }
+                    else{
+                        setValidationLabelsVisibility(false);
+                        ordersTableModel.setDataVector(convertOrderVectorToOrderMatrix(x), ordersColumnNames);
+                        searchCompleted.setVisible(true);
+                    }
+                    */
                 }
                 else{
                     setValidationLabelsVisibility(false);
@@ -383,28 +404,50 @@ public class OrdersSearchPanel extends IWorkPanel {
         });
     }
 
+    //{"Order ID","Provider ID","Total amount","Order status","Order Date","Delivery Date"};
+    private String[][] convertOrderVectorToOrderMatrix(Vector<Order> orderVector) {
+        String[][] matrix = new String[orderVector.size()][Constants.ORDER_MATRIX_COLUMNS];
+        for (int i = 0; i < orderVector.size(); i++) {
+            String[] array = {
+                    orderVector.get(i).getOrderId().toString(),
+                    //orderVector.get(i).getProvider(), //TODO: is it ID or name??? should be Id
+                    orderVector.get(i).getTotalAmount().toString(),
+                    String.valueOf(orderVector.get(i).getOrderStatus()),
+                    //TODO: add order date
+                    DateUtils.formatDateToString(orderVector.get(i).getDeliveryDate())
+            };
+            matrix[i] = array;
+        }
+
+        return matrix;
+    }
+
+    //search query will JOIN ordered_items, product, orders
     private HashMap buildSearchParameters() {
         HashMap searchParams = new HashMap();
         if(!providersList.getSelectedItem().equals(GUIConstants.SELECT_FIELD))
-            searchParams.put(DatabaseConstants.ORDERS_TABLE_PROVIDER_COLUMN, DatabaseController.getProviderIdByName(StringUtils.getStringWithSingleQuotes(providersList.getSelectedItem().toString())));
+            searchParams.put("product."+DatabaseConstants.PRODUCT_TABLE_ITEM_PROVIDER_COLUMN, DatabaseController.getProviderIdByName(StringUtils.getStringWithSingleQuotes(providersList.getSelectedItem().toString())));
 
         if (!categoryList.getSelectedItem().equals(GUIConstants.SELECT_FIELD))
             searchParams.put(DatabaseConstants.PRODUCT_TABLE_ITEM_CATEGORY_COLUMN, StringUtils.getStringWithSingleQuotes(categoryList.getSelectedItem().toString()));
 
-        if(!itemNameTF.getText().equals(GUIConstants.EMPTY_FIELD)) //TODO: fix column names
-            searchParams.put(DatabaseConstants.ORDERS_TABLE_ORDER_ID_COLUMN,itemNameTF.getText());
+        if(!itemNameTF.getText().equals(GUIConstants.EMPTY_FIELD))
+            searchParams.put(DatabaseConstants.PRODUCT_TABLE_ITEM_NAME_COLUMN,itemNameTF.getText());
 
         if(!orderIdTF.getText().equals(GUIConstants.EMPTY_FIELD))
-            searchParams.put(DatabaseConstants.ORDERS_TABLE_ORDER_ID_COLUMN,orderIdTF.getText());
+            searchParams.put(DatabaseConstants.ORDERED_ITEMS_TABLE_ORDER_ID_COLUMN,orderIdTF.getText());
+
+        if(orderDateChooser.getDate() != null)
+            searchParams.put(DatabaseConstants.ORDERS_TABLE_ORDER_DATE_COLUMN, DateUtils.formatDateToString(deliveryDateChooser.getDate()));
 
         if(deliveryDateChooser.getDate() != null)
-            searchParams.put(DatabaseConstants.ORDERS_TABLE_DELIVERY_DATE_COLUMN,deliveryDateChooser.getDate());
+            searchParams.put(DatabaseConstants.ORDERS_TABLE_DELIVERY_DATE_COLUMN,DateUtils.formatDateToString(deliveryDateChooser.getDate()));
 
         if(closedOrderCB.isSelected())
-            searchParams.put(GUIConstants.ORDER_STATUS, OrderStatus.valueOf("delivered"));
+            searchParams.put(DatabaseConstants.ORDERS_TABLE_ORDER_STATUS_COLUMN, OrderStatus.valueOf("delivered"));
 
         if(openOrderCB.isSelected())
-            searchParams.put(GUIConstants.ORDER_STATUS,OrderStatus.valueOf("inProcess"));
+            searchParams.put(DatabaseConstants.ORDERS_TABLE_ORDER_STATUS_COLUMN,OrderStatus.valueOf("inProcess"));
         return searchParams;
     }
 
