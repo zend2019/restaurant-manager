@@ -6,6 +6,7 @@ import main.java.common.StringUtils;
 import main.java.common.constants.Constants;
 import main.java.common.constants.DatabaseConstants;
 import main.java.common.constants.GUIConstants;
+import main.java.database.DatabaseController;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -385,7 +386,7 @@ public class OrdersSearchPanel extends IWorkPanel {
     private HashMap buildSearchParameters() {
         HashMap searchParams = new HashMap();
         if(!providersList.getSelectedItem().equals(GUIConstants.SELECT_FIELD))
-            searchParams.put(DatabaseConstants.ORDERS_TABLE_PROVIDER_COLUMN, StringUtils.getStringWithSingleQuotes(providersList.getSelectedItem().toString()));
+            searchParams.put(DatabaseConstants.ORDERS_TABLE_PROVIDER_COLUMN, DatabaseController.getProviderIdByName(StringUtils.getStringWithSingleQuotes(providersList.getSelectedItem().toString())));
 
         if (!categoryList.getSelectedItem().equals(GUIConstants.SELECT_FIELD))
             searchParams.put(DatabaseConstants.PRODUCT_TABLE_ITEM_CATEGORY_COLUMN, StringUtils.getStringWithSingleQuotes(categoryList.getSelectedItem().toString()));
