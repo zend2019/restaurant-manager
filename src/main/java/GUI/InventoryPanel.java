@@ -31,6 +31,11 @@ public class InventoryPanel extends IWorkPanel {
     private JLabel currentAmountLabel;
     private JLabel dateLabel;
     private JLabel priceLabel;
+    private JLabel allRequired;
+    private JLabel oneRequired;
+    private JLabel itemAdded;
+    private JLabel noResults;
+    private JLabel searchCompleted;
     private JComboBox providersList;
     private JComboBox categoryList;
     private JTextField itemNameTF;
@@ -60,6 +65,11 @@ public class InventoryPanel extends IWorkPanel {
 
     @Override
     protected void initialization() {
+        allRequired = new JLabel(GUIConstants.ALL_FIELDS_REQUIRED);
+        oneRequired = new JLabel(GUIConstants.ATLEAST_ONE_FIELD_REQUIRED);
+        itemAdded = new JLabel(GUIConstants.ITEM_ADDED);
+        noResults = new JLabel(GUIConstants.NO_RESULTS);
+        searchCompleted = new JLabel(GUIConstants.SEARCH_COMPLETED);
         providerLabel = new JLabel(GUIConstants.PROVIDER);
         categoryLabel = new JLabel(GUIConstants.CATEGORY);
         itemNameLabel = new JLabel(GUIConstants.ITEM_NAME);
@@ -128,13 +138,8 @@ public class InventoryPanel extends IWorkPanel {
 
     @Override
     protected void setSearchPanelLayout() {
-        /////// Set combo-box ///////
-        setCurrentProvider();//TODO: should be adjusted live and not only when running the app first
-        setCurrentCategories(); //TODO: same here
-        DefaultComboBoxModel providersModel = new DefaultComboBoxModel(providers);
-        providersList.setModel(providersModel);
-        DefaultComboBoxModel categoryModel = new DefaultComboBoxModel(categories);
-        categoryList.setModel(categoryModel);
+
+        setComboBoxes();
 
         searchPanel.setBorder(BorderFactory.createTitledBorder("Inventory"));
         searchPanel.setLayout(new GridBagLayout());
@@ -238,34 +243,45 @@ public class InventoryPanel extends IWorkPanel {
         gcSearchPanel.gridx = 3;
         gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_START;
 
-        GUIConstants.ALL_FIELDS_REQUIRED.setForeground(Color.red);
-        GUIConstants.ALL_FIELDS_REQUIRED.setVisible(false);
-        searchPanel.add(GUIConstants.ALL_FIELDS_REQUIRED, gcSearchPanel);
+        allRequired.setForeground(Color.red);
+        allRequired.setVisible(false);
+        searchPanel.add(allRequired, gcSearchPanel);
 
-        searchPanel.add(GUIConstants.ATLEAST_ONE_FIELD_REQUIRED, gcSearchPanel);
-        GUIConstants.ATLEAST_ONE_FIELD_REQUIRED.setForeground(Color.red);
-        GUIConstants.ATLEAST_ONE_FIELD_REQUIRED.setVisible(false);
+        searchPanel.add(oneRequired, gcSearchPanel);
+        oneRequired.setForeground(Color.red);
+        oneRequired.setVisible(false);
 
-        GUIConstants.ITEM_ADDED.setForeground(Color.blue);
-        GUIConstants.ITEM_ADDED.setVisible(false);
-        searchPanel.add(GUIConstants.ITEM_ADDED, gcSearchPanel);
+        itemAdded.setForeground(Color.blue);
+        itemAdded.setVisible(false);
+        searchPanel.add(itemAdded, gcSearchPanel);
 
-        GUIConstants.SEARCH_COMPLETED.setForeground(Color.blue);
-        GUIConstants.SEARCH_COMPLETED.setVisible(false);
-        searchPanel.add(GUIConstants.SEARCH_COMPLETED, gcSearchPanel);
+        searchCompleted.setForeground(Color.blue);
+        searchCompleted.setVisible(false);
+        searchPanel.add(searchCompleted, gcSearchPanel);
 
-        GUIConstants.NO_RESULTS.setForeground(Color.blue);
-        GUIConstants.NO_RESULTS.setVisible(false);
-        searchPanel.add(GUIConstants.NO_RESULTS, gcSearchPanel);
+        noResults.setForeground(Color.blue);
+        noResults.setVisible(false);
+        searchPanel.add(noResults, gcSearchPanel);
 
-        ///// align fields sizes //////
+        alignFieldSizes();
+    }
+
+    private void alignFieldSizes() {
         Dimension fieldSize = itemNameTF.getPreferredSize();
         providersList.setPreferredSize(fieldSize);
         categoryList.setPreferredSize(fieldSize);
         addButton.setPreferredSize(fieldSize);
         searchButton.setPreferredSize(fieldSize);
         dateChooser.setPreferredSize(fieldSize);
+    }
 
+    private void setComboBoxes() {
+        setCurrentProvider();//TODO: should be adjusted live and not only when running the app first
+        setCurrentCategories(); //TODO: same here
+        DefaultComboBoxModel providersModel = new DefaultComboBoxModel(providers);
+        providersList.setModel(providersModel);
+        DefaultComboBoxModel categoryModel = new DefaultComboBoxModel(categories);
+        categoryList.setModel(categoryModel);
     }
 
     private void setCurrentProvider() {
@@ -293,17 +309,17 @@ public class InventoryPanel extends IWorkPanel {
                     Vector<Product> x = DatabaseController.getListOfProducts(buildSearchProductParameters());
                     if(x.size() == 0) {
                         model.setDataVector(convertProductVectorToInventoryMatrix(x), inventoryColumnNames);
-                        GUIConstants.NO_RESULTS.setVisible(true);
+                        noResults.setVisible(true);
                     }
                     else{
                         setValidationLabelsVisibility(false);
                         model.setDataVector(convertProductVectorToInventoryMatrix(x), inventoryColumnNames);
-                        GUIConstants.SEARCH_COMPLETED.setVisible(true);
+                        searchCompleted.setVisible(true);
                     }
                 }
                 else {
                     setValidationLabelsVisibility(false);
-                    GUIConstants.ATLEAST_ONE_FIELD_REQUIRED.setVisible(true);
+                    oneRequired.setVisible(true);
                 }
 
             }
@@ -316,16 +332,15 @@ public class InventoryPanel extends IWorkPanel {
             public void actionPerformed(ActionEvent e) {
                 if (!checkNoEmptyFields()) {
                     setValidationLabelsVisibility(false);
-                    GUIConstants.ALL_FIELDS_REQUIRED.setVisible(true);
+                    allRequired.setVisible(true);
                 } else {
                     setValidationLabelsVisibility(false);
                     DatabaseController.addProduct(getProductProperties());
-                    GUIConstants.ITEM_ADDED.setVisible(true);
+                    itemAdded.setVisible(true);
                 }
             }
         });
     }
-
 
     //{"ID", "Item name", "Category", "Provider", "Current amount", "Required amount", "Expiration date"};
     private String[][] convertProductVectorToInventoryMatrix(Vector<Product> productVector) {
@@ -418,10 +433,10 @@ public class InventoryPanel extends IWorkPanel {
 
     @Override
     protected void setValidationLabelsVisibility(boolean visibility) {
-        GUIConstants.ALL_FIELDS_REQUIRED.setVisible(visibility);
-        GUIConstants.ATLEAST_ONE_FIELD_REQUIRED.setVisible(visibility);
-        GUIConstants.ITEM_ADDED.setVisible(visibility);
-        GUIConstants.SEARCH_COMPLETED.setVisible(visibility);
-        GUIConstants.NO_RESULTS.setVisible(visibility);
+        allRequired.setVisible(visibility);
+        oneRequired.setVisible(visibility);
+        itemAdded.setVisible(visibility);
+        searchCompleted.setVisible(visibility);
+        noResults.setVisible(visibility);
     }
 }

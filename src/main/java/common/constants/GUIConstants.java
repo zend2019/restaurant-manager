@@ -4,13 +4,13 @@ import javax.swing.*;
 
 public class GUIConstants {
     //GUI labels//
-    public static final JLabel FIELD_REQUIRED = new JLabel("Field is required");
-    public static final JLabel ALL_FIELDS_REQUIRED = new JLabel("All fields are required");
-    public static final JLabel ATLEAST_ONE_FIELD_REQUIRED = new JLabel("At least One field is required");
-    public static final JLabel ITEM_ADDED = new JLabel("Item was added");
-    public static final JLabel SEARCH_COMPLETED = new JLabel("Search completed");
-    public static final JLabel NO_RESULTS = new JLabel("No products matching the search");
-    public static final JLabel EXCEED_LIMIT = new JLabel("Selection exceeded the limited amount");
+    public static final String FIELD_REQUIRED = "Field is required";
+    public static final String ALL_FIELDS_REQUIRED = "All fields are required";
+    public static final String ATLEAST_ONE_FIELD_REQUIRED = "At least One field is required";
+    public static final String ITEM_ADDED = "Item was added";
+    public static final String SEARCH_COMPLETED = "Search completed";
+    public static final String NO_RESULTS = "No products matching the search";
+    public static final String EXCEED_LIMIT = "Selection exceeded the limited amount";
 
     //Label names//
     public static final String PROVIDER = "Provider: ";
@@ -23,6 +23,7 @@ public class GUIConstants {
     public static final String ORDER_ID = "Order ID: ";
     public static final String ORDER_STATUS = "Order Status: ";
     public static final String DELIVERY_DATE = "Delivery Date: ";
+    public static final String ORDER_DATE = "Order Date: ";
     public static final String ORDER_SUM = "Order total amount: ";
     public static final String SEARCH = "Search";
     public static final String SEARCH_ORDER = "Search Order";
@@ -34,4 +35,5 @@ public class GUIConstants {
     public static final String EMPTY_FIELD = "";
 
     public static final int INVENTORY_MATRIX_COLUMNS = 7;
+
 }

@@ -1,11 +1,6 @@
 package main.java.GUI;
 
 import com.toedter.calendar.JDateChooser;
-import javafx.beans.value.ObservableValue;
-import javafx.collections.ObservableList;
-import javafx.scene.control.TablePosition;
-import javafx.scene.control.TableView;
-import main.java.BL.Contract.Category;
 import main.java.BL.Contract.OrderStatus;
 import main.java.common.StringUtils;
 import main.java.common.constants.Constants;
@@ -13,20 +8,16 @@ import main.java.common.constants.DatabaseConstants;
 import main.java.common.constants.GUIConstants;
 
 import javax.swing.*;
-import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.util.HashMap;
 import java.util.Vector;
 
 import static main.java.database.DatabaseController.getAllCategoryNames;
-import static main.java.database.DatabaseController.getAllProductsNames;
 import static main.java.database.DatabaseController.getAllProviderCompanyName;
 
 public class OrdersSearchPanel extends IWorkPanel {
@@ -36,17 +27,23 @@ public class OrdersSearchPanel extends IWorkPanel {
     private JLabel orderIdLabel;
     private JLabel orderStatusLabel;
     private JLabel deliveryDateLabel;
+    private JLabel orderDateLabel;
+    private JLabel oneRequired;
+    private JLabel noResults;
+    private JLabel searchCompleted;
     private JComboBox providersList;
     private JComboBox categoryList;
-    private JComboBox itemList;
+    //private JComboBox itemList;
     private JTextField orderIdTF;
+    private JTextField itemNameTF;
     private JCheckBox openOrderCB;
     private JCheckBox closedOrderCB;
     private JDateChooser deliveryDateChooser;
+    private JDateChooser orderDateChooser;
     private JButton searchOrderButton;
     private JTable ordersTable;
     private JTable itemsTable;
-    private DefaultTableModel model;
+    private DefaultTableModel itemsTableModel;
     private JScrollPane scrollOrdersTable;
     private JScrollPane scrollItemsTable;
     private JPanel searchPanel;
@@ -63,7 +60,7 @@ public class OrdersSearchPanel extends IWorkPanel {
     private String[][] items1TestData = {{"1313","kuku","dairy","Shufersal","5","451","15.12.2020"}
                                         ,{"1314","lolo","meat","mega","57","41","21.01.2020"}};
     private String[][] items2TestData = {{"1300","shubu","uniform","castro","5","200","N/A"}};
-    private String[] ordersColumnNames = {"Order ID","Units","Cost","Delivery status","Order Date","Delivery Date"};
+    private String[] ordersColumnNames = {"Order ID","Provider ID","Total amount","Delivery status","Order Date","Delivery Date"};
     private String[][] order1TestData ={{"555","2","999","Closed","10.05.19","15.05.19"}
                                         ,{"44","1","23","Closed","11.05.19","14.05.19"}};
 
@@ -83,17 +80,23 @@ public class OrdersSearchPanel extends IWorkPanel {
         orderIdLabel = new JLabel(GUIConstants.ORDER_ID);
         orderStatusLabel = new JLabel(GUIConstants.ORDER_STATUS);
         deliveryDateLabel = new JLabel(GUIConstants.DELIVERY_DATE);
+        orderDateLabel = new JLabel(GUIConstants.ORDER_DATE);
+        oneRequired = new JLabel(GUIConstants.ATLEAST_ONE_FIELD_REQUIRED);
+        noResults = new JLabel(GUIConstants.NO_RESULTS);
+        searchCompleted = new JLabel(GUIConstants.SEARCH_COMPLETED);
         providersList = new JComboBox();
         categoryList = new JComboBox();
-        itemList = new JComboBox();
+        //itemList = new JComboBox();
         openOrderCB = new JCheckBox("In Process");
         closedOrderCB = new JCheckBox("Delivered");
         deliveryDateChooser = new JDateChooser();
+        orderDateChooser = new JDateChooser();
+        itemNameTF = new JTextField(10);
         orderIdTF = new JTextField(10);
         searchOrderButton = new JButton(GUIConstants.SEARCH_ORDER);
-        model = new DefaultTableModel(null, itemsColumnNames);
+        itemsTableModel = new DefaultTableModel(null, itemsColumnNames);
         ordersTable = new JTable(order1TestData, ordersColumnNames);
-        itemsTable = new JTable(model);
+        itemsTable = new JTable(itemsTableModel);
         scrollOrdersTable = new JScrollPane(ordersTable,JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         scrollItemsTable = new JScrollPane(itemsTable,JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         searchPanel = new JPanel();
@@ -186,16 +189,8 @@ public class OrdersSearchPanel extends IWorkPanel {
 
     @Override
     protected void setSearchPanelLayout() {
-        /////// Set combo-box ///////
-        setCurrentProvider();//TODO: should be adjusted live and not only when running the app first
-        setCurrentCategories(); //TODO: same here
-        setCurrentItems();//TODO: same here
-        DefaultComboBoxModel providersModel = new DefaultComboBoxModel(providers);
-        providersList.setModel(providersModel);
-        DefaultComboBoxModel categoryModel = new DefaultComboBoxModel(categories);
-        categoryList.setModel(categoryModel);
-        DefaultComboBoxModel itemsModel = new DefaultComboBoxModel(items);
-        itemList.setModel(itemsModel);
+
+        setComboBoxes();
 
         searchPanel.setBorder(BorderFactory.createTitledBorder("Orders"));
         searchPanel.setLayout(new GridBagLayout());
@@ -236,11 +231,11 @@ public class OrdersSearchPanel extends IWorkPanel {
 
         gcSearchPanel.gridx = 0;
         gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_END;
-        searchPanel.add(itemNameLabel, gcSearchPanel);
+        searchPanel.add(orderDateLabel, gcSearchPanel);
 
         gcSearchPanel.gridx = 1;
         gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_START;
-        searchPanel.add(itemList, gcSearchPanel);
+        searchPanel.add(orderDateChooser, gcSearchPanel);
 
         gcSearchPanel.gridx = 2;
         gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_END;
@@ -277,6 +272,14 @@ public class OrdersSearchPanel extends IWorkPanel {
         gcSearchPanel.weightx = 0.1;
         gcSearchPanel.weighty = 0.1;
 
+        gcSearchPanel.gridx = 0;
+        gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_END;
+        searchPanel.add(itemNameLabel, gcSearchPanel);
+
+        gcSearchPanel.gridx = 1;
+        gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_START;
+        searchPanel.add(itemNameTF, gcSearchPanel);
+
         gcSearchPanel.gridx = 3;
         gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_START;
         searchPanel.add(closedOrderCB, gcSearchPanel);
@@ -284,32 +287,49 @@ public class OrdersSearchPanel extends IWorkPanel {
         gcSearchPanel.gridx = 4;
         gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_START;
 
-        GUIConstants.ATLEAST_ONE_FIELD_REQUIRED.setForeground(Color.red);
-        GUIConstants.ATLEAST_ONE_FIELD_REQUIRED.setVisible(false);
-        searchPanel.add(GUIConstants.ATLEAST_ONE_FIELD_REQUIRED,gcSearchPanel);
+        searchPanel.add(oneRequired, gcSearchPanel);
+        oneRequired.setForeground(Color.red);
+        oneRequired.setVisible(false);
 
-        GUIConstants.SEARCH_COMPLETED.setForeground(Color.blue);
-        GUIConstants.SEARCH_COMPLETED.setVisible(false);
-        searchPanel.add(GUIConstants.SEARCH_COMPLETED, gcSearchPanel);
+        searchCompleted.setForeground(Color.blue);
+        searchCompleted.setVisible(false);
+        searchPanel.add(searchCompleted, gcSearchPanel);
 
-        GUIConstants.NO_RESULTS.setForeground(Color.blue);
-        GUIConstants.NO_RESULTS.setVisible(false);
-        searchPanel.add(GUIConstants.NO_RESULTS, gcSearchPanel);
+        noResults.setForeground(Color.blue);
+        noResults.setVisible(false);
+        searchPanel.add(noResults, gcSearchPanel);
 
-        ///// align fields sizes //////
+        alignFieldSizes();
+    }
+
+    private void setComboBoxes() {
+        setCurrentProvider();//TODO: should be adjusted live and not only when running the app first
+        setCurrentCategories(); //TODO: same here
+        //setCurrentItems();//TODO: same here
+        DefaultComboBoxModel providersModel = new DefaultComboBoxModel(providers);
+        providersList.setModel(providersModel);
+        DefaultComboBoxModel categoryModel = new DefaultComboBoxModel(categories);
+        categoryList.setModel(categoryModel);
+        //DefaultComboBoxModel itemsModel = new DefaultComboBoxModel(items);
+        //itemList.setModel(itemsModel);
+    }
+
+    private void alignFieldSizes(){
         Dimension fieldSize = orderIdTF.getPreferredSize();
         providersList.setPreferredSize(fieldSize);
         categoryList.setPreferredSize(fieldSize);
-        itemList.setPreferredSize(fieldSize);
+        //itemList.setPreferredSize(fieldSize);
         searchOrderButton.setPreferredSize(fieldSize);
         deliveryDateChooser.setPreferredSize(fieldSize);
+        orderDateChooser.setPreferredSize(fieldSize);
     }
 
+    /*
     private void setCurrentItems() {
         items = getAllProductsNames();
         items.add(0,GUIConstants.SELECT_FIELD);
     }
-
+    */
     private void setCurrentProvider() {
         providers = getAllProviderCompanyName();
         providers.add(0, GUIConstants.SELECT_FIELD);
@@ -335,10 +355,10 @@ public class OrdersSearchPanel extends IWorkPanel {
                 //TODO: send orderId to SQL query builder -> get in return a 2D data array
                 //A test to see the data is changed upon setDataVector
                 if(orderId.equals("555")){
-                    model.setDataVector(items1TestData,itemsColumnNames);
+                    itemsTableModel.setDataVector(items1TestData,itemsColumnNames);
                 }
                 else{
-                    model.setDataVector(items2TestData,itemsColumnNames);
+                    itemsTableModel.setDataVector(items2TestData,itemsColumnNames);
                 }
             }
         });
@@ -355,7 +375,7 @@ public class OrdersSearchPanel extends IWorkPanel {
                 }
                 else{
                     setValidationLabelsVisibility(false);
-                    Constants.ATLEAST_ONE_FIELD_REQUIRED.setVisible(true);
+                    oneRequired.setVisible(true);
                 }
 
             }
@@ -370,8 +390,8 @@ public class OrdersSearchPanel extends IWorkPanel {
         if (!categoryList.getSelectedItem().equals(GUIConstants.SELECT_FIELD))
             searchParams.put(DatabaseConstants.PRODUCT_TABLE_ITEM_CATEGORY_COLUMN, StringUtils.getStringWithSingleQuotes(categoryList.getSelectedItem().toString()));
 
-        if(!itemList.getSelectedItem().equals(GUIConstants.EMPTY_FIELD)) //TODO: fix column names
-            searchParams.put(DatabaseConstants.ORDERS_TABLE_ORDER_ID_COLUMN,itemList.getSelectedItem());
+        if(!itemNameTF.getText().equals(GUIConstants.EMPTY_FIELD)) //TODO: fix column names
+            searchParams.put(DatabaseConstants.ORDERS_TABLE_ORDER_ID_COLUMN,itemNameTF.getText());
 
         if(!orderIdTF.getText().equals(GUIConstants.EMPTY_FIELD))
             searchParams.put(DatabaseConstants.ORDERS_TABLE_ORDER_ID_COLUMN,orderIdTF.getText());
@@ -390,8 +410,9 @@ public class OrdersSearchPanel extends IWorkPanel {
     private boolean checkAtleastOneNotEmpty() {
         if(     !providersList.getSelectedItem().equals(GUIConstants.SELECT_FIELD) ||
                 !categoryList.getSelectedItem().equals(GUIConstants.SELECT_FIELD) ||
-                !itemList.getSelectedItem().equals(GUIConstants.EMPTY_FIELD )||
+                !itemNameTF.getText().equals(GUIConstants.EMPTY_FIELD )||
                 !orderIdTF.getText().equals(GUIConstants.EMPTY_FIELD )||
+                orderDateChooser.getDate() != null ||
                 deliveryDateChooser.getDate() != null ||
                 closedOrderCB.isSelected() ||
                 openOrderCB.isSelected()
@@ -405,7 +426,9 @@ public class OrdersSearchPanel extends IWorkPanel {
 
     @Override
     protected void setValidationLabelsVisibility(boolean visibility){
-        Constants.ATLEAST_ONE_FIELD_REQUIRED.setVisible(visibility);
+        oneRequired.setVisible(visibility);
+        searchCompleted.setVisible(visibility);
+        noResults.setVisible(visibility);
     }
 
 }
