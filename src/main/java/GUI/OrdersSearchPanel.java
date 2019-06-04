@@ -7,8 +7,10 @@ import javafx.scene.control.TablePosition;
 import javafx.scene.control.TableView;
 import main.java.BL.Contract.Category;
 import main.java.BL.Contract.OrderStatus;
+import main.java.common.StringUtils;
 import main.java.common.constants.Constants;
 import main.java.common.constants.DatabaseConstants;
+import main.java.common.constants.GUIConstants;
 
 import javax.swing.*;
 import javax.swing.event.ChangeListener;
@@ -21,6 +23,11 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.HashMap;
+import java.util.Vector;
+
+import static main.java.database.DatabaseController.getAllCategoryNames;
+import static main.java.database.DatabaseController.getAllProductsNames;
+import static main.java.database.DatabaseController.getAllProviderCompanyName;
 
 public class OrdersSearchPanel extends IWorkPanel {
     private JLabel providerLabel;
@@ -46,18 +53,19 @@ public class OrdersSearchPanel extends IWorkPanel {
     private JPanel ordersTablePanel;
     private JPanel itemsTablePanel;
     private JPanel tablesPanel;
+    private Vector<String> providers;
+    private Vector<String> categories;
+    private Vector<String> items;
 
     //TEST FIELDS//
     private HashMap searchParams = new HashMap();
-    private String[] itemsColumnNames = {"ID","Item name","Category","Provider","Units","Cost","Expiration date"};
+    private String[] itemsColumnNames = {"ID","Item name","Category","Provider","Current amount","Cost","Expiration date"};
     private String[][] items1TestData = {{"1313","kuku","dairy","Shufersal","5","451","15.12.2020"}
                                         ,{"1314","lolo","meat","mega","57","41","21.01.2020"}};
     private String[][] items2TestData = {{"1300","shubu","uniform","castro","5","200","N/A"}};
     private String[] ordersColumnNames = {"Order ID","Units","Cost","Delivery status","Order Date","Delivery Date"};
     private String[][] order1TestData ={{"555","2","999","Closed","10.05.19","15.05.19"}
                                         ,{"44","1","23","Closed","11.05.19","14.05.19"}};
-    private String[] providers = {"1","2","3"};
-    private String[] items = {"","4","5","6"};
 
     public OrdersSearchPanel(){
             initialization();
@@ -69,12 +77,12 @@ public class OrdersSearchPanel extends IWorkPanel {
 
     @Override
     protected void initialization(){
-        providerLabel = new JLabel("Provider: ");
-        categoryLabel = new JLabel("Category: ");
-        itemNameLabel = new JLabel("Item name: ");
-        orderIdLabel = new JLabel("Order ID: ");
-        orderStatusLabel = new JLabel("Order status: ");
-        deliveryDateLabel = new JLabel("Delivery date: ");
+        providerLabel = new JLabel(GUIConstants.PROVIDER);
+        categoryLabel = new JLabel(GUIConstants.CATEGORY);
+        itemNameLabel = new JLabel(GUIConstants.ITEM_NAME);
+        orderIdLabel = new JLabel(GUIConstants.ORDER_ID);
+        orderStatusLabel = new JLabel(GUIConstants.ORDER_STATUS);
+        deliveryDateLabel = new JLabel(GUIConstants.DELIVERY_DATE);
         providersList = new JComboBox();
         categoryList = new JComboBox();
         itemList = new JComboBox();
@@ -82,8 +90,8 @@ public class OrdersSearchPanel extends IWorkPanel {
         closedOrderCB = new JCheckBox("Delivered");
         deliveryDateChooser = new JDateChooser();
         orderIdTF = new JTextField(10);
-        searchOrderButton = new JButton("Search order");
-        model = new DefaultTableModel(items2TestData, itemsColumnNames);
+        searchOrderButton = new JButton(GUIConstants.SEARCH_ORDER);
+        model = new DefaultTableModel(null, itemsColumnNames);
         ordersTable = new JTable(order1TestData, ordersColumnNames);
         itemsTable = new JTable(model);
         scrollOrdersTable = new JScrollPane(ordersTable,JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
@@ -179,9 +187,12 @@ public class OrdersSearchPanel extends IWorkPanel {
     @Override
     protected void setSearchPanelLayout() {
         /////// Set combo-box ///////
+        setCurrentProvider();//TODO: should be adjusted live and not only when running the app first
+        setCurrentCategories(); //TODO: same here
+        setCurrentItems();//TODO: same here
         DefaultComboBoxModel providersModel = new DefaultComboBoxModel(providers);
         providersList.setModel(providersModel);
-        DefaultComboBoxModel categoryModel = new DefaultComboBoxModel(Category.values());
+        DefaultComboBoxModel categoryModel = new DefaultComboBoxModel(categories);
         categoryList.setModel(categoryModel);
         DefaultComboBoxModel itemsModel = new DefaultComboBoxModel(items);
         itemList.setModel(itemsModel);
@@ -273,9 +284,17 @@ public class OrdersSearchPanel extends IWorkPanel {
         gcSearchPanel.gridx = 4;
         gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_START;
 
-        searchPanel.add(Constants.ATLEAST_ONE_FIELD_REQUIRED,gcSearchPanel);
-        Constants.ATLEAST_ONE_FIELD_REQUIRED.setForeground(Color.red);
-        Constants.ATLEAST_ONE_FIELD_REQUIRED.setVisible(false);
+        GUIConstants.ATLEAST_ONE_FIELD_REQUIRED.setForeground(Color.red);
+        GUIConstants.ATLEAST_ONE_FIELD_REQUIRED.setVisible(false);
+        searchPanel.add(GUIConstants.ATLEAST_ONE_FIELD_REQUIRED,gcSearchPanel);
+
+        GUIConstants.SEARCH_COMPLETED.setForeground(Color.blue);
+        GUIConstants.SEARCH_COMPLETED.setVisible(false);
+        searchPanel.add(GUIConstants.SEARCH_COMPLETED, gcSearchPanel);
+
+        GUIConstants.NO_RESULTS.setForeground(Color.blue);
+        GUIConstants.NO_RESULTS.setVisible(false);
+        searchPanel.add(GUIConstants.NO_RESULTS, gcSearchPanel);
 
         ///// align fields sizes //////
         Dimension fieldSize = orderIdTF.getPreferredSize();
@@ -284,6 +303,21 @@ public class OrdersSearchPanel extends IWorkPanel {
         itemList.setPreferredSize(fieldSize);
         searchOrderButton.setPreferredSize(fieldSize);
         deliveryDateChooser.setPreferredSize(fieldSize);
+    }
+
+    private void setCurrentItems() {
+        items = getAllProductsNames();
+        items.add(0,GUIConstants.SELECT_FIELD);
+    }
+
+    private void setCurrentProvider() {
+        providers = getAllProviderCompanyName();
+        providers.add(0, GUIConstants.SELECT_FIELD);
+    }
+
+    private void setCurrentCategories(){
+        categories = getAllCategoryNames();
+        categories.add(0, GUIConstants.SELECT_FIELD);
     }
 
     @Override
@@ -330,27 +364,34 @@ public class OrdersSearchPanel extends IWorkPanel {
 
     private HashMap buildSearchParameters() {
         HashMap searchParams = new HashMap();
-        //TODO: Add Providers
-        if(!categoryList.getSelectedItem().equals(Category.None))
-            searchParams.put(Constants.CATEGORY,categoryList.getSelectedItem());
-        if(!itemList.getSelectedItem().equals(Constants.EMPTY_FIELD))
-            searchParams.put(DatabaseConstants.PRODUCT_TABLE_ITEM_NAME_COLUMN,itemList.getSelectedItem());
-        if(!orderIdTF.getText().equals(Constants.EMPTY_FIELD))
-            searchParams.put(Constants.ORDER_ID,orderIdTF.getText());
+        if(!providersList.getSelectedItem().equals(GUIConstants.SELECT_FIELD))
+            searchParams.put(DatabaseConstants.ORDERS_TABLE_PROVIDER_COLUMN, StringUtils.getStringWithSingleQuotes(providersList.getSelectedItem().toString()));
+
+        if (!categoryList.getSelectedItem().equals(GUIConstants.SELECT_FIELD))
+            searchParams.put(DatabaseConstants.PRODUCT_TABLE_ITEM_CATEGORY_COLUMN, StringUtils.getStringWithSingleQuotes(categoryList.getSelectedItem().toString()));
+
+        if(!itemList.getSelectedItem().equals(GUIConstants.EMPTY_FIELD)) //TODO: fix column names
+            searchParams.put(DatabaseConstants.ORDERS_TABLE_ORDER_ID_COLUMN,itemList.getSelectedItem());
+
+        if(!orderIdTF.getText().equals(GUIConstants.EMPTY_FIELD))
+            searchParams.put(DatabaseConstants.ORDERS_TABLE_ORDER_ID_COLUMN,orderIdTF.getText());
+
         if(deliveryDateChooser.getDate() != null)
-            searchParams.put(Constants.DELIVERY_DATE,deliveryDateChooser.getDate());
+            searchParams.put(DatabaseConstants.ORDERS_TABLE_DELIVERY_DATE_COLUMN,deliveryDateChooser.getDate());
+
         if(closedOrderCB.isSelected())
-            searchParams.put(Constants.ORDER_STATUS, OrderStatus.valueOf("delivered"));
+            searchParams.put(GUIConstants.ORDER_STATUS, OrderStatus.valueOf("delivered"));
+
         if(openOrderCB.isSelected())
-            searchParams.put(Constants.ORDER_STATUS,OrderStatus.valueOf("inProcess"));
+            searchParams.put(GUIConstants.ORDER_STATUS,OrderStatus.valueOf("inProcess"));
         return searchParams;
     }
 
     private boolean checkAtleastOneNotEmpty() {
-        //TODO: Provider list
-        if(     !categoryList.getSelectedItem().equals(Category.None) ||
-                !itemList.getSelectedItem().equals(Constants.EMPTY_FIELD )||
-                !orderIdTF.getText().equals(Constants.EMPTY_FIELD )||
+        if(     !providersList.getSelectedItem().equals(GUIConstants.SELECT_FIELD) ||
+                !categoryList.getSelectedItem().equals(GUIConstants.SELECT_FIELD) ||
+                !itemList.getSelectedItem().equals(GUIConstants.EMPTY_FIELD )||
+                !orderIdTF.getText().equals(GUIConstants.EMPTY_FIELD )||
                 deliveryDateChooser.getDate() != null ||
                 closedOrderCB.isSelected() ||
                 openOrderCB.isSelected()
