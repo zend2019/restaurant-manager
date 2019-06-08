@@ -78,8 +78,9 @@ public class DatabaseController {
         String dateOfBirth = user.getDateOfBirth();
         String username = user.getUserName();
         String phoneNumber = user.getPhoneNmuber();
+        String password = user.getPassword();
 
-        String sql = "INSERT INTO user(id,first_name,last_name,age,date_of_birth,username,phone_number) VALUES(?,?,?,?,?,?,?)";
+        String sql = "INSERT INTO user(id,first_name,last_name,age,date_of_birth,username,phone_number,password) VALUES(?,?,?,?,?,?,?)";
         Connection conn = DatabaseAccessManager.getConnection();
         try {
             PreparedStatement pstmt = conn.prepareStatement(sql);
@@ -90,6 +91,7 @@ public class DatabaseController {
             pstmt.setString(5, dateOfBirth);
             pstmt.setString(6, username);
             pstmt.setString(7, phoneNumber);
+            pstmt.setString(8, password);
             pstmt.executeUpdate();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -216,7 +218,7 @@ public class DatabaseController {
     public static int addOrder(Order order) {
         int id = order.getOrderId();
         String productType = String.join(",", order.getProductIds()); //String.join(",",order.getProductIds());
-        String provider = String.join(",", order.getProvider());
+        String provider = order.getProvider();
         Date deliveryDate = order.getDeliveryDate();
         Double totalAmount = order.getTotalAmount();
         String sql = "INSERT INTO orders(id,product_id,provider,delivery_date,total_amount) VALUES(?,?,?,?,?)";
@@ -249,7 +251,7 @@ public class DatabaseController {
             order.setOrderId(rs.getInt("id"));
             List<String> d = new ArrayList<String>(Arrays.asList(rs.getString("product_id").split(",")));
             order.setProductIds(new ArrayList<String>(Arrays.asList(rs.getString("product_id").split(","))));
-            order.setProvider(new ArrayList<String>(Arrays.asList(rs.getString("provider").split(","))));
+            order.setProvider(rs.getString("provider"));
             order.setDeliveryDate(rs.getDate("delivery_date"));
             order.setTotalAmount(rs.getDouble("total_amount"));
 
@@ -284,6 +286,23 @@ public class DatabaseController {
             DatabaseAccessManager.closeConnection(conn);
         }
         return user;
+    }
+
+    public static boolean LogIn(String user, String password) {
+        String sql = String.format("SELECT * FROM user WHERE username =%s And password=%s ", user, password);
+        Connection conn = DatabaseAccessManager.getConnection();
+        try {
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
+            if (rs.first()) {
+                return true;
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            DatabaseAccessManager.closeConnection(conn);
+        }
+        return false;
     }
 
     /*
@@ -363,7 +382,7 @@ public class DatabaseController {
 
     public static Vector<String> getAllCategoryNames() {
         Vector<String> categoryNames = new Vector<>();
-        String sql = "SELECT distinct "+ CATEGORIES_TABLE_CATEGORY_NAME_COLUMN +" FROM categories";
+        String sql = "SELECT distinct " + CATEGORIES_TABLE_CATEGORY_NAME_COLUMN + " FROM categories";
         Connection conn = DatabaseAccessManager.getConnection();
         try {
             Statement stmt = conn.createStatement();
@@ -381,7 +400,7 @@ public class DatabaseController {
 
     public static Vector<String> getAllProductsNames() {
         Vector<String> productNames = new Vector<>();
-        String sql = "SELECT distinct "+ DatabaseConstants.PRODUCT_TABLE_ITEM_NAME_COLUMN +" FROM product";
+        String sql = "SELECT distinct " + DatabaseConstants.PRODUCT_TABLE_ITEM_NAME_COLUMN + " FROM product";
         Connection conn = DatabaseAccessManager.getConnection();
         try {
             Statement stmt = conn.createStatement();
@@ -434,7 +453,7 @@ public class DatabaseController {
     }
 
     public static void deleteUser(int userId) {
-        String sql = "DELETE from user where id ="+userId;
+        String sql = "DELETE from user where id =" + userId;
         Connection conn = DatabaseAccessManager.getConnection();
         try {
             Statement stmt = conn.createStatement();
@@ -451,7 +470,7 @@ public class DatabaseController {
     }
 
     public static void deleteProvider(String providerId) {
-        String sql = "DELETE from provider where id ="+providerId;
+        String sql = "DELETE from provider where id =" + providerId;
         Connection conn = DatabaseAccessManager.getConnection();
         try {
             Statement stmt = conn.createStatement();
@@ -463,9 +482,9 @@ public class DatabaseController {
         }
     }
 
-    public static String getProviderIdByName(String providerName){
-        String providerId ="";
-        String sql = "SELECT "+ PROVIDER_TABLE_PROVIDER_ID_COLUMN +" FROM provider WHERE "+ PROVIDER_TABLE_COMPANY_NAME_COLUMN +"=" + providerName;
+    public static String getProviderIdByName(String providerName) {
+        String providerId = "";
+        String sql = "SELECT " + PROVIDER_TABLE_PROVIDER_ID_COLUMN + " FROM provider WHERE " + PROVIDER_TABLE_COMPANY_NAME_COLUMN + "=" + providerName;
         Connection conn = DatabaseAccessManager.getConnection();
         try {
             PreparedStatement pstmt = conn.prepareStatement(sql);
@@ -479,9 +498,9 @@ public class DatabaseController {
         return providerId;
     }
 
-    public static String getProviderNameById(String providerId){
-        String providerName ="";
-        String sql = "SELECT "+ PROVIDER_TABLE_COMPANY_NAME_COLUMN +" FROM provider WHERE "+ PROVIDER_TABLE_PROVIDER_ID_COLUMN +"=" + providerId;
+    public static String getProviderNameById(String providerId) {
+        String providerName = "";
+        String sql = "SELECT " + PROVIDER_TABLE_COMPANY_NAME_COLUMN + " FROM provider WHERE " + PROVIDER_TABLE_PROVIDER_ID_COLUMN + "=" + providerId;
         Connection conn = DatabaseAccessManager.getConnection();
         try {
             PreparedStatement pstmt = conn.prepareStatement(sql);
@@ -495,9 +514,9 @@ public class DatabaseController {
         return providerName;
     }
 
-    public static int getCategoryIdByName(String categoryName){
+    public static int getCategoryIdByName(String categoryName) {
         int categoryId = -1;
-        String sql = "SELECT "+ CATEGORIES_TABLE_CATEGORY_ID_COLUMN +" FROM categories WHERE "+ CATEGORIES_TABLE_CATEGORY_NAME_COLUMN +"=" + categoryName;
+        String sql = "SELECT " + CATEGORIES_TABLE_CATEGORY_ID_COLUMN + " FROM categories WHERE " + CATEGORIES_TABLE_CATEGORY_NAME_COLUMN + "=" + categoryName;
         Connection conn = DatabaseAccessManager.getConnection();
         try {
             PreparedStatement pstmt = conn.prepareStatement(sql);

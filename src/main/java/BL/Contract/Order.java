@@ -40,7 +40,6 @@ public class Order {
         this.orderId = orderId;
     }
 
-    private OrderStatus orderStatus;
 
     public int getRating() {
         return rating;
@@ -58,21 +57,28 @@ public class Order {
         this.productIds = productIds;
     }
 
-    public List<String> getProvider() {
+    public String getProvider() {
         return provider;
     }
 
-    public void setProvider(List<String> provider) {
+    public void setProvider(String provider) {
         this.provider = provider;
     }
 
+    public Date getOrderDate() {
+        return OrderDate;
+    }
+
+    public void setOrderDate(Date orderDate) {
+        OrderDate = orderDate;
+    }
 
     private Date deliveryDate;
     private int orderId;
     private List<String> productIds;
-    private List<String> provider;
+    private String provider;
     private Double totalAmount;
     private int rating;
-
-
+    private Date OrderDate;
+    private OrderStatus orderStatus;
 }
