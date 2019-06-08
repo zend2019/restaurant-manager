@@ -8,7 +8,15 @@ public class User {
     private int Age;
     private String DateOfBirth;
     private String UserName;
+    private String Password;
 
+    public String getPassword() {
+        return Password;
+    }
+
+    public void setPassword(String password) {
+        Password = password;
+    }
 
     public int getId() {
         return id;
@@ -17,7 +25,6 @@ public class User {
     public void setId(int id) {
         this.id = id;
     }
-
 
     public String getFirstName() {
         return FirstName;

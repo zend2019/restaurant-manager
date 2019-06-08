@@ -19,6 +19,8 @@ public class UserManager implements IUSerManager {
         if (existingUser != null) {
             throw new RestaurantManagerException("User already exist.");
         }
+        int pass = user.getPassword().hashCode();
+        user.setPassword(Integer.toString(pass));
         DatabaseController.addUser(user);
     }
 
@@ -28,7 +30,7 @@ public class UserManager implements IUSerManager {
         if (existingUser != null) {
             throw new RestaurantManagerException("User already exist.");
         }
-        DatabaseController.editUser(user,userId);
+        DatabaseController.editUser(user, userId);
     }
 
     @Override
