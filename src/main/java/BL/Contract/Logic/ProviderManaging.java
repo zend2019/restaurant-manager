@@ -19,12 +19,12 @@ public class ProviderManaging implements IProviderManaging {
 
     @Override
     public void deleteProvider(int providerId) {
-        DatabaseController.deleteProvider(providerId);
+        DatabaseController.deleteProvider(String.valueOf(providerId));
     }
 
     @Override
     public void editProvider(Provider provider, int providerId) {
-        DatabaseController.deditProvider(provider,providerId);
+        DatabaseController.editProvider(provider,providerId);
     }
 
     @Override

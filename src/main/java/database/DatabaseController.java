@@ -1,11 +1,16 @@
 package main.java.database;
 
 import main.java.BL.Contract.*;
+import main.java.common.DateUtils;
+import main.java.common.StringUtils;
+import main.java.common.constants.DatabaseConstants;
 
 import java.sql.*;
 import java.text.ParseException;
 import java.util.*;
 import java.util.Date;
+
+import static main.java.common.constants.DatabaseConstants.*;
 
 
 public class DatabaseController {
@@ -37,13 +42,13 @@ public class DatabaseController {
 
         //Adding product sample
 //        Product product = new Product();
-//        product.setProductId(1);
+//        product.setProductId("5");
 //        product.setProductName("yolo");
-//        product.setPrice("25");
-//        product.setExpirationDate(new SimpleDateFormat("dd/MM/yyyy").parse("01/01/1993"));
-//        product.setCurrentpProductAmount(21);
-//        product.setRequiredAmount(22);
-//        product.setProvider("Noga tm");
+//        product.setPrice("255");
+//        product.setExpirationDate(new SimpleDateFormat("dd/MM/yyyy").parse("01/01/2019"));
+//        product.setCurrentProductAmount(66);
+//        product.setRequiredAmount(55);
+//        product.setProviderId("5");
 //        addProduct(product);
 
 //        adding order sample
@@ -55,7 +60,14 @@ public class DatabaseController {
 //        order.setTotalAmount(22.56);
 //        addOrder(order);
 //        getUserById(1);
-        getAllProviderCompanyName();
+//        getAllProviderCompanyName();
+        HashMap hashMap = new HashMap();
+//        hashMap.put("id", "1");
+        hashMap.put("name", "'yolo'");
+//        hashMap.put("price", "25");
+//        hashMap.put("expiration_date", "'Fri Jan 01 00:00:00 IST 1993'");
+//        hashMap.put("current_amount", "21");
+        getListOfProducts(hashMap);
     }
 
     public static void addUser(User user) {
@@ -126,22 +138,25 @@ public class DatabaseController {
     public static void addProduct(Product product) {
         String id = product.getProductId();
         String name = product.getProductName();
+        int category = getCategoryIdByName(StringUtils.getStringWithSingleQuotes(product.getCategory().toString()));
         String price = product.getPrice();
-        String expirationDate = String.valueOf(product.getExpirationDate()); //todo string casting might cause issues...need to check
+        String expirationDate = DateUtils.formatDateToString(product.getExpirationDate()); //todo string casting might cause issues...need to check
         int currentAmount = product.getCurrentProductAmount();
         int requiredAmount = product.getRequiredAmount();
         String provider = product.getProviderId();
-        String sql = "INSERT INTO product(id,name,price,expiration_date,current_amount,required_amount,provider) VALUES(?,?,?,?,?,?,?)";
+        String sql = "INSERT INTO product(id,item_name,category,provider,price,expiration_date,current_amount,required_amount) VALUES(?,?,?,?,?,?,?,?)";
         Connection conn = DatabaseAccessManager.getConnection();
         try {
             PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, id);
             pstmt.setString(2, name);
-            pstmt.setString(3, price);
-            pstmt.setString(4, expirationDate);
-            pstmt.setInt(5, currentAmount);
-            pstmt.setInt(6, requiredAmount);
-            pstmt.setString(7, provider);
+            pstmt.setInt(3, category);
+            pstmt.setString(4, provider);
+            pstmt.setString(5, price);
+            pstmt.setString(6, expirationDate);
+            pstmt.setInt(7, currentAmount);
+            pstmt.setInt(8, requiredAmount);
+
             pstmt.executeUpdate();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -164,7 +179,7 @@ public class DatabaseController {
 
                 Product product = new Product();
                 product.setProductId(rs.getString("id"));
-                product.setProductName(rs.getString("name"));
+                product.setProductName(rs.getString(DatabaseConstants.PRODUCT_TABLE_ITEM_NAME_COLUMN));
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -270,11 +285,63 @@ public class DatabaseController {
         }
         return user;
     }
+
     /*
      SQLite Reset Primary Key Field (mostly will be used for auto autoincrement for ids) run the following queries:
     delete from your_table;
     delete from sqlite_sequence where name='your_table';
      */
+    public static Vector<Product> getListOfProducts(HashMap hashMap) {
+        String sql = "SELECT* FROM product WHERE " + getDynamicWhereQueryBuilder(hashMap);
+        Connection conn = DatabaseAccessManager.getConnection();
+        Vector<Product> productsList = new Vector<>();
+
+        try {
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+
+                Product product = new Product();
+                product.setProductId(rs.getString(DatabaseConstants.PRODUCT_TABLE_ITEM_ID_COLUMN));
+                product.setProductName(rs.getString(DatabaseConstants.PRODUCT_TABLE_ITEM_NAME_COLUMN));
+                product.setPrice(rs.getString(DatabaseConstants.PRODUCT_TABLE_ITEM_PRICE_COLUMN));
+                product.setCategory(Category.valueOf(rs.getString(DatabaseConstants.PRODUCT_TABLE_ITEM_CATEGORY_COLUMN)));
+                product.setExpirationDate(DateUtils.getDateByString(rs.getString(DatabaseConstants.PRODUCT_TABLE_ITEM_EXPIRATION_DATE_COLUMN)));
+                product.setCurrentProductAmount(rs.getInt(DatabaseConstants.PRODUCT_TABLE_ITEM_CURRENT_AMOUNT_COLUMN));
+                product.setRequiredAmount(rs.getInt(DatabaseConstants.PRODUCT_TABLE_ITEM_REQUIRED_AMOUNT_COLUMN));
+                product.setProviderId(rs.getString(DatabaseConstants.PRODUCT_TABLE_ITEM_PROVIDER_COLUMN));
+                productsList.add(product);
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } catch (ParseException e) {
+            e.printStackTrace();
+        } finally {
+            DatabaseAccessManager.closeConnection(conn);
+        }
+        return productsList;
+    }
+
+    //TODO: add by the query:
+    //SELECT order_id,product.provider,total_amount,order_status,delivery_date
+    //FROM ordered_items JOIN product ON product.id=ordered_items.item_id
+    //JOIN orders ON ordered_items.order_id=orders.id
+    //public static Vector<Order> getListOfOrders(HashMap hashMap){}
+
+    private static String getDynamicWhereQueryBuilder(HashMap hashMap) {
+        StringBuilder whereQuery;
+        Iterator it = hashMap.entrySet().iterator();
+        Map.Entry pair = (Map.Entry) it.next();
+        whereQuery = new StringBuilder(pair.getKey() + "=" + pair.getValue());
+        it.remove();
+        while (it.hasNext()) {
+            pair = (Map.Entry) it.next();
+            String andQuery = " AND " + pair.getKey() + "=" + pair.getValue();
+            whereQuery.append(andQuery);
+            it.remove();
+        }
+        return whereQuery.toString();
+    }
 
     public static Vector<String> getAllProviderCompanyName() {
         Vector<String> providersNames = new Vector<>();
@@ -294,27 +361,156 @@ public class DatabaseController {
         return providersNames;
     }
 
+    public static Vector<String> getAllCategoryNames() {
+        Vector<String> categoryNames = new Vector<>();
+        String sql = "SELECT distinct "+ CATEGORIES_TABLE_CATEGORY_NAME_COLUMN +" FROM categories";
+        Connection conn = DatabaseAccessManager.getConnection();
+        try {
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
+            while (rs.next()) {
+                categoryNames.add(rs.getString(CATEGORIES_TABLE_CATEGORY_NAME_COLUMN));
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            DatabaseAccessManager.closeConnection(conn);
+        }
+        return categoryNames;
+    }
+
+    public static Vector<String> getAllProductsNames() {
+        Vector<String> productNames = new Vector<>();
+        String sql = "SELECT distinct "+ DatabaseConstants.PRODUCT_TABLE_ITEM_NAME_COLUMN +" FROM product";
+        Connection conn = DatabaseAccessManager.getConnection();
+        try {
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
+            while (rs.next()) {
+                productNames.add(rs.getString(DatabaseConstants.PRODUCT_TABLE_ITEM_NAME_COLUMN));
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            DatabaseAccessManager.closeConnection(conn);
+        }
+        return productNames;
+    }
+
     public static void editOrder(int orderId, Order order) {
     }
 
-    public static Order getOrder(int orderId) {
-    }
+    public static List<Product> getProductByProvider(String providerId) {
+        String sql = "SELECT* FROM product WHERE provider=" + providerId;
+        Connection conn = DatabaseAccessManager.getConnection();
+        Vector<Product> products = new Vector<>();
 
-    public static List<Product> getProductByProvider(Integer providerId) {
+        try {
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+
+                Product product = new Product();
+                product.setProductId(rs.getString("id"));
+                product.setProductName(rs.getString(DatabaseConstants.PRODUCT_TABLE_ITEM_NAME_COLUMN));
+                product.setPrice(rs.getString("price"));
+                product.setExpirationDate(DateUtils.getDateByString(rs.getString("expiration_date")));
+                product.setCurrentProductAmount(rs.getInt("current_amount"));
+                product.setRequiredAmount(rs.getInt("required_amount"));
+                product.setProviderId(rs.getString("provider"));
+                products.add(product);
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } catch (ParseException e) {
+            e.printStackTrace();
+        } finally {
+            DatabaseAccessManager.closeConnection(conn);
+        }
+        return products;
     }
 
     public static void editUser(User user, int userId) {
     }
 
     public static void deleteUser(int userId) {
+        String sql = "DELETE from user where id ="+userId;
+        Connection conn = DatabaseAccessManager.getConnection();
+        try {
+            Statement stmt = conn.createStatement();
+            stmt.execute(sql);
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            DatabaseAccessManager.closeConnection(conn);
+        }
     }
 
     public static List<Provider> getProviderByCategory(Category category) {
+        return null;
     }
 
-    public static void deleteProvider(int providerId) {
+    public static void deleteProvider(String providerId) {
+        String sql = "DELETE from provider where id ="+providerId;
+        Connection conn = DatabaseAccessManager.getConnection();
+        try {
+            Statement stmt = conn.createStatement();
+            stmt.execute(sql);
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            DatabaseAccessManager.closeConnection(conn);
+        }
     }
 
-    public static void deditProvider(Provider provider, int providerId) {
+    public static String getProviderIdByName(String providerName){
+        String providerId ="";
+        String sql = "SELECT "+ PROVIDER_TABLE_PROVIDER_ID_COLUMN +" FROM provider WHERE "+ PROVIDER_TABLE_COMPANY_NAME_COLUMN +"=" + providerName;
+        Connection conn = DatabaseAccessManager.getConnection();
+        try {
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            ResultSet rs = pstmt.executeQuery();
+            providerId = rs.getString(PROVIDER_TABLE_PROVIDER_ID_COLUMN);
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            DatabaseAccessManager.closeConnection(conn);
+        }
+        return providerId;
+    }
+
+    public static String getProviderNameById(String providerId){
+        String providerName ="";
+        String sql = "SELECT "+ PROVIDER_TABLE_COMPANY_NAME_COLUMN +" FROM provider WHERE "+ PROVIDER_TABLE_PROVIDER_ID_COLUMN +"=" + providerId;
+        Connection conn = DatabaseAccessManager.getConnection();
+        try {
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            ResultSet rs = pstmt.executeQuery();
+            providerName = rs.getString(PROVIDER_TABLE_COMPANY_NAME_COLUMN);
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            DatabaseAccessManager.closeConnection(conn);
+        }
+        return providerName;
+    }
+
+    public static int getCategoryIdByName(String categoryName){
+        int categoryId = -1;
+        String sql = "SELECT "+ CATEGORIES_TABLE_CATEGORY_ID_COLUMN +" FROM categories WHERE "+ CATEGORIES_TABLE_CATEGORY_NAME_COLUMN +"=" + categoryName;
+        Connection conn = DatabaseAccessManager.getConnection();
+        try {
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            ResultSet rs = pstmt.executeQuery();
+            categoryId = rs.getInt(CATEGORIES_TABLE_CATEGORY_ID_COLUMN);
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            DatabaseAccessManager.closeConnection(conn);
+        }
+        return categoryId;
+    }
+
+    public static void editProvider(Provider provider, int providerId) {
     }
 }
