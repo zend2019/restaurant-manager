@@ -302,7 +302,8 @@ public class OrdersSearchPanel extends IWorkPanel {
         alignFieldSizes();
     }
 
-    private void setComboBoxes() {
+    @Override
+    protected void setComboBoxes() {
         setCurrentProvider();//TODO: should be adjusted live and not only when running the app first
         setCurrentCategories(); //TODO: same here
         DefaultComboBoxModel providersModel = new DefaultComboBoxModel(providers);
@@ -311,7 +312,8 @@ public class OrdersSearchPanel extends IWorkPanel {
         categoryList.setModel(categoryModel);
     }
 
-    private void alignFieldSizes(){
+    @Override
+    protected void alignFieldSizes(){
         Dimension fieldSize = orderIdTF.getPreferredSize();
         providersList.setPreferredSize(fieldSize);
         categoryList.setPreferredSize(fieldSize);
