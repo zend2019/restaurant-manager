@@ -268,7 +268,8 @@ public class InventoryPanel extends IWorkPanel {
         alignFieldSizes();
     }
 
-    private void alignFieldSizes() {
+    @Override
+    protected void alignFieldSizes() {
         Dimension fieldSize = itemNameTF.getPreferredSize();
         providersList.setPreferredSize(fieldSize);
         categoryList.setPreferredSize(fieldSize);
@@ -277,7 +278,8 @@ public class InventoryPanel extends IWorkPanel {
         dateChooser.setPreferredSize(fieldSize);
     }
 
-    private void setComboBoxes() {
+    @Override
+    protected void setComboBoxes() {
         setCurrentProvider();//TODO: should be adjusted live and not only when running the app first
         setCurrentCategories(); //TODO: same here
         DefaultComboBoxModel providersModel = new DefaultComboBoxModel(providers);
