@@ -141,7 +141,7 @@ public class InventoryPanel extends IWorkPanel {
 
         setComboBoxes();
 
-        searchPanel.setBorder(BorderFactory.createTitledBorder("Inventory"));
+        searchPanel.setBorder(BorderFactory.createTitledBorder("Restaurant Inventory"));
         searchPanel.setLayout(new GridBagLayout());
         GridBagConstraints gcSearchPanel = new GridBagConstraints();
         gcSearchPanel.fill = GridBagConstraints.CENTER;
