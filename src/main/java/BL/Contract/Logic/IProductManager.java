@@ -9,4 +9,10 @@ import java.util.List;
 public interface IProductManager {
 
     List<Product> GetProductByProvider(String providerId);
+
+    void DeleteProduct(String productId);
+
+    void SetProduct(Product product);
+
+    void AddProduct(Product product);
 }
