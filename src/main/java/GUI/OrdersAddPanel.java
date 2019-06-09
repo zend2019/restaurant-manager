@@ -1,6 +1,9 @@
 package main.java.GUI;
 
+import main.java.BL.Contract.Product;
+import main.java.common.DateUtils;
 import main.java.common.StringUtils;
+import main.java.common.constants.Constants;
 import main.java.common.constants.DatabaseConstants;
 import main.java.common.constants.GUIConstants;
 import main.java.database.DatabaseController;
@@ -54,13 +57,10 @@ public class OrdersAddPanel extends IWorkPanel{
     private Vector<String> categories;
 
     //TEST FIELDS//
-    HashMap searchParams = new HashMap();
-    private String[] itemsColumnNames = {"Item name","Category","Provider","Available units","Cost per Item","Expected delivery"};
-    private String[] orderColumnNames = {"Item name","Category","Provider","Units","Cost per Item","Expected delivery"};
-    private String[][] testData ={{"555","Shubi","kabubi","shabubi","2","20.8.15","2"}
-                                    ,{"123","Halo","this is dog","kuku","5","20.8.18","2"}};
-    private String[] addOrderTest = {"11-22","milky","buku","kuku","5","2020","4"};
-    private String orderItem;
+    private String[] itemsColumnNames = {"ID","Item name","Category","Provider","Available units","Price per Item","Expiration date"};
+    private String[] orderColumnNames = {"ID","Item name","Category","Provider","Selected units","Price per Item","Expiration date"};
+    private String[] addOrderTest = {"11-22","milky","buku","kuku","5","2020"};
+    private String orderItemId;
     private int orderItemAmount;
 
     public OrdersAddPanel(){
@@ -355,7 +355,8 @@ public class OrdersAddPanel extends IWorkPanel{
                 Point point = mouseEvent.getPoint();
                 int row = table.rowAtPoint(point);
                 if (mouseEvent.getClickCount() == 2 && table.getSelectedRow() != -1) {
-                    orderItem = itemsTable.getValueAt(row, 0).toString();
+                    orderItemId = itemsTable.getValueAt(row, 0).toString();
+                    itemDialog.numOfItemsTF.setText("");
                     itemDialog.setVisible(true);
                 }
             }
@@ -369,9 +370,9 @@ public class OrdersAddPanel extends IWorkPanel{
             public void setItemInOrder(int units) {
                 orderItemAmount = units;
                 System.out.println(orderItemAmount);
-                //TODO: function that populates the item details based on itemId and updated units into Array or list
-                ordersTableModel.addRow(addOrderTest); //insert test data to order table
-                orderSum += calculateItemSum(addOrderTest[4],addOrderTest[5]); //update the order sum by teh price (TODO: update the test data)
+                String[] productToAdd = convertProductToOrderArr(DatabaseController.getProductByProductId(orderItemId));
+                ordersTableModel.addRow(productToAdd);
+                orderSum += calculateItemSum(productToAdd[4],productToAdd[5]); //update the order sum by the price (TODO: update the test data)
                 setOrderSumFieldLabel(); //updates the sum label
             }
         });
@@ -394,8 +395,8 @@ public class OrdersAddPanel extends IWorkPanel{
 
     //TODO: update according to the data that will be received
     //TODO: consider moving to a utils class
-    private Integer calculateItemSum(String numOfItems, String itemPrice){
-        Integer numItems = valueOf(numOfItems), price = valueOf(itemPrice);
+    private int calculateItemSum(String numOfItems, String itemPrice){
+        int numItems = valueOf(numOfItems), price = valueOf(itemPrice);
         return numItems * price;
     }
 
@@ -424,8 +425,16 @@ public class OrdersAddPanel extends IWorkPanel{
             public void actionPerformed(ActionEvent e) {
                 if(checkAtleastOneNotEmpty()){
                     setValidationLabelsVisibility(false);
-                    searchParams = buildSearchParameters();
-                    //TODO: call method that will use the search params and return the right data
+                    Vector<Product> x = DatabaseController.getListOfProducts(buildSearchParameters());
+                    if(x.size() == 0) {
+                        itemsTableModel.setDataVector(convertProductVectorToProductMatrix(x), itemsColumnNames);
+                        noResults.setVisible(true);
+                    }
+                    else{
+                        setValidationLabelsVisibility(false);
+                        itemsTableModel.setDataVector(convertProductVectorToProductMatrix(x), itemsColumnNames);
+                        searchCompleted.setVisible(true);
+                    }
                 }
                 else{
                     setValidationLabelsVisibility(false);
@@ -434,6 +443,39 @@ public class OrdersAddPanel extends IWorkPanel{
 
             }
         });
+    }
+
+    //"Item name","Category","Provider","Available units","Price per Item","Expiration date"
+    private String[][] convertProductVectorToProductMatrix(Vector<Product> productVector) {
+        String[][] matrix = new String[productVector.size()][Constants.PRODUCTS_MATRIX_COLUMNS];
+        for (int i = 0; i < productVector.size(); i++) {
+            String[] array = {
+                    productVector.get(i).getProductId(),
+                    productVector.get(i).getProductName(),
+                    String.valueOf(productVector.get(i).getCategory()),
+                    DatabaseController.getProviderNameById(productVector.get(i).getProviderId()),
+                    String.valueOf(productVector.get(i).getCurrentProductAmount()),
+                    productVector.get(i).getPrice(),
+                    DateUtils.formatDateToString(productVector.get(i).getExpirationDate())
+            };
+            matrix[i] = array;
+        }
+
+        return matrix;
+    }
+
+    //{"ID", "Item name", "Category", "Provider", "Selected units", "Expiration date"};
+    private String[] convertProductToOrderArr(Product product) {
+            String[] productArr = {
+                    product.getProductId(),
+                    product.getProductName(),
+                    String.valueOf(product.getCategory()),
+                    DatabaseController.getProviderNameById(product.getProviderId()),
+                    String.valueOf(orderItemAmount),
+                    product.getPrice(),
+                    DateUtils.formatDateToString(product.getExpirationDate())
+            };
+        return productArr;
     }
 
     private HashMap buildSearchParameters() {
@@ -445,7 +487,7 @@ public class OrdersAddPanel extends IWorkPanel{
             searchParams.put(DatabaseConstants.PRODUCT_TABLE_ITEM_CATEGORY_COLUMN, StringUtils.getStringWithSingleQuotes(categoryList.getSelectedItem().toString()));
 
         if(!itemNameTF.getText().equals(GUIConstants.EMPTY_FIELD))
-            searchParams.put(DatabaseConstants.PRODUCT_TABLE_ITEM_NAME_COLUMN,itemNameTF.getText());
+            searchParams.put(DatabaseConstants.PRODUCT_TABLE_ITEM_NAME_COLUMN,StringUtils.getStringWithSingleQuotes(itemNameTF.getText()));
 
         if(!unitsTF.getText().equals(GUIConstants.EMPTY_FIELD))
             searchParams.put(DatabaseConstants.PRODUCT_TABLE_ITEM_CURRENT_AMOUNT_COLUMN,unitsTF.getText());

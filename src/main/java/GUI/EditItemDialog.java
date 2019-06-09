@@ -13,9 +13,9 @@ import static java.lang.Integer.valueOf;
 public class EditItemDialog extends JDialog {
     private JLabel numOfItemsLabel = new JLabel("Items to add? ");
     private JLabel exceedLimit = new JLabel(GUIConstants.EXCEED_LIMIT);
-    private JTextField numOfItemsTF = new JTextField();
     private JButton addButton = new JButton("Add");
     private DialogListener dialogListener;
+    public JTextField numOfItemsTF = new JTextField();
 
     public EditItemDialog(JFrame parent){
         super(parent,"Edit item",false);
@@ -57,6 +57,7 @@ public class EditItemDialog extends JDialog {
         gcMain.gridwidth = 3;
         gcMain.gridx = 0;
         gcMain.anchor = GridBagConstraints.CENTER;
+
         add(exceedLimit,gcMain);
         exceedLimit.setForeground(Color.red);
         exceedLimit.setVisible(false);
@@ -77,7 +78,6 @@ public class EditItemDialog extends JDialog {
             public void actionPerformed(ActionEvent e) {
                 int itemsToAdd = valueOf(numOfItemsTF.getText());
                 //TODO: function that checks the items entered do not exceed limit
-                //TODO: deduct the number of items from the DB, update the table ? or should we update once full order is placed
                 if(dialogListener != null){
                     dialogListener.setItemInOrder(itemsToAdd);
                 }
