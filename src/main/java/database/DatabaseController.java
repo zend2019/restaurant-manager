@@ -311,7 +311,7 @@ public class DatabaseController {
     delete from sqlite_sequence where name='your_table';
      */
     public static Vector<Product> getListOfProducts(HashMap hashMap) {
-        String sql = "SELECT* FROM product WHERE " + getDynamicWhereQueryBuilder(hashMap);
+        String sql = "SELECT * FROM product WHERE " + getDynamicWhereQueryBuilder(hashMap);
         Connection conn = DatabaseAccessManager.getConnection();
         Vector<Product> productsList = new Vector<>();
 
@@ -367,7 +367,6 @@ public class DatabaseController {
         }
         return productsList;
     }
-
 
     public static Vector<Order> getListOfOrders(HashMap hashMap){
         String sql = "SELECT order_id,product.provider,total_amount,order_status,order_date,delivery_date\n" +
@@ -474,7 +473,7 @@ public class DatabaseController {
     }
 
     public static List<Product> getProductByProvider(String providerId) {
-        String sql = "SELECT* FROM product WHERE provider=" + providerId;
+        String sql = "SELECT * FROM product WHERE provider=" + providerId;
         Connection conn = DatabaseAccessManager.getConnection();
         Vector<Product> products = new Vector<>();
 
@@ -501,6 +500,32 @@ public class DatabaseController {
             DatabaseAccessManager.closeConnection(conn);
         }
         return products;
+    }
+
+    public static Product getProductByProductId(String productId) {
+        String sql = "SELECT * FROM product WHERE id =" + productId;
+        Connection conn = DatabaseAccessManager.getConnection();
+        Product product = new Product();
+
+        try {
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+                product.setProductId(rs.getString(DatabaseConstants.PRODUCT_TABLE_ITEM_ID_COLUMN));
+                product.setProductName(rs.getString(DatabaseConstants.PRODUCT_TABLE_ITEM_NAME_COLUMN));
+                product.setPrice(rs.getString(DatabaseConstants.PRODUCT_TABLE_ITEM_PRICE_COLUMN));
+                product.setExpirationDate(DateUtils.getDateByString(rs.getString(DatabaseConstants.PRODUCT_TABLE_ITEM_EXPIRATION_DATE_COLUMN)));
+                product.setProviderId(rs.getString(DatabaseConstants.PRODUCT_TABLE_ITEM_PROVIDER_COLUMN));
+                product.setCategory(Category.valueOf(rs.getString(DatabaseConstants.PRODUCT_TABLE_ITEM_CATEGORY_COLUMN)));
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } catch (ParseException e) {
+            e.printStackTrace();
+        } finally {
+            DatabaseAccessManager.closeConnection(conn);
+        }
+        return product;
     }
 
     public static void editUser(User user, int userId) {

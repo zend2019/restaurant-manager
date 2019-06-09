@@ -11,4 +11,5 @@ public class Constants {
     public static final int INVENTORY_MATRIX_COLUMNS = 7;
     public static final int ORDER_MATRIX_COLUMNS = 6;
     public static final int ORDERED_ITEMS_MATRIX_COLUMNS = 5;
+    public static final int PRODUCTS_MATRIX_COLUMNS = 6;
 }
