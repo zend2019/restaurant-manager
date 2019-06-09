@@ -1,9 +1,28 @@
 package main.java.BL.Contract;
 
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 public class Order {
+    private int orderId;
+    private List<HashMap> orderedProducts = new ArrayList<>();
+    private Double totalAmount;
+    private int rating;
+    private Date OrderDate;
+    private Date deliveryDate;
+    private OrderStatus orderStatus;
+
+    public List<HashMap> getOrderedProducts(){
+        return  orderedProducts;
+    }
+
+    public void setOrderedProducts(Vector<Vector> data, int iProductId, int iOrderedUnits){
+        for (int i = 0; i < data.size(); i++) {
+            HashMap map = new HashMap();
+            map.put(data.get(i).get(iProductId),data.get(i).get(iOrderedUnits));
+            orderedProducts.add(map);
+        }
+    }
+
     public Date getDeliveryDate() {
         return deliveryDate;
     }
@@ -14,10 +33,6 @@ public class Order {
 
     public Integer getOrderId() {
         return orderId;
-    }
-
-    public void setOrderId(Integer orderId) {
-        this.orderId = orderId;
     }
 
     public Double getTotalAmount() {
@@ -49,22 +64,6 @@ public class Order {
         this.rating = rating;
     }
 
-    public List<String> getProductIds() {
-        return productIds;
-    }
-
-    public void setProductIds(List<String> productIds) {
-        this.productIds = productIds;
-    }
-
-    public String getProviderId() {
-        return providerId;
-    }
-
-    public void setProviderId(String providerId) {
-        this.providerId = providerId;
-    }
-
     public Date getOrderDate() {
         return OrderDate;
     }
@@ -73,12 +72,4 @@ public class Order {
         OrderDate = orderDate;
     }
 
-    private Date deliveryDate;
-    private int orderId;
-    private List<String> productIds;
-    private String providerId;
-    private Double totalAmount;
-    private int rating;
-    private Date OrderDate;
-    private OrderStatus orderStatus;
 }

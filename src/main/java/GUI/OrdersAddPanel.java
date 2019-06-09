@@ -1,5 +1,8 @@
 package main.java.GUI;
 
+import main.java.BL.Contract.Logic.OrderManager;
+import main.java.BL.Contract.Order;
+import main.java.BL.Contract.OrderStatus;
 import main.java.BL.Contract.Product;
 import main.java.common.DateUtils;
 import main.java.common.StringUtils;
@@ -16,6 +19,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Vector;
 
@@ -393,7 +398,6 @@ public class OrdersAddPanel extends IWorkPanel{
         });
     }
 
-    //TODO: update according to the data that will be received
     //TODO: consider moving to a utils class
     private int calculateItemSum(String numOfItems, String itemPrice){
         int numItems = valueOf(numOfItems), price = valueOf(itemPrice);
@@ -408,13 +412,18 @@ public class OrdersAddPanel extends IWorkPanel{
         placeOrderButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                Vector data = ordersTableModel.getDataVector();
-                //TODO: how do we create the order ID ??
+                Vector<Vector> data = ordersTableModel.getDataVector();
+                Order order = new Order();
+                order.setOrderedProducts(data,0,4);
+                order.setTotalAmount(orderSum.doubleValue());
+                order.setOrderStatus(OrderStatus.inProcess);
+                order.setOrderDate(new Date(System.currentTimeMillis()));
+                order.setDeliveryDate(new Date(System.currentTimeMillis()));
+                order.setOrderId(DatabaseController.addOrder(order));
+
                 //passing the order id to the dialog
-                orderPlacedDialog.setPlacedOrderId(123456); //test orderId
+                orderPlacedDialog.setPlacedOrderId(order.getOrderId()); //test orderId
                 orderPlacedDialog.setVisible(true);
-                //TODO: populate the data vector to make according changes in the DB
-                //TODO: now the orders table should contain this orders details & order status is in process
             }
         });
     }

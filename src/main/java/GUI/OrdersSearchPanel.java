@@ -60,7 +60,7 @@ public class OrdersSearchPanel extends IWorkPanel {
 
     //Table Column FIELDS//
     private String[] itemsColumnNames = {"Item name","Category","Provider","Ordered Amount","Cost"};
-    private String[] ordersColumnNames = {"Order ID","Provider","Total amount","Order status","Order Date","Delivery Date"};
+    private String[] ordersColumnNames = {"Order ID","Total amount","Order status","Order Date","Delivery Date"};
 
     public OrdersSearchPanel(){
             initialization();
@@ -385,7 +385,6 @@ public class OrdersSearchPanel extends IWorkPanel {
         for (int i = 0; i < orderVector.size(); i++) {
             String[] array = {
                     orderVector.get(i).getOrderId().toString(),
-                    DatabaseController.getProviderNameById(orderVector.get(i).getProviderId()),
                     orderVector.get(i).getTotalAmount().toString(),
                     String.valueOf(orderVector.get(i).getOrderStatus()),
                     DateUtils.formatDateToString(orderVector.get(i).getOrderDate()),
