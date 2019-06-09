@@ -55,7 +55,7 @@ public class DatabaseController {
 //        Order order = new Order();
 //        order.setOrderId(1);
 //        order.setProductType("Hairline");
-//        order.setProvider(provider);
+//        order.setProviderId(provider);
 //        order.setDeliveryDate(new SimpleDateFormat("dd/MM/yyyy").parse("01/01/1993"));
 //        order.setTotalAmount(22.56);
 //        addOrder(order);
@@ -218,7 +218,7 @@ public class DatabaseController {
     public static int addOrder(Order order) {
         int id = order.getOrderId();
         String productType = String.join(",", order.getProductIds()); //String.join(",",order.getProductIds());
-        String provider = order.getProvider();
+        String provider = order.getProviderId();
         Date deliveryDate = order.getDeliveryDate();
         Double totalAmount = order.getTotalAmount();
         String sql = "INSERT INTO orders(id,product_id,provider,delivery_date,total_amount) VALUES(?,?,?,?,?)";
@@ -251,7 +251,7 @@ public class DatabaseController {
             order.setOrderId(rs.getInt("id"));
             List<String> d = new ArrayList<String>(Arrays.asList(rs.getString("product_id").split(",")));
             order.setProductIds(new ArrayList<String>(Arrays.asList(rs.getString("product_id").split(","))));
-            order.setProvider(rs.getString("provider"));
+            order.setProviderId(rs.getString("provider"));
             order.setDeliveryDate(rs.getDate("delivery_date"));
             order.setTotalAmount(rs.getDouble("total_amount"));
 
@@ -341,11 +341,65 @@ public class DatabaseController {
         return productsList;
     }
 
-    //TODO: add by the query:
-    //SELECT order_id,product.provider,total_amount,order_status,delivery_date
-    //FROM ordered_items JOIN product ON product.id=ordered_items.item_id
-    //JOIN orders ON ordered_items.order_id=orders.id
-    //public static Vector<Order> getListOfOrders(HashMap hashMap){}
+    public static Vector<Product> getListOfOrderedProductsByOrder(String orderId) {
+        String sql = "SELECT item_name,category,provider,ordered_units,price\n" +
+                     "FROM ordered_items JOIN product ON product.id=ordered_items.item_id\n WHERE order_id = "+ orderId;
+        Connection conn = DatabaseAccessManager.getConnection();
+        Vector<Product> productsList = new Vector<>();
+
+        try {
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+
+                Product product = new Product();
+                product.setProductName(rs.getString(DatabaseConstants.PRODUCT_TABLE_ITEM_NAME_COLUMN));
+                product.setCategory(Category.valueOf(rs.getString(DatabaseConstants.PRODUCT_TABLE_ITEM_CATEGORY_COLUMN)));
+                product.setProviderId(rs.getString(DatabaseConstants.PRODUCT_TABLE_ITEM_PROVIDER_COLUMN));
+                product.setPrice(rs.getString(DatabaseConstants.PRODUCT_TABLE_ITEM_PRICE_COLUMN));
+                product.setCurrentProductAmount(rs.getInt(DatabaseConstants.ORDERED_ITEMS_TABLE_ORDERED_UNITS_COLUMN));
+                productsList.add(product);
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            DatabaseAccessManager.closeConnection(conn);
+        }
+        return productsList;
+    }
+
+
+    public static Vector<Order> getListOfOrders(HashMap hashMap){
+        String sql = "SELECT order_id,product.provider,total_amount,order_status,order_date,delivery_date\n" +
+                "    FROM ordered_items JOIN product ON product.id=ordered_items.item_id\n" +
+                "    JOIN orders ON ordered_items.order_id=orders.id WHERE " + getDynamicWhereQueryBuilder(hashMap);
+
+        Connection conn = DatabaseAccessManager.getConnection();
+        Vector<Order> ordersList = new Vector<>();
+
+        try {
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+
+                Order order = new Order();
+                order.setOrderId(rs.getInt(DatabaseConstants.ORDERED_ITEMS_TABLE_ORDER_ID_COLUMN));
+                order.setProviderId(rs.getString(DatabaseConstants.PRODUCT_TABLE_ITEM_PROVIDER_COLUMN));
+                order.setTotalAmount(rs.getDouble(DatabaseConstants.ORDERS_TABLE_TOTAL_AMOUNT_COLUMN));
+                order.setOrderStatus(OrderStatus.valueOf(rs.getString(DatabaseConstants.ORDERS_TABLE_ORDER_STATUS_COLUMN)));
+                order.setOrderDate(DateUtils.getDateByString(rs.getString(DatabaseConstants.ORDERS_TABLE_ORDER_DATE_COLUMN)));
+                order.setDeliveryDate(DateUtils.getDateByString(rs.getString(DatabaseConstants.ORDERS_TABLE_DELIVERY_DATE_COLUMN)));
+                ordersList.add(order);
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } catch (ParseException e) {
+            e.printStackTrace();
+        } finally {
+            DatabaseAccessManager.closeConnection(conn);
+        }
+        return ordersList;
+    }
 
     private static String getDynamicWhereQueryBuilder(HashMap hashMap) {
         StringBuilder whereQuery;

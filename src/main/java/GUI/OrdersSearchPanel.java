@@ -58,17 +58,10 @@ public class OrdersSearchPanel extends IWorkPanel {
     private JPanel tablesPanel;
     private Vector<String> providers;
     private Vector<String> categories;
-    //private Vector<String> items;
 
     //TEST FIELDS//
-    private HashMap searchParams = new HashMap();
-    private String[] itemsColumnNames = {"ID","Item name","Category","Provider","Ordered Amount","Cost"};
-    private String[][] items1TestData = {{"1313","kuku","dairy","Shufersal","5","451","15.12.2020"}
-                                        ,{"1314","lolo","meat","mega","57","41","21.01.2020"}};
-    private String[][] items2TestData = {{"1300","shubu","uniform","castro","5","200","N/A"}};
-    private String[] ordersColumnNames = {"Order ID","Provider ID","Total amount","Order status","Order Date","Delivery Date"};
-    private String[][] order1TestData ={{"555","2","999","Closed","10.05.19","15.05.19"}
-                                        ,{"44","1","23","Closed","11.05.19","14.05.19"}};
+    private String[] itemsColumnNames = {"Item name","Category","Provider","Ordered Amount","Cost"};
+    private String[] ordersColumnNames = {"Order ID","Provider","Total amount","Order status","Order Date","Delivery Date"};
 
     public OrdersSearchPanel(){
             initialization();
@@ -312,13 +305,10 @@ public class OrdersSearchPanel extends IWorkPanel {
     private void setComboBoxes() {
         setCurrentProvider();//TODO: should be adjusted live and not only when running the app first
         setCurrentCategories(); //TODO: same here
-        //setCurrentItems();//TODO: same here
         DefaultComboBoxModel providersModel = new DefaultComboBoxModel(providers);
         providersList.setModel(providersModel);
         DefaultComboBoxModel categoryModel = new DefaultComboBoxModel(categories);
         categoryList.setModel(categoryModel);
-        //DefaultComboBoxModel itemsModel = new DefaultComboBoxModel(items);
-        //itemList.setModel(itemsModel);
     }
 
     private void alignFieldSizes(){
@@ -331,12 +321,6 @@ public class OrdersSearchPanel extends IWorkPanel {
         orderDateChooser.setPreferredSize(fieldSize);
     }
 
-    /*
-    private void setCurrentItems() {
-        items = getAllProductsNames();
-        items.add(0,GUIConstants.SELECT_FIELD);
-    }
-    */
     private void setCurrentProvider() {
         providers = getAllProviderCompanyName();
         providers.add(0, GUIConstants.SELECT_FIELD);
@@ -357,15 +341,10 @@ public class OrdersSearchPanel extends IWorkPanel {
         ordersTable.getSelectionModel().addListSelectionListener(new ListSelectionListener(){
             @Override
             public void valueChanged(ListSelectionEvent event) {
-                String orderId = ordersTable.getValueAt(ordersTable.getSelectedRow(), 0).toString();
-                System.out.println(orderId);
-                //TODO: send orderId to SQL query builder -> get in return a 2D data array
-                //A test to see the data is changed upon setDataVector
-                if(orderId.equals("555")){
-                    itemsTableModel.setDataVector(items1TestData,itemsColumnNames);
-                }
-                else{
-                    itemsTableModel.setDataVector(items2TestData,itemsColumnNames);
+                if(ordersTable.getSelectedRow() >= 0) {
+                    String orderId = ordersTable.getValueAt(ordersTable.getSelectedRow(), 0).toString();
+                    Vector<Product> productList = DatabaseController.getListOfOrderedProductsByOrder(StringUtils.getStringWithSingleQuotes(orderId));
+                    itemsTableModel.setDataVector(convertProductVectorToOrderedItemsMatrix(productList), itemsColumnNames);
                 }
             }
         });
@@ -377,23 +356,18 @@ public class OrdersSearchPanel extends IWorkPanel {
             public void actionPerformed(ActionEvent e) {
                 if(checkAtleastOneNotEmpty()){
                     setValidationLabelsVisibility(false);
-                    searchParams = buildSearchParameters();
-                    //TODO: method returns Vector<Order> by the query
-                    //SELECT order_id,product.provider,total_amount,order_status,delivery_date
-                    //FROM ordered_items JOIN product ON product.id=ordered_items.item_id
-                    //JOIN orders ON ordered_items.order_id=orders.id
-                    /*
-                    Vector<Order> x = DatabaseController.getListOfOrders(buildSearchProductParameters());
+                    Vector<Order> x = DatabaseController.getListOfOrders(buildSearchParameters());
                     if(x.size() == 0) {
                         ordersTableModel.setDataVector(convertOrderVectorToOrderMatrix(x), ordersColumnNames);
+                        itemsTableModel.setDataVector(null,itemsColumnNames);
                         noResults.setVisible(true);
                     }
                     else{
                         setValidationLabelsVisibility(false);
                         ordersTableModel.setDataVector(convertOrderVectorToOrderMatrix(x), ordersColumnNames);
+                        itemsTableModel.setDataVector(null,itemsColumnNames);
                         searchCompleted.setVisible(true);
                     }
-                    */
                 }
                 else{
                     setValidationLabelsVisibility(false);
@@ -410,11 +384,28 @@ public class OrdersSearchPanel extends IWorkPanel {
         for (int i = 0; i < orderVector.size(); i++) {
             String[] array = {
                     orderVector.get(i).getOrderId().toString(),
-                    //orderVector.get(i).getProvider(), //TODO: is it ID or name??? should be Id
+                    DatabaseController.getProviderNameById(orderVector.get(i).getProviderId()),
                     orderVector.get(i).getTotalAmount().toString(),
                     String.valueOf(orderVector.get(i).getOrderStatus()),
-                    //TODO: add order date
+                    DateUtils.formatDateToString(orderVector.get(i).getOrderDate()),
                     DateUtils.formatDateToString(orderVector.get(i).getDeliveryDate())
+            };
+            matrix[i] = array;
+        }
+
+        return matrix;
+    }
+
+    //"Item name","Category","Provider","Ordered Amount","Price"
+    private String[][] convertProductVectorToOrderedItemsMatrix(Vector<Product> productVector) {
+        String[][] matrix = new String[productVector.size()][Constants.ORDERED_ITEMS_MATRIX_COLUMNS];
+        for (int i = 0; i < productVector.size(); i++) {
+            String[] array = {
+                    productVector.get(i).getProductName(),
+                    String.valueOf(productVector.get(i).getCategory()),
+                    DatabaseController.getProviderNameById(productVector.get(i).getProviderId()),
+                    String.valueOf(productVector.get(i).getCurrentProductAmount()),
+                    productVector.get(i).getPrice()
             };
             matrix[i] = array;
         }
@@ -466,7 +457,6 @@ public class OrdersSearchPanel extends IWorkPanel {
         else
             return false;
     }
-
 
     @Override
     protected void setValidationLabelsVisibility(boolean visibility){
