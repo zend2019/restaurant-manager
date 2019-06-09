@@ -55,13 +55,13 @@ public class OrdersAddPanel extends IWorkPanel{
     private Integer orderSum = 0;
     private Vector<String> providers;
     private Vector<String> categories;
-
-    //TEST FIELDS//
-    private String[] itemsColumnNames = {"ID","Item name","Category","Provider","Available units","Price per Item","Expiration date"};
-    private String[] orderColumnNames = {"ID","Item name","Category","Provider","Selected units","Price per Item","Expiration date"};
-    private String[] addOrderTest = {"11-22","milky","buku","kuku","5","2020"};
     private String orderItemId;
     private int orderItemAmount;
+
+    //Tables column FIELDS//
+    private String[] itemsColumnNames = {"ID","Item name","Category","Provider","Available units","Price per Item","Expiration date"};
+    private String[] orderColumnNames = {"ID","Item name","Category","Provider","Selected units","Price per Item","Expiration date"};
+
 
     public OrdersAddPanel(){
         initialization();
@@ -385,7 +385,7 @@ public class OrdersAddPanel extends IWorkPanel{
                 Point point = mouseEvent.getPoint();
                 int row = table.rowAtPoint(point);
                 if (mouseEvent.getClickCount() == 2 && table.getSelectedRow() != -1) {
-                    orderSum -= calculateItemSum(addOrderTest[4],addOrderTest[5]); //update the order sum by the price (TODO: update the test data)
+                    orderSum -= calculateItemSum(ordersTableModel.getValueAt(row,4).toString(),ordersTableModel.getValueAt(row,5).toString());
                     setOrderSumFieldLabel(); //updates the sum label
                     ordersTableModel.removeRow(row);
                 }
