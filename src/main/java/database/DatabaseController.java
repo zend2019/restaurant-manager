@@ -168,6 +168,49 @@ public class DatabaseController {
     }
 
 
+    public static void editProduct(Product product) {
+        String id = product.getProductId();
+        String name = product.getProductName();
+        int category = getCategoryIdByName(StringUtils.getStringWithSingleQuotes(product.getCategory().toString()));
+        String price = product.getPrice();
+        String expirationDate = DateUtils.formatDateToString(product.getExpirationDate()); //todo string casting might cause issues...need to check
+        int currentAmount = product.getCurrentProductAmount();
+        int requiredAmount = product.getRequiredAmount();
+        String provider = product.getProviderId();
+        String sql = "Update product set (id,item_name,category,provider,price,expiration_date,current_amount,required_amount) VALUES(?,?,?,?,?,?,?,?) where id=" + product.getProductId();
+        Connection conn = DatabaseAccessManager.getConnection();
+        try {
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, id);
+            pstmt.setString(2, name);
+            pstmt.setInt(3, category);
+            pstmt.setString(4, provider);
+            pstmt.setString(5, price);
+            pstmt.setString(6, expirationDate);
+            pstmt.setInt(7, currentAmount);
+            pstmt.setInt(8, requiredAmount);
+
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            DatabaseAccessManager.closeConnection(conn);
+        }
+    }
+
+    public static void deleteProduct(String productId) {
+        String sql = "DELETE from product where id =" + productId;
+        Connection conn = DatabaseAccessManager.getConnection();
+        try {
+            Statement stmt = conn.createStatement();
+            stmt.execute(sql);
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            DatabaseAccessManager.closeConnection(conn);
+        }
+    }
+
     public static List<Product> getProductList(int providerId) {
         String sql = "SELECT* FROM product WHERE providerId = ? ";
         Connection conn = DatabaseAccessManager.getConnection();
@@ -262,6 +305,31 @@ public class DatabaseController {
             DatabaseAccessManager.closeConnection(conn);
         }
         return order;
+    }
+
+    public static Vector<Order> getAllOrders() {
+        Vector<Order> orders = new Vector<Order>();
+        String sql = "SELECT * FROM orders";
+        Connection conn = DatabaseAccessManager.getConnection();
+        try {
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
+            while (rs.next()) {
+                Order order = new Order();
+                order.setOrderId(rs.getInt("id"));
+                List<String> d = new ArrayList<String>(Arrays.asList(rs.getString("product_id").split(",")));
+                order.setProductIds(new ArrayList<String>(Arrays.asList(rs.getString("product_id").split(","))));
+                order.setProvider(rs.getString("provider"));
+                order.setDeliveryDate(rs.getDate("delivery_date"));
+                order.setTotalAmount(rs.getDouble("total_amount"));
+                orders.add(order);
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            DatabaseAccessManager.closeConnection(conn);
+        }
+        return orders;
     }
 
     public static User getUserById(int id) {
@@ -419,7 +487,7 @@ public class DatabaseController {
     public static void editOrder(int orderId, Order order) {
     }
 
-    public static List<Product> getProductByProvider(String providerId) {
+    public static Vector<Product> getProductByProvider(String providerId) {
         String sql = "SELECT* FROM product WHERE provider=" + providerId;
         Connection conn = DatabaseAccessManager.getConnection();
         Vector<Product> products = new Vector<>();

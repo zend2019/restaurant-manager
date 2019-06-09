@@ -1,9 +1,12 @@
 package main.java.BL.Contract.Logic;
+
 import main.java.BL.Contract.Order;
 import main.java.BL.Contract.OrderStatus;
 import main.java.common.exceptions.RestaurantManagerException;
 import main.java.dataAccess.IRestaurantRepository;
 import main.java.database.DatabaseController;
+
+import java.util.Vector;
 
 public class OrderManager implements IOrderManager {
 
@@ -42,7 +45,7 @@ public class OrderManager implements IOrderManager {
 
     @Override
     public void CompletedOrder(int orderId) {
-        Order order = restaurantRepository.GetOrder(orderId);
+        Order order = DatabaseController.getOrderById(orderId);
         order.setOrderStatus(OrderStatus.completed);
         restaurantRepository.EditOrder(orderId, order);
     }
@@ -53,5 +56,16 @@ public class OrderManager implements IOrderManager {
         order.setRating(rating);
         DatabaseController.editOrder(orderId, order);
 
+    }
+
+    public Vector<Order> GetAllOpenOrder() {
+        Vector<Order> orders = DatabaseController.getAllOrders();
+        Vector<Order> openOrder = new Vector<Order>();
+        for (Order order : orders) {
+
+            if (order.getOrderStatus() == OrderStatus.inProcess)
+                openOrder.add(order);
+        }
+        return openOrder;
     }
 }
