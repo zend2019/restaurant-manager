@@ -38,7 +38,6 @@ public class OrdersSearchPanel extends IWorkPanel {
     private JLabel searchCompleted;
     private JComboBox providersList;
     private JComboBox categoryList;
-    //private JComboBox itemList;
     private JTextField orderIdTF;
     private JTextField itemNameTF;
     private JCheckBox openOrderCB;
@@ -59,7 +58,7 @@ public class OrdersSearchPanel extends IWorkPanel {
     private Vector<String> providers;
     private Vector<String> categories;
 
-    //TEST FIELDS//
+    //Table Column FIELDS//
     private String[] itemsColumnNames = {"Item name","Category","Provider","Ordered Amount","Cost"};
     private String[] ordersColumnNames = {"Order ID","Provider","Total amount","Order status","Order Date","Delivery Date"};
 
@@ -85,7 +84,6 @@ public class OrdersSearchPanel extends IWorkPanel {
         searchCompleted = new JLabel(GUIConstants.SEARCH_COMPLETED);
         providersList = new JComboBox();
         categoryList = new JComboBox();
-        //itemList = new JComboBox();
         openOrderCB = new JCheckBox("In Process");
         closedOrderCB = new JCheckBox("Delivered");
         deliveryDateChooser = new JDateChooser();
@@ -94,9 +92,11 @@ public class OrdersSearchPanel extends IWorkPanel {
         orderIdTF = new JTextField(10);
         searchOrderButton = new JButton(GUIConstants.SEARCH_ORDER);
         itemsTableModel = new DefaultTableModel(null, itemsColumnNames);
-        itemsTable = new JTable(itemsTableModel);
+        itemsTable = new JTable(itemsTableModel){public boolean isCellEditable(int row, int column){
+                return false;
+            }};
         ordersTableModel = new DefaultTableModel(null,ordersColumnNames);
-        ordersTable = new JTable(ordersTableModel);
+        ordersTable = new JTable(ordersTableModel){ public boolean isCellEditable(int row, int column){return false; }};
         scrollOrdersTable = new JScrollPane(ordersTable,JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         scrollItemsTable = new JScrollPane(itemsTable,JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         searchPanel = new JPanel();
@@ -315,7 +315,6 @@ public class OrdersSearchPanel extends IWorkPanel {
         Dimension fieldSize = orderIdTF.getPreferredSize();
         providersList.setPreferredSize(fieldSize);
         categoryList.setPreferredSize(fieldSize);
-        //itemList.setPreferredSize(fieldSize);
         searchOrderButton.setPreferredSize(fieldSize);
         deliveryDateChooser.setPreferredSize(fieldSize);
         orderDateChooser.setPreferredSize(fieldSize);
