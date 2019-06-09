@@ -216,22 +216,34 @@ public class DatabaseController {
 
 
     public static int addOrder(Order order) {
-        int id = order.getOrderId();
-        String productType = String.join(",", order.getProductIds()); //String.join(",",order.getProductIds());
-        String provider = order.getProviderId();
-        Date deliveryDate = order.getDeliveryDate();
-        Double totalAmount = order.getTotalAmount();
-        String sql = "INSERT INTO orders(id,product_id,provider,delivery_date,total_amount) VALUES(?,?,?,?,?)";
+        int id=-1;
+        String sql = "INSERT INTO orders(order_date,delivery_date,total_amount,order_status) VALUES(?,?,?,?)";
         Connection conn = DatabaseAccessManager.getConnection();
         try {
             PreparedStatement pstmt = conn.prepareStatement(sql);
-            pstmt.setInt(1, id);
-            pstmt.setString(2, productType);
-            pstmt.setObject(3, provider);
-            pstmt.setString(4, String.valueOf(deliveryDate));
-            pstmt.setDouble(5, totalAmount);
+            pstmt.setString(1, DateUtils.formatDateToString(order.getOrderDate()));
+            pstmt.setString(2, DateUtils.formatDateToString(order.getDeliveryDate()));
+            pstmt.setDouble(3, order.getTotalAmount());
+            pstmt.setString(4, order.getOrderStatus().toString());
+            pstmt.executeQuery();
+            id = getTopOrderId();
 
-            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            DatabaseAccessManager.closeConnection(conn);
+        }
+        return id;
+    }
+
+    public static int getTopOrderId(){
+        int id = -1;
+        String sql = "SELECT MAX(id) FROM orders";
+        Connection conn = DatabaseAccessManager.getConnection();
+        try {
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
+            id = rs.getInt("MAX(id)");
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         } finally {
@@ -247,15 +259,12 @@ public class DatabaseController {
         try {
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(sql);
-//            while (rs.next()) {
-            order.setOrderId(rs.getInt("id"));
-            List<String> d = new ArrayList<String>(Arrays.asList(rs.getString("product_id").split(",")));
-            order.setProductIds(new ArrayList<String>(Arrays.asList(rs.getString("product_id").split(","))));
-            order.setProviderId(rs.getString("provider"));
-            order.setDeliveryDate(rs.getDate("delivery_date"));
-            order.setTotalAmount(rs.getDouble("total_amount"));
+            order.setOrderId(id);
+            order.setOrderDate(rs.getDate(DatabaseConstants.ORDERS_TABLE_ORDER_DATE_COLUMN));
+            order.setDeliveryDate(rs.getDate(DatabaseConstants.ORDERS_TABLE_DELIVERY_DATE_COLUMN));
+            order.setOrderStatus(OrderStatus.valueOf(rs.getString(DatabaseConstants.ORDERS_TABLE_ORDER_STATUS_COLUMN)));
+            order.setTotalAmount(rs.getDouble(DatabaseConstants.ORDERS_TABLE_TOTAL_AMOUNT_COLUMN));
 
-//        }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         } finally {
@@ -263,6 +272,7 @@ public class DatabaseController {
         }
         return order;
     }
+
 
     public static User getUserById(int id) {
         User user = new User();
@@ -383,7 +393,7 @@ public class DatabaseController {
 
                 Order order = new Order();
                 order.setOrderId(rs.getInt(DatabaseConstants.ORDERED_ITEMS_TABLE_ORDER_ID_COLUMN));
-                order.setProviderId(rs.getString(DatabaseConstants.PRODUCT_TABLE_ITEM_PROVIDER_COLUMN));
+                //order.setProviderId(rs.getString(DatabaseConstants.PRODUCT_TABLE_ITEM_PROVIDER_COLUMN));
                 order.setTotalAmount(rs.getDouble(DatabaseConstants.ORDERS_TABLE_TOTAL_AMOUNT_COLUMN));
                 order.setOrderStatus(OrderStatus.valueOf(rs.getString(DatabaseConstants.ORDERS_TABLE_ORDER_STATUS_COLUMN)));
                 order.setOrderDate(DateUtils.getDateByString(rs.getString(DatabaseConstants.ORDERS_TABLE_ORDER_DATE_COLUMN)));
