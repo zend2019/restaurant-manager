@@ -87,7 +87,9 @@ public class InventoryPanel extends IWorkPanel {
         searchButton = new JButton(GUIConstants.SEARCH);
         addButton = new JButton(GUIConstants.ADD_PRODUCT);
         model = new DefaultTableModel(null, inventoryColumnNames);
-        inventoryTable = new JTable(model);
+        inventoryTable = new JTable(model){ public boolean isCellEditable(int row, int column){
+            return false;
+        }};
         scrollTable = new JScrollPane(inventoryTable, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         searchPanel = new JPanel();
         tablePanel = new JPanel();
