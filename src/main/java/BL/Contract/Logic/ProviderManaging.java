@@ -28,20 +28,13 @@ public class ProviderManaging implements IProviderManaging {
     public void editProvider(Provider provider, int providerId) {
         DatabaseController.editProvider(provider,providerId);
     }
-
-
     @Override
     public List<Provider> GetProviderByCategory(Category category) {
         return DatabaseController.getProviderByCategory(category);
     }
-
     @Override
     public Vector<Product> GetProductsByProvider (String providerId){
       return   DatabaseController.getProductByProvider(providerId);
-
     }
-
-
-
 
 }

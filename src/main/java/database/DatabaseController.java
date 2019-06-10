@@ -260,19 +260,15 @@ public class DatabaseController {
 
     public static int addOrder(Order order) {
         int id = order.getOrderId();
-        String productType = String.join(",", order.getProductIds()); //String.join(",",order.getProductIds());
-        String provider = order.getProvider();
         Date deliveryDate = order.getDeliveryDate();
         Double totalAmount = order.getTotalAmount();
-        String sql = "INSERT INTO orders(id,product_id,provider,delivery_date,total_amount) VALUES(?,?,?,?,?)";
+        String sql = "INSERT INTO orders(id,delivery_date,total_amount) VALUES(?,?,?)";
         Connection conn = DatabaseAccessManager.getConnection();
         try {
             PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.setInt(1, id);
-            pstmt.setString(2, productType);
-            pstmt.setObject(3, provider);
-            pstmt.setString(4, String.valueOf(deliveryDate));
-            pstmt.setDouble(5, totalAmount);
+            pstmt.setString(2, String.valueOf(deliveryDate));
+            pstmt.setDouble(3, totalAmount);
 
             pstmt.executeUpdate();
         } catch (SQLException e) {
@@ -293,8 +289,6 @@ public class DatabaseController {
 //            while (rs.next()) {
             order.setOrderId(rs.getInt("id"));
             List<String> d = new ArrayList<String>(Arrays.asList(rs.getString("product_id").split(",")));
-            order.setProductIds(new ArrayList<String>(Arrays.asList(rs.getString("product_id").split(","))));
-            order.setProvider(rs.getString("provider"));
             order.setDeliveryDate(rs.getDate("delivery_date"));
             order.setTotalAmount(rs.getDouble("total_amount"));
 
@@ -318,8 +312,6 @@ public class DatabaseController {
                 Order order = new Order();
                 order.setOrderId(rs.getInt("id"));
                 List<String> d = new ArrayList<String>(Arrays.asList(rs.getString("product_id").split(",")));
-                order.setProductIds(new ArrayList<String>(Arrays.asList(rs.getString("product_id").split(","))));
-                order.setProvider(rs.getString("provider"));
                 order.setDeliveryDate(rs.getDate("delivery_date"));
                 order.setTotalAmount(rs.getDouble("total_amount"));
                 orders.add(order);
@@ -330,6 +322,45 @@ public class DatabaseController {
             DatabaseAccessManager.closeConnection(conn);
         }
         return orders;
+    }
+
+    public static HashMap<String, Integer> getOrderdItemByOrderId(Integer orderId) {
+        HashMap<String, Integer> result = new HashMap<>();
+        String sql = "SELECT * FROM ordered_items WHERE order_id = " + orderId;
+        Connection conn = DatabaseAccessManager.getConnection();
+        try {
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
+            while (rs.next()) {
+                result.put(rs.getString("item_id"),rs.getInt("amount"));
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            DatabaseAccessManager.closeConnection(conn);
+        }
+        return result;
+    }
+
+    public static void addOrderdItem (HashMap<String, Integer> products, int orderId){
+
+        String sql = "INSERT INTO ordered_items(order_id,item_id,amount) VALUES(?,?,?)";
+
+        for (Map.Entry p : products.entrySet()) {
+            Connection conn = DatabaseAccessManager.getConnection();
+            try {
+                PreparedStatement pstmt = conn.prepareStatement(sql);
+                pstmt.setInt(1, orderId);
+                pstmt.setString(2, p.getKey().toString());
+                pstmt.setInt(3, Integer.parseInt(p.getValue().toString()));
+
+                pstmt.executeUpdate();
+            } catch (SQLException e) {
+                System.out.println(e.getMessage());
+            } finally {
+                DatabaseAccessManager.closeConnection(conn);
+            }
+        }
     }
 
     public static User getUserById(int id) {

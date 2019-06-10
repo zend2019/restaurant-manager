@@ -1,6 +1,7 @@
 package main.java.BL.Contract;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 public class Order {
@@ -49,21 +50,6 @@ public class Order {
         this.rating = rating;
     }
 
-    public List<String> getProductIds() {
-        return productIds;
-    }
-
-    public void setProductIds(List<String> productIds) {
-        this.productIds = productIds;
-    }
-
-    public String getProvider() {
-        return provider;
-    }
-
-    public void setProvider(String provider) {
-        this.provider = provider;
-    }
 
     public Date getOrderDate() {
         return OrderDate;
@@ -72,11 +58,17 @@ public class Order {
     public void setOrderDate(Date orderDate) {
         OrderDate = orderDate;
     }
+    public HashMap<String, Integer> getProductIds() {
+        return productIds;
+    }
+
+    public void setProductIds(HashMap<String, Integer> productIds) {
+        this.productIds = productIds;
+    }
 
     private Date deliveryDate;
     private int orderId;
-    private List<String> productIds;
-    private String provider;
+    private HashMap<String,Integer> productIds;
     private Double totalAmount;
     private int rating;
     private Date OrderDate;

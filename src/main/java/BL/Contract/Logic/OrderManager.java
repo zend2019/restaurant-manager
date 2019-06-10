@@ -24,13 +24,16 @@ public class OrderManager implements IOrderManager {
             throw new RestaurantManagerException("Your order is above the current budget");
         }
         int orderId = DatabaseController.addOrder(order);
+        DatabaseController.addOrderdItem(order.getProductIds(), orderId);
 
         return orderId;
     }
 
     @Override
     public Order GetOrder(int orderId) {
-        return DatabaseController.getOrderById(orderId);
+        Order order = DatabaseController.getOrderById(orderId);
+        order.setProductIds(DatabaseController.getOrderdItemByOrderId(orderId));
+        return order;
     }
 
     @Override

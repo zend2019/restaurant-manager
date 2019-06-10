@@ -68,6 +68,14 @@ public class Product {
         this.productId = productId;
     }
 
+    public int getMaxAmountPerOrder() {
+        return MaxAmountPerOrder;
+    }
+
+    public void setMaxAmountPerOrder(int maxAmountPerOrder) {
+        MaxAmountPerOrder = maxAmountPerOrder;
+    }
+
     private String productName;
     private String price;
     private Date expirationDate;
@@ -76,4 +84,7 @@ public class Product {
     private Integer requiredAmount;
     private String providerId;
     private Category category;
+    private int MaxAmountPerOrder;
+
+
 }
