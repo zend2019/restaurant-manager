@@ -216,7 +216,7 @@ public class DatabaseController {
 
 
     public static int addOrder(Order order) {
-        int id=-1;
+        int id= -1;
         String sql = "INSERT INTO orders(order_date,delivery_date,total_amount,order_status) VALUES(?,?,?,?)";
         Connection conn = DatabaseAccessManager.getConnection();
         try {
@@ -225,7 +225,7 @@ public class DatabaseController {
             pstmt.setString(2, DateUtils.formatDateToString(order.getDeliveryDate()));
             pstmt.setDouble(3, order.getTotalAmount());
             pstmt.setString(4, order.getOrderStatus().toString());
-            pstmt.executeQuery();
+            pstmt.executeUpdate();
             id = getTopOrderId();
 
         } catch (SQLException e) {
@@ -233,6 +233,7 @@ public class DatabaseController {
         } finally {
             DatabaseAccessManager.closeConnection(conn);
         }
+
         return id;
     }
 

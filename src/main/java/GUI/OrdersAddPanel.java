@@ -38,6 +38,7 @@ public class OrdersAddPanel extends IWorkPanel{
     private JLabel oneRequired;
     private JLabel noResults;
     private JLabel searchCompleted;
+    private JLabel placeOrderErrorLabel;
     private JComboBox providersList;
     private JComboBox categoryList;
     private JTextField unitsTF;
@@ -88,6 +89,7 @@ public class OrdersAddPanel extends IWorkPanel{
         oneRequired = new JLabel(GUIConstants.ATLEAST_ONE_FIELD_REQUIRED);
         noResults = new JLabel(GUIConstants.NO_RESULTS);
         searchCompleted = new JLabel(GUIConstants.SEARCH_COMPLETED);
+        placeOrderErrorLabel = new JLabel(GUIConstants.PLACE_ORDER_ERROR);
         providersList = new JComboBox();
         categoryList = new JComboBox();
         unitsTF = new JTextField(10);
@@ -338,6 +340,12 @@ public class OrdersAddPanel extends IWorkPanel{
         gcPlaceOrderPanel.anchor = GridBagConstraints.FIRST_LINE_START;
         placeOrderPanel.add(placeOrderButton, gcPlaceOrderPanel);
 
+        gcPlaceOrderPanel.gridx = 3;
+        gcPlaceOrderPanel.anchor = GridBagConstraints.FIRST_LINE_START;
+        placeOrderErrorLabel.setVisible(false);
+        placeOrderErrorLabel.setForeground(Color.red);
+        placeOrderPanel.add(placeOrderErrorLabel, gcPlaceOrderPanel);
+
         ///// align fields sizes //////
         Dimension fieldSize = unitsTF.getPreferredSize();
         orderSumFieldLabel.setPreferredSize(fieldSize);
@@ -420,10 +428,14 @@ public class OrdersAddPanel extends IWorkPanel{
                 order.setOrderDate(new Date(System.currentTimeMillis()));
                 order.setDeliveryDate(new Date(System.currentTimeMillis()));
                 order.setOrderId(DatabaseController.addOrder(order));
-
-                //passing the order id to the dialog
-                orderPlacedDialog.setPlacedOrderId(order.getOrderId()); //test orderId
-                orderPlacedDialog.setVisible(true);
+                if(order.getOrderId()== -1)
+                    placeOrderErrorLabel.setVisible(true);
+                else
+                {
+                    //passing the order id to the dialog
+                    orderPlacedDialog.setPlacedOrderId(order.getOrderId());
+                    orderPlacedDialog.setVisible(true);
+                }
             }
         });
     }
@@ -520,5 +532,6 @@ public class OrdersAddPanel extends IWorkPanel{
         oneRequired.setVisible(visibility);
         searchCompleted.setVisible(visibility);
         noResults.setVisible(visibility);
+        placeOrderErrorLabel.setVisible(visibility);
     }
 }
