@@ -1,17 +1,19 @@
 package main.java.BL.Contract;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class Order {
     private int orderId;
+
+
     private List<HashMap> orderedProducts = new ArrayList<>();
     private Double totalAmount;
     private int rating;
     private Date OrderDate;
     private Date deliveryDate;
     private OrderStatus orderStatus;
+    private HashMap<String,Integer> productIds;
+
 
     public List<HashMap> getOrderedProducts(){
         return  orderedProducts;
@@ -82,11 +84,4 @@ public class Order {
         this.productIds = productIds;
     }
 
-    private Date deliveryDate;
-    private int orderId;
-    private HashMap<String,Integer> productIds;
-    private Double totalAmount;
-    private int rating;
-    private Date OrderDate;
-    private OrderStatus orderStatus;
 }

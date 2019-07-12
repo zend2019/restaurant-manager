@@ -49,7 +49,7 @@ public class OrderManager implements IOrderManager {
     @Override
     public void CompletedOrder(int orderId) {
         Order order = DatabaseController.getOrderById(orderId);
-        order.setOrderStatus(OrderStatus.completed);
+        order.setOrderStatus(OrderStatus.Completed);
         restaurantRepository.EditOrder(orderId, order);
     }
 

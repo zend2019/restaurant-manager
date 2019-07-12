@@ -340,8 +340,9 @@ public class DatabaseController {
     }
 
     public static HashMap<String, Integer> getOrderdItemByOrderId(Integer orderId) {
+
         HashMap<String, Integer> result = new HashMap<>();
-        String sql = "SELECT * FROM ordered_items WHERE order_id = " + orderId;
+        String sql = String.format("SELECT * FROM ordered_items WHERE %s = " + orderId,ORDERED_ITEMS_TABLE_ITEM_ID_COLUMN);
         Connection conn = DatabaseAccessManager.getConnection();
         try {
             Statement stmt = conn.createStatement();
