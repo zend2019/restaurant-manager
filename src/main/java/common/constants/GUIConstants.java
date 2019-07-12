@@ -16,7 +16,7 @@ public class GUIConstants {
     public static final String PROVIDER = "Provider: ";
     public static final String CATEGORY = "Category: ";
     public static final String ITEM_NAME = "Item name: ";
-    public static final String AVAILABLE_AMOUNT = "Available amount: ";
+    public static final String CURRENT_AMOUNT = "Current amount: ";
     public static final String REQUIRED_AMOUNT = "Required amount: ";
     public static final String EXPIRATION_DATE = "Expiration date: ";
     public static final String PRICE = "Price: ";
@@ -29,11 +29,13 @@ public class GUIConstants {
     public static final String SEARCH_ORDER = "Search Order";
     public static final String ADD_PRODUCT = "Add Product";
     public static final String PLACE_ORDER = "Place Order";
+    public static final String PLACE_ORDER_ERROR = "There was an error placing the order";
     public static final String SELECT_FIELD = "Select field";
     public static final String ZERO = "0";
 
     public static final String EMPTY_FIELD = "";
 
     public static final int INVENTORY_MATRIX_COLUMNS = 7;
+
 
 }

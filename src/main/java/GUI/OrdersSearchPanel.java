@@ -38,7 +38,6 @@ public class OrdersSearchPanel extends IWorkPanel {
     private JLabel searchCompleted;
     private JComboBox providersList;
     private JComboBox categoryList;
-    //private JComboBox itemList;
     private JTextField orderIdTF;
     private JTextField itemNameTF;
     private JCheckBox openOrderCB;
@@ -58,17 +57,10 @@ public class OrdersSearchPanel extends IWorkPanel {
     private JPanel tablesPanel;
     private Vector<String> providers;
     private Vector<String> categories;
-    //private Vector<String> items;
 
-    //TEST FIELDS//
-    private HashMap searchParams = new HashMap();
-    private String[] itemsColumnNames = {"ID","Item name","Category","Provider","Ordered Amount","Cost"};
-    private String[][] items1TestData = {{"1313","kuku","dairy","Shufersal","5","451","15.12.2020"}
-                                        ,{"1314","lolo","meat","mega","57","41","21.01.2020"}};
-    private String[][] items2TestData = {{"1300","shubu","uniform","castro","5","200","N/A"}};
-    private String[] ordersColumnNames = {"Order ID","Provider ID","Total amount","Order status","Order Date","Delivery Date"};
-    private String[][] order1TestData ={{"555","2","999","Closed","10.05.19","15.05.19"}
-                                        ,{"44","1","23","Closed","11.05.19","14.05.19"}};
+    //Table Column FIELDS//
+    private String[] itemsColumnNames = {"Item name","Category","Provider","Ordered Amount","Cost"};
+    private String[] ordersColumnNames = {"Order ID","Total amount","Order status","Order Date","Delivery Date"};
 
     public OrdersSearchPanel(){
             initialization();
@@ -92,7 +84,6 @@ public class OrdersSearchPanel extends IWorkPanel {
         searchCompleted = new JLabel(GUIConstants.SEARCH_COMPLETED);
         providersList = new JComboBox();
         categoryList = new JComboBox();
-        //itemList = new JComboBox();
         openOrderCB = new JCheckBox("In Process");
         closedOrderCB = new JCheckBox("Delivered");
         deliveryDateChooser = new JDateChooser();
@@ -101,9 +92,11 @@ public class OrdersSearchPanel extends IWorkPanel {
         orderIdTF = new JTextField(10);
         searchOrderButton = new JButton(GUIConstants.SEARCH_ORDER);
         itemsTableModel = new DefaultTableModel(null, itemsColumnNames);
-        itemsTable = new JTable(itemsTableModel);
+        itemsTable = new JTable(itemsTableModel){public boolean isCellEditable(int row, int column){
+                return false;
+            }};
         ordersTableModel = new DefaultTableModel(null,ordersColumnNames);
-        ordersTable = new JTable(ordersTableModel);
+        ordersTable = new JTable(ordersTableModel){ public boolean isCellEditable(int row, int column){return false; }};
         scrollOrdersTable = new JScrollPane(ordersTable,JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         scrollItemsTable = new JScrollPane(itemsTable,JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         searchPanel = new JPanel();
@@ -309,34 +302,26 @@ public class OrdersSearchPanel extends IWorkPanel {
         alignFieldSizes();
     }
 
-    private void setComboBoxes() {
+    @Override
+    protected void setComboBoxes() {
         setCurrentProvider();//TODO: should be adjusted live and not only when running the app first
         setCurrentCategories(); //TODO: same here
-        //setCurrentItems();//TODO: same here
         DefaultComboBoxModel providersModel = new DefaultComboBoxModel(providers);
         providersList.setModel(providersModel);
         DefaultComboBoxModel categoryModel = new DefaultComboBoxModel(categories);
         categoryList.setModel(categoryModel);
-        //DefaultComboBoxModel itemsModel = new DefaultComboBoxModel(items);
-        //itemList.setModel(itemsModel);
     }
 
-    private void alignFieldSizes(){
+    @Override
+    protected void alignFieldSizes(){
         Dimension fieldSize = orderIdTF.getPreferredSize();
         providersList.setPreferredSize(fieldSize);
         categoryList.setPreferredSize(fieldSize);
-        //itemList.setPreferredSize(fieldSize);
         searchOrderButton.setPreferredSize(fieldSize);
         deliveryDateChooser.setPreferredSize(fieldSize);
         orderDateChooser.setPreferredSize(fieldSize);
     }
 
-    /*
-    private void setCurrentItems() {
-        items = getAllProductsNames();
-        items.add(0,GUIConstants.SELECT_FIELD);
-    }
-    */
     private void setCurrentProvider() {
         providers = getAllProviderCompanyName();
         providers.add(0, GUIConstants.SELECT_FIELD);
@@ -357,15 +342,10 @@ public class OrdersSearchPanel extends IWorkPanel {
         ordersTable.getSelectionModel().addListSelectionListener(new ListSelectionListener(){
             @Override
             public void valueChanged(ListSelectionEvent event) {
-                String orderId = ordersTable.getValueAt(ordersTable.getSelectedRow(), 0).toString();
-                System.out.println(orderId);
-                //TODO: send orderId to SQL query builder -> get in return a 2D data array
-                //A test to see the data is changed upon setDataVector
-                if(orderId.equals("555")){
-                    itemsTableModel.setDataVector(items1TestData,itemsColumnNames);
-                }
-                else{
-                    itemsTableModel.setDataVector(items2TestData,itemsColumnNames);
+                if(ordersTable.getSelectedRow() >= 0) {
+                    String orderId = ordersTable.getValueAt(ordersTable.getSelectedRow(), 0).toString();
+                    Vector<Product> productList = DatabaseController.getListOfOrderedProductsByOrder(StringUtils.getStringWithSingleQuotes(orderId));
+                    itemsTableModel.setDataVector(convertProductVectorToOrderedItemsMatrix(productList), itemsColumnNames);
                 }
             }
         });
@@ -377,23 +357,18 @@ public class OrdersSearchPanel extends IWorkPanel {
             public void actionPerformed(ActionEvent e) {
                 if(checkAtleastOneNotEmpty()){
                     setValidationLabelsVisibility(false);
-                    searchParams = buildSearchParameters();
-                    //TODO: method returns Vector<Order> by the query
-                    //SELECT order_id,product.provider,total_amount,order_status,delivery_date
-                    //FROM ordered_items JOIN product ON product.id=ordered_items.item_id
-                    //JOIN orders ON ordered_items.order_id=orders.id
-                    /*
-                    Vector<Order> x = DatabaseController.getListOfOrders(buildSearchProductParameters());
+                    Vector<Order> x = DatabaseController.getListOfOrders(buildSearchParameters());
                     if(x.size() == 0) {
                         ordersTableModel.setDataVector(convertOrderVectorToOrderMatrix(x), ordersColumnNames);
+                        itemsTableModel.setDataVector(null,itemsColumnNames);
                         noResults.setVisible(true);
                     }
                     else{
                         setValidationLabelsVisibility(false);
                         ordersTableModel.setDataVector(convertOrderVectorToOrderMatrix(x), ordersColumnNames);
+                        itemsTableModel.setDataVector(null,itemsColumnNames);
                         searchCompleted.setVisible(true);
                     }
-                    */
                 }
                 else{
                     setValidationLabelsVisibility(false);
@@ -410,11 +385,27 @@ public class OrdersSearchPanel extends IWorkPanel {
         for (int i = 0; i < orderVector.size(); i++) {
             String[] array = {
                     orderVector.get(i).getOrderId().toString(),
-                    //orderVector.get(i).getProvider(), //TODO: is it ID or name??? should be Id
                     orderVector.get(i).getTotalAmount().toString(),
                     String.valueOf(orderVector.get(i).getOrderStatus()),
-                    //TODO: add order date
+                    DateUtils.formatDateToString(orderVector.get(i).getOrderDate()),
                     DateUtils.formatDateToString(orderVector.get(i).getDeliveryDate())
+            };
+            matrix[i] = array;
+        }
+
+        return matrix;
+    }
+
+    //"Item name","Category","Provider","Ordered Amount","Price"
+    private String[][] convertProductVectorToOrderedItemsMatrix(Vector<Product> productVector) {
+        String[][] matrix = new String[productVector.size()][Constants.ORDERED_ITEMS_MATRIX_COLUMNS];
+        for (int i = 0; i < productVector.size(); i++) {
+            String[] array = {
+                    productVector.get(i).getProductName(),
+                    String.valueOf(productVector.get(i).getCategory()),
+                    DatabaseController.getProviderNameById(productVector.get(i).getProviderId()),
+                    String.valueOf(productVector.get(i).getCurrentProductAmount()),
+                    productVector.get(i).getPrice()
             };
             matrix[i] = array;
         }
@@ -438,16 +429,16 @@ public class OrdersSearchPanel extends IWorkPanel {
             searchParams.put(DatabaseConstants.ORDERED_ITEMS_TABLE_ORDER_ID_COLUMN,orderIdTF.getText());
 
         if(orderDateChooser.getDate() != null)
-            searchParams.put(DatabaseConstants.ORDERS_TABLE_ORDER_DATE_COLUMN, DateUtils.formatDateToString(deliveryDateChooser.getDate()));
+            searchParams.put(DatabaseConstants.ORDERS_TABLE_ORDER_DATE_COLUMN, StringUtils.getStringWithSingleQuotes(DateUtils.formatDateToString(orderDateChooser.getDate())));
 
         if(deliveryDateChooser.getDate() != null)
-            searchParams.put(DatabaseConstants.ORDERS_TABLE_DELIVERY_DATE_COLUMN,DateUtils.formatDateToString(deliveryDateChooser.getDate()));
+            searchParams.put(DatabaseConstants.ORDERS_TABLE_DELIVERY_DATE_COLUMN,StringUtils.getStringWithSingleQuotes(DateUtils.formatDateToString(deliveryDateChooser.getDate())));
 
         if(closedOrderCB.isSelected())
-            searchParams.put(DatabaseConstants.ORDERS_TABLE_ORDER_STATUS_COLUMN, OrderStatus.valueOf("delivered"));
+            searchParams.put(DatabaseConstants.ORDERS_TABLE_ORDER_STATUS_COLUMN, StringUtils.getStringWithSingleQuotes(OrderStatus.valueOf("Delivered").toString()));
 
         if(openOrderCB.isSelected())
-            searchParams.put(DatabaseConstants.ORDERS_TABLE_ORDER_STATUS_COLUMN,OrderStatus.valueOf("inProcess"));
+            searchParams.put(DatabaseConstants.ORDERS_TABLE_ORDER_STATUS_COLUMN,StringUtils.getStringWithSingleQuotes(OrderStatus.valueOf("inProcess").toString()));
         return searchParams;
     }
 
@@ -466,7 +457,6 @@ public class OrdersSearchPanel extends IWorkPanel {
         else
             return false;
     }
-
 
     @Override
     protected void setValidationLabelsVisibility(boolean visibility){

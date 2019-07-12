@@ -73,7 +73,7 @@ public class InventoryPanel extends IWorkPanel {
         providerLabel = new JLabel(GUIConstants.PROVIDER);
         categoryLabel = new JLabel(GUIConstants.CATEGORY);
         itemNameLabel = new JLabel(GUIConstants.ITEM_NAME);
-        availableAmountLabel = new JLabel(GUIConstants.AVAILABLE_AMOUNT);
+        availableAmountLabel = new JLabel(GUIConstants.CURRENT_AMOUNT);
         currentAmountLabel = new JLabel(GUIConstants.REQUIRED_AMOUNT);
         dateLabel = new JLabel(GUIConstants.EXPIRATION_DATE);
         priceLabel = new JLabel(GUIConstants.PRICE);
@@ -87,7 +87,9 @@ public class InventoryPanel extends IWorkPanel {
         searchButton = new JButton(GUIConstants.SEARCH);
         addButton = new JButton(GUIConstants.ADD_PRODUCT);
         model = new DefaultTableModel(null, inventoryColumnNames);
-        inventoryTable = new JTable(model);
+        inventoryTable = new JTable(model){ public boolean isCellEditable(int row, int column){
+            return false;
+        }};
         scrollTable = new JScrollPane(inventoryTable, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         searchPanel = new JPanel();
         tablePanel = new JPanel();
@@ -141,7 +143,7 @@ public class InventoryPanel extends IWorkPanel {
 
         setComboBoxes();
 
-        searchPanel.setBorder(BorderFactory.createTitledBorder("Inventory"));
+        searchPanel.setBorder(BorderFactory.createTitledBorder("Restaurant Inventory"));
         searchPanel.setLayout(new GridBagLayout());
         GridBagConstraints gcSearchPanel = new GridBagConstraints();
         gcSearchPanel.fill = GridBagConstraints.CENTER;
@@ -266,7 +268,8 @@ public class InventoryPanel extends IWorkPanel {
         alignFieldSizes();
     }
 
-    private void alignFieldSizes() {
+    @Override
+    protected void alignFieldSizes() {
         Dimension fieldSize = itemNameTF.getPreferredSize();
         providersList.setPreferredSize(fieldSize);
         categoryList.setPreferredSize(fieldSize);
@@ -275,9 +278,10 @@ public class InventoryPanel extends IWorkPanel {
         dateChooser.setPreferredSize(fieldSize);
     }
 
-    private void setComboBoxes() {
-        setCurrentProvider();//TODO: should be adjusted live and not only when running the app first
-        setCurrentCategories(); //TODO: same here
+    @Override
+    protected void setComboBoxes() {
+        setCurrentProvider();
+        setCurrentCategories();
         DefaultComboBoxModel providersModel = new DefaultComboBoxModel(providers);
         providersList.setModel(providersModel);
         DefaultComboBoxModel categoryModel = new DefaultComboBoxModel(categories);
@@ -335,7 +339,9 @@ public class InventoryPanel extends IWorkPanel {
                     allRequired.setVisible(true);
                 } else {
                     setValidationLabelsVisibility(false);
-                    DatabaseController.addProduct(getProductProperties());
+                    Product product = new Product();
+                    product = getProductProperties();
+                    product.setProductId(DatabaseController.addProduct(product));
                     itemAdded.setVisible(true);
                 }
             }
@@ -398,7 +404,7 @@ public class InventoryPanel extends IWorkPanel {
             searchParams.put(DatabaseConstants.PRODUCT_TABLE_ITEM_PRICE_COLUMN, StringUtils.getStringWithSingleQuotes(priceTF.getText()));
 
         if (dateChooser.getDate() != null) {
-            searchParams.put(DatabaseConstants.PRODUCT_TABLE_ITEM_EXPIRATION_DATE_COLUMN, DateUtils.formatDateToString(dateChooser.getDate()));
+            searchParams.put(DatabaseConstants.PRODUCT_TABLE_ITEM_EXPIRATION_DATE_COLUMN, StringUtils.getStringWithSingleQuotes(DateUtils.formatDateToString(dateChooser.getDate())));
         }
         return searchParams;
     }
@@ -420,7 +426,6 @@ public class InventoryPanel extends IWorkPanel {
 
     private Product getProductProperties() {
         Product product = new Product();
-        //TODO: Item ID ?
         product.setProviderId(DatabaseController.getProviderIdByName(StringUtils.getStringWithSingleQuotes(providersList.getSelectedItem().toString())));
         product.setCategory(Category.valueOf(categoryList.getSelectedItem().toString()));
         product.setProductName(itemNameTF.getText());

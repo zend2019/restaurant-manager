@@ -1,9 +1,14 @@
 package main.java.GUI;
 
+import main.java.BL.Contract.Order;
+import main.java.BL.Contract.OrderStatus;
+import main.java.BL.Contract.Product;
+import main.java.common.DateUtils;
 import main.java.common.StringUtils;
 import main.java.common.constants.Constants;
 import main.java.common.constants.DatabaseConstants;
 import main.java.common.constants.GUIConstants;
+import main.java.database.DatabaseController;
 
 import javax.swing.*;
 import javax.swing.border.BevelBorder;
@@ -13,12 +18,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Vector;
 
 import static java.lang.Integer.valueOf;
 import static main.java.database.DatabaseController.getAllCategoryNames;
-import static main.java.database.DatabaseController.getAllProductsNames;
 import static main.java.database.DatabaseController.getAllProviderCompanyName;
 
 public class OrdersAddPanel extends IWorkPanel{
@@ -29,15 +34,19 @@ public class OrdersAddPanel extends IWorkPanel{
     private JLabel orderSumLabel;
     private JLabel orderSumFieldLabel;
     private JLabel oneRequired;
+    private JLabel noResults;
+    private JLabel searchCompleted;
+    private JLabel placeOrderErrorLabel;
     private JComboBox providersList;
     private JComboBox categoryList;
-    private JComboBox itemList;
     private JTextField unitsTF;
+    private JTextField itemNameTF;
     private JButton searchItemButton;
     private JButton placeOrderButton;
     private JTable itemsTable;
     private JTable orderTable;
-    private DefaultTableModel model;
+    private DefaultTableModel ordersTableModel;
+    private DefaultTableModel itemsTableModel;
     private JScrollPane scrollItemsTable;
     private JScrollPane scrollOrderTable;
     private JPanel searchPanel;
@@ -50,17 +59,13 @@ public class OrdersAddPanel extends IWorkPanel{
     private Integer orderSum = 0;
     private Vector<String> providers;
     private Vector<String> categories;
-    private Vector<String> items;
-
-    //TEST FIELDS//
-    HashMap searchParams = new HashMap();
-    private String[] itemsColumnNames = {"ID","Item name","Category","Provider","Available units","Cost per Item","Expected delivery"};
-    private String[] orderColumnNames = {"ID","Item name","Category","Provider","Units","Cost per Item","Expected delivery"};
-    private String[][] testData ={{"555","Shubi","kabubi","shabubi","2","20.8.15","2"}
-                                    ,{"123","Halo","this is dog","kuku","5","20.8.18","2"}};
-    private String[] addOrderTest = {"11-22","milky","buku","kuku","5","2020","4"};
-    private String orderItem;
+    private String orderItemId;
     private int orderItemAmount;
+
+    //Tables column FIELDS//
+    private String[] itemsColumnNames = {"ID","Item name","Category","Provider","Available units","Price per Item","Expiration date"};
+    private String[] orderColumnNames = {"ID","Item name","Category","Provider","Selected units","Price per Item","Expiration date"};
+
 
     public OrdersAddPanel(){
         initialization();
@@ -76,23 +81,25 @@ public class OrdersAddPanel extends IWorkPanel{
         providerLabel = new JLabel(GUIConstants.PROVIDER);
         categoryLabel = new JLabel(GUIConstants.CATEGORY);
         itemNameLabel = new JLabel(GUIConstants.ITEM_NAME);
-        unitsLabel = new JLabel(GUIConstants.AVAILABLE_AMOUNT);
+        unitsLabel = new JLabel(GUIConstants.CURRENT_AMOUNT);
         orderSumLabel = new JLabel(GUIConstants.ORDER_SUM);
         orderSumFieldLabel = new JLabel(GUIConstants.ZERO);
         oneRequired = new JLabel(GUIConstants.ATLEAST_ONE_FIELD_REQUIRED);
+        noResults = new JLabel(GUIConstants.NO_RESULTS);
+        searchCompleted = new JLabel(GUIConstants.SEARCH_COMPLETED);
+        placeOrderErrorLabel = new JLabel(GUIConstants.PLACE_ORDER_ERROR);
         providersList = new JComboBox();
         categoryList = new JComboBox();
-        itemList = new JComboBox();
         unitsTF = new JTextField(10);
+        itemNameTF = new JTextField(10);
         searchItemButton = new JButton(GUIConstants.SEARCH);
         placeOrderButton = new JButton(GUIConstants.PLACE_ORDER);
-        model = new DefaultTableModel(null,orderColumnNames);
-        itemsTable = new JTable(testData,itemsColumnNames){
-            public boolean isCellEditable(int row, int column){
+        ordersTableModel = new DefaultTableModel(null,orderColumnNames);
+        itemsTableModel = new DefaultTableModel(null,itemsColumnNames);
+        itemsTable = new JTable(itemsTableModel){public boolean isCellEditable(int row, int column){
             return false;
         }};
-        orderTable = new JTable(model){
-            public boolean isCellEditable(int row, int column){
+        orderTable = new JTable(ordersTableModel){public boolean isCellEditable(int row, int column){
                 return false;
             }};
         scrollItemsTable = new JScrollPane(itemsTable);
@@ -201,16 +208,7 @@ public class OrdersAddPanel extends IWorkPanel{
 
     @Override
     protected void setSearchPanelLayout() {
-        /////// Set combo-box ///////
-        setCurrentProvider();//TODO: should be adjusted live and not only when running the app first
-        setCurrentCategories(); //TODO: same here
-        setCurrentItems();//TODO: same here
-        DefaultComboBoxModel providersModel = new DefaultComboBoxModel(providers);
-        providersList.setModel(providersModel);
-        DefaultComboBoxModel categoryModel = new DefaultComboBoxModel(categories);
-        categoryList.setModel(categoryModel);
-        DefaultComboBoxModel itemsModel = new DefaultComboBoxModel(items);
-        itemList.setModel(itemsModel);
+        setComboBoxes();
 
         searchPanel.setBorder(BorderFactory.createTitledBorder("Orders"));
         searchPanel.setLayout(new GridBagLayout());
@@ -255,7 +253,7 @@ public class OrdersAddPanel extends IWorkPanel{
 
         gcSearchPanel.gridx = 1;
         gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_START;
-        searchPanel.add(itemList, gcSearchPanel);
+        searchPanel.add(itemNameTF, gcSearchPanel);
 
         gcSearchPanel.gridx = 2;
         gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_END;
@@ -272,26 +270,33 @@ public class OrdersAddPanel extends IWorkPanel{
         oneRequired.setVisible(false);
         searchPanel.add(oneRequired,gcSearchPanel);
 
-        /*
-        GUIConstants.SEARCH_COMPLETED.setForeground(Color.blue);
-        GUIConstants.SEARCH_COMPLETED.setVisible(false);
-        searchPanel.add(GUIConstants.SEARCH_COMPLETED, gcSearchPanel);
+        searchCompleted.setForeground(Color.blue);
+        searchCompleted.setVisible(false);
+        searchPanel.add(searchCompleted, gcSearchPanel);
 
-        GUIConstants.NO_RESULTS.setForeground(Color.blue);
-        GUIConstants.NO_RESULTS.setVisible(false);
-        searchPanel.add(GUIConstants.NO_RESULTS, gcSearchPanel);
-*/
-        ///// align fields sizes //////
+        noResults.setForeground(Color.blue);
+        noResults.setVisible(false);
+        searchPanel.add(noResults, gcSearchPanel);
+
+        alignFieldSizes();
+    }
+
+    @Override
+    protected void alignFieldSizes() {
         Dimension fieldSize = unitsTF.getPreferredSize();
         providersList.setPreferredSize(fieldSize);
         categoryList.setPreferredSize(fieldSize);
-        itemList.setPreferredSize(fieldSize);
         searchItemButton.setPreferredSize(fieldSize);
     }
 
-    private void setCurrentItems() {
-        items = getAllProductsNames();
-        items.add(0,GUIConstants.SELECT_FIELD);
+    @Override
+    protected void setComboBoxes() {
+        setCurrentProvider();//TODO: should be adjusted live and not only when running the app first
+        setCurrentCategories(); //TODO: same here
+        DefaultComboBoxModel providersModel = new DefaultComboBoxModel(providers);
+        providersList.setModel(providersModel);
+        DefaultComboBoxModel categoryModel = new DefaultComboBoxModel(categories);
+        categoryList.setModel(categoryModel);
     }
 
     private void setCurrentProvider() {
@@ -333,6 +338,12 @@ public class OrdersAddPanel extends IWorkPanel{
         gcPlaceOrderPanel.anchor = GridBagConstraints.FIRST_LINE_START;
         placeOrderPanel.add(placeOrderButton, gcPlaceOrderPanel);
 
+        gcPlaceOrderPanel.gridx = 3;
+        gcPlaceOrderPanel.anchor = GridBagConstraints.FIRST_LINE_START;
+        placeOrderErrorLabel.setVisible(false);
+        placeOrderErrorLabel.setForeground(Color.red);
+        placeOrderPanel.add(placeOrderErrorLabel, gcPlaceOrderPanel);
+
         ///// align fields sizes //////
         Dimension fieldSize = unitsTF.getPreferredSize();
         orderSumFieldLabel.setPreferredSize(fieldSize);
@@ -355,7 +366,8 @@ public class OrdersAddPanel extends IWorkPanel{
                 Point point = mouseEvent.getPoint();
                 int row = table.rowAtPoint(point);
                 if (mouseEvent.getClickCount() == 2 && table.getSelectedRow() != -1) {
-                    orderItem = itemsTable.getValueAt(row, 0).toString();
+                    orderItemId = itemsTable.getValueAt(row, 0).toString();
+                    itemDialog.numOfItemsTF.setText("");
                     itemDialog.setVisible(true);
                 }
             }
@@ -369,9 +381,9 @@ public class OrdersAddPanel extends IWorkPanel{
             public void setItemInOrder(int units) {
                 orderItemAmount = units;
                 System.out.println(orderItemAmount);
-                //TODO: function that populates the item details based on itemId and updated units into Array or list
-                model.addRow(addOrderTest); //insert test data to order table
-                orderSum += calculateItemSum(addOrderTest[4],addOrderTest[5]); //update the order sum by teh price (TODO: update the test data)
+                String[] productToAdd = convertProductToOrderArr(DatabaseController.getProductByProductId(orderItemId));
+                ordersTableModel.addRow(productToAdd);
+                orderSum += calculateItemSum(productToAdd[4],productToAdd[5]); //update the order sum by the price (TODO: update the test data)
                 setOrderSumFieldLabel(); //updates the sum label
             }
         });
@@ -384,18 +396,17 @@ public class OrdersAddPanel extends IWorkPanel{
                 Point point = mouseEvent.getPoint();
                 int row = table.rowAtPoint(point);
                 if (mouseEvent.getClickCount() == 2 && table.getSelectedRow() != -1) {
-                    orderSum -= calculateItemSum(addOrderTest[4],addOrderTest[5]); //update the order sum by the price (TODO: update the test data)
+                    orderSum -= calculateItemSum(ordersTableModel.getValueAt(row,4).toString(),ordersTableModel.getValueAt(row,5).toString());
                     setOrderSumFieldLabel(); //updates the sum label
-                    model.removeRow(row);
+                    ordersTableModel.removeRow(row);
                 }
             }
         });
     }
 
-    //TODO: update according to the data that will be received
     //TODO: consider moving to a utils class
-    private Integer calculateItemSum(String numOfItems, String itemPrice){
-        Integer numItems = valueOf(numOfItems), price = valueOf(itemPrice);
+    private int calculateItemSum(String numOfItems, String itemPrice){
+        int numItems = valueOf(numOfItems), price = valueOf(itemPrice);
         return numItems * price;
     }
 
@@ -407,13 +418,22 @@ public class OrdersAddPanel extends IWorkPanel{
         placeOrderButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                Vector data = model.getDataVector();
-                //TODO: how do we create the order ID ??
-                //passing the order id to the dialog
-                orderPlacedDialog.setPlacedOrderId(123456); //test orderId
-                orderPlacedDialog.setVisible(true);
-                //TODO: populate the data vector to make according changes in the DB
-                //TODO: now the orders table should contain this orders details & order status is in process
+                Vector<Vector> data = ordersTableModel.getDataVector();
+                Order order = new Order();
+                order.setOrderedProducts(data,0,4);
+                order.setTotalAmount(orderSum.doubleValue());
+                order.setOrderStatus(OrderStatus.inProcess);
+                order.setOrderDate(new Date(System.currentTimeMillis()));
+                order.setDeliveryDate(new Date(System.currentTimeMillis()));
+                order.setOrderId(DatabaseController.addOrder(order));
+                if(order.getOrderId()== -1)
+                    placeOrderErrorLabel.setVisible(true);
+                else
+                {
+                    //passing the order id to the dialog
+                    orderPlacedDialog.setPlacedOrderId(order.getOrderId());
+                    orderPlacedDialog.setVisible(true);
+                }
             }
         });
     }
@@ -424,8 +444,16 @@ public class OrdersAddPanel extends IWorkPanel{
             public void actionPerformed(ActionEvent e) {
                 if(checkAtleastOneNotEmpty()){
                     setValidationLabelsVisibility(false);
-                    searchParams = buildSearchParameters();
-                    //TODO: call method that will use the search params and return the right data
+                    Vector<Product> x = DatabaseController.getListOfProducts(buildSearchParameters());
+                    if(x.size() == 0) {
+                        itemsTableModel.setDataVector(convertProductVectorToProductMatrix(x), itemsColumnNames);
+                        noResults.setVisible(true);
+                    }
+                    else{
+                        setValidationLabelsVisibility(false);
+                        itemsTableModel.setDataVector(convertProductVectorToProductMatrix(x), itemsColumnNames);
+                        searchCompleted.setVisible(true);
+                    }
                 }
                 else{
                     setValidationLabelsVisibility(false);
@@ -436,17 +464,49 @@ public class OrdersAddPanel extends IWorkPanel{
         });
     }
 
+    //"Item name","Category","Provider","Available units","Price per Item","Expiration date"
+    private String[][] convertProductVectorToProductMatrix(Vector<Product> productVector) {
+        String[][] matrix = new String[productVector.size()][Constants.PRODUCTS_MATRIX_COLUMNS];
+        for (int i = 0; i < productVector.size(); i++) {
+            String[] array = {
+                    productVector.get(i).getProductId(),
+                    productVector.get(i).getProductName(),
+                    String.valueOf(productVector.get(i).getCategory()),
+                    DatabaseController.getProviderNameById(productVector.get(i).getProviderId()),
+                    String.valueOf(productVector.get(i).getCurrentProductAmount()),
+                    productVector.get(i).getPrice(),
+                    DateUtils.formatDateToString(productVector.get(i).getExpirationDate())
+            };
+            matrix[i] = array;
+        }
+
+        return matrix;
+    }
+
+    //{"ID", "Item name", "Category", "Provider", "Selected units", "Expiration date"};
+    private String[] convertProductToOrderArr(Product product) {
+            String[] productArr = {
+                    product.getProductId(),
+                    product.getProductName(),
+                    String.valueOf(product.getCategory()),
+                    DatabaseController.getProviderNameById(product.getProviderId()),
+                    String.valueOf(orderItemAmount),
+                    product.getPrice(),
+                    DateUtils.formatDateToString(product.getExpirationDate())
+            };
+        return productArr;
+    }
+
     private HashMap buildSearchParameters() {
         HashMap searchParams = new HashMap();
-        //TODO: check columns are correct
         if(!providersList.getSelectedItem().equals(GUIConstants.SELECT_FIELD))
-            searchParams.put(DatabaseConstants.PROVIDER_TABLE_PROVIDER_ID_COLUMN, StringUtils.getStringWithSingleQuotes(providersList.getSelectedItem().toString()));
+            searchParams.put("product."+DatabaseConstants.PRODUCT_TABLE_ITEM_PROVIDER_COLUMN, DatabaseController.getProviderIdByName(StringUtils.getStringWithSingleQuotes(providersList.getSelectedItem().toString())));
 
         if (!categoryList.getSelectedItem().equals(GUIConstants.SELECT_FIELD))
             searchParams.put(DatabaseConstants.PRODUCT_TABLE_ITEM_CATEGORY_COLUMN, StringUtils.getStringWithSingleQuotes(categoryList.getSelectedItem().toString()));
 
-        if(!itemList.getSelectedItem().equals(GUIConstants.EMPTY_FIELD))
-            searchParams.put(DatabaseConstants.PRODUCT_TABLE_ITEM_NAME_COLUMN,itemList.getSelectedItem());
+        if(!itemNameTF.getText().equals(GUIConstants.EMPTY_FIELD))
+            searchParams.put(DatabaseConstants.PRODUCT_TABLE_ITEM_NAME_COLUMN,StringUtils.getStringWithSingleQuotes(itemNameTF.getText()));
 
         if(!unitsTF.getText().equals(GUIConstants.EMPTY_FIELD))
             searchParams.put(DatabaseConstants.PRODUCT_TABLE_ITEM_CURRENT_AMOUNT_COLUMN,unitsTF.getText());
@@ -454,9 +514,9 @@ public class OrdersAddPanel extends IWorkPanel{
     }
 
     private boolean checkAtleastOneNotEmpty(){
-        //TODO: Provider list
-        if(     !categoryList.getSelectedItem().equals(GUIConstants.SELECT_FIELD) ||
-                !itemList.getSelectedItem().equals(GUIConstants.EMPTY_FIELD )||
+        if(     !providersList.getSelectedItem().equals(GUIConstants.SELECT_FIELD) ||
+                !categoryList.getSelectedItem().equals(GUIConstants.SELECT_FIELD) ||
+                !itemNameTF.getText().equals(GUIConstants.EMPTY_FIELD )||
                 !unitsTF.getText().equals(GUIConstants.EMPTY_FIELD)
         )
             return true;
@@ -468,5 +528,8 @@ public class OrdersAddPanel extends IWorkPanel{
     @Override
     protected void setValidationLabelsVisibility(boolean visibility) {
         oneRequired.setVisible(visibility);
+        searchCompleted.setVisible(visibility);
+        noResults.setVisible(visibility);
+        placeOrderErrorLabel.setVisible(visibility);
     }
 }

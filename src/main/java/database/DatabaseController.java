@@ -55,7 +55,7 @@ public class DatabaseController {
 //        Order order = new Order();
 //        order.setOrderId(1);
 //        order.setProductType("Hairline");
-//        order.setProvider(provider);
+//        order.setProviderId(provider);
 //        order.setDeliveryDate(new SimpleDateFormat("dd/MM/yyyy").parse("01/01/1993"));
 //        order.setTotalAmount(22.56);
 //        addOrder(order);
@@ -137,34 +137,45 @@ public class DatabaseController {
         }
     }
 
-    public static void addProduct(Product product) {
-        String id = product.getProductId();
-        String name = product.getProductName();
-        int category = getCategoryIdByName(StringUtils.getStringWithSingleQuotes(product.getCategory().toString()));
-        String price = product.getPrice();
-        String expirationDate = DateUtils.formatDateToString(product.getExpirationDate()); //todo string casting might cause issues...need to check
-        int currentAmount = product.getCurrentProductAmount();
-        int requiredAmount = product.getRequiredAmount();
-        String provider = product.getProviderId();
-        String sql = "INSERT INTO product(id,item_name,category,provider,price,expiration_date,current_amount,required_amount) VALUES(?,?,?,?,?,?,?,?)";
+    public static String  addProduct(Product product) {
+        String id = "-1";
+        String sql = "INSERT INTO product(item_name,category,provider,price,expiration_date,current_amount,required_amount) VALUES(?,?,?,?,?,?,?)";
         Connection conn = DatabaseAccessManager.getConnection();
         try {
             PreparedStatement pstmt = conn.prepareStatement(sql);
-            pstmt.setString(1, id);
-            pstmt.setString(2, name);
-            pstmt.setInt(3, category);
-            pstmt.setString(4, provider);
-            pstmt.setString(5, price);
-            pstmt.setString(6, expirationDate);
-            pstmt.setInt(7, currentAmount);
-            pstmt.setInt(8, requiredAmount);
+            pstmt.setString(1, product.getProductName());
+            pstmt.setString(2, product.getCategory().toString());
+            pstmt.setString(3, product.getProviderId());
+            pstmt.setString(4, product.getPrice());
+            pstmt.setString(5, DateUtils.formatDateToString(product.getExpirationDate() ));
+            pstmt.setInt(6, product.getCurrentProductAmount());
+            pstmt.setInt(7, product.getRequiredAmount());
 
             pstmt.executeUpdate();
+            id = getTopProductId();
+
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         } finally {
             DatabaseAccessManager.closeConnection(conn);
         }
+        return id;
+    }
+
+    private static String getTopProductId() {
+        String id = "-1";
+        String sql = "SELECT MAX(id) FROM product";
+        Connection conn = DatabaseAccessManager.getConnection();
+        try {
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
+            id = rs.getString("MAX(id)");
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            DatabaseAccessManager.closeConnection(conn);
+        }
+        return id;
     }
 
 
@@ -216,22 +227,35 @@ public class DatabaseController {
 
 
     public static int addOrder(Order order) {
-        int id = order.getOrderId();
-        String productType = String.join(",", order.getProductIds()); //String.join(",",order.getProductIds());
-        String provider = order.getProvider();
-        Date deliveryDate = order.getDeliveryDate();
-        Double totalAmount = order.getTotalAmount();
-        String sql = "INSERT INTO orders(id,product_id,provider,delivery_date,total_amount) VALUES(?,?,?,?,?)";
+        int id= -1;
+        String sql = "INSERT INTO orders(order_date,delivery_date,total_amount,order_status) VALUES(?,?,?,?)";
         Connection conn = DatabaseAccessManager.getConnection();
         try {
             PreparedStatement pstmt = conn.prepareStatement(sql);
-            pstmt.setInt(1, id);
-            pstmt.setString(2, productType);
-            pstmt.setObject(3, provider);
-            pstmt.setString(4, String.valueOf(deliveryDate));
-            pstmt.setDouble(5, totalAmount);
-
+            pstmt.setString(1, DateUtils.formatDateToString(order.getOrderDate()));
+            pstmt.setString(2, DateUtils.formatDateToString(order.getDeliveryDate()));
+            pstmt.setDouble(3, order.getTotalAmount());
+            pstmt.setString(4, order.getOrderStatus().toString());
             pstmt.executeUpdate();
+            id = getTopOrderId();
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            DatabaseAccessManager.closeConnection(conn);
+        }
+
+        return id;
+    }
+
+    public static int getTopOrderId(){
+        int id = -1;
+        String sql = "SELECT MAX(id) FROM orders";
+        Connection conn = DatabaseAccessManager.getConnection();
+        try {
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
+            id = rs.getInt("MAX(id)");
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         } finally {
@@ -247,15 +271,12 @@ public class DatabaseController {
         try {
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(sql);
-//            while (rs.next()) {
-            order.setOrderId(rs.getInt("id"));
-            List<String> d = new ArrayList<String>(Arrays.asList(rs.getString("product_id").split(",")));
-            order.setProductIds(new ArrayList<String>(Arrays.asList(rs.getString("product_id").split(","))));
-            order.setProvider(rs.getString("provider"));
-            order.setDeliveryDate(rs.getDate("delivery_date"));
-            order.setTotalAmount(rs.getDouble("total_amount"));
+            order.setOrderId(id);
+            order.setOrderDate(rs.getDate(DatabaseConstants.ORDERS_TABLE_ORDER_DATE_COLUMN));
+            order.setDeliveryDate(rs.getDate(DatabaseConstants.ORDERS_TABLE_DELIVERY_DATE_COLUMN));
+            order.setOrderStatus(OrderStatus.valueOf(rs.getString(DatabaseConstants.ORDERS_TABLE_ORDER_STATUS_COLUMN)));
+            order.setTotalAmount(rs.getDouble(DatabaseConstants.ORDERS_TABLE_TOTAL_AMOUNT_COLUMN));
 
-//        }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         } finally {
@@ -263,6 +284,7 @@ public class DatabaseController {
         }
         return order;
     }
+
 
     public static User getUserById(int id) {
         User user = new User();
@@ -311,7 +333,7 @@ public class DatabaseController {
     delete from sqlite_sequence where name='your_table';
      */
     public static Vector<Product> getListOfProducts(HashMap hashMap) {
-        String sql = "SELECT* FROM product WHERE " + getDynamicWhereQueryBuilder(hashMap);
+        String sql = "SELECT * FROM product WHERE " + getDynamicWhereQueryBuilder(hashMap);
         Connection conn = DatabaseAccessManager.getConnection();
         Vector<Product> productsList = new Vector<>();
 
@@ -341,11 +363,64 @@ public class DatabaseController {
         return productsList;
     }
 
-    //TODO: add by the query:
-    //SELECT order_id,product.provider,total_amount,order_status,delivery_date
-    //FROM ordered_items JOIN product ON product.id=ordered_items.item_id
-    //JOIN orders ON ordered_items.order_id=orders.id
-    //public static Vector<Order> getListOfOrders(HashMap hashMap){}
+    public static Vector<Product> getListOfOrderedProductsByOrder(String orderId) {
+        String sql = "SELECT item_name,category,provider,ordered_units,price\n" +
+                     "FROM ordered_items JOIN product ON product.id=ordered_items.item_id\n WHERE order_id = "+ orderId;
+        Connection conn = DatabaseAccessManager.getConnection();
+        Vector<Product> productsList = new Vector<>();
+
+        try {
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+
+                Product product = new Product();
+                product.setProductName(rs.getString(DatabaseConstants.PRODUCT_TABLE_ITEM_NAME_COLUMN));
+                product.setCategory(Category.valueOf(rs.getString(DatabaseConstants.PRODUCT_TABLE_ITEM_CATEGORY_COLUMN)));
+                product.setProviderId(rs.getString(DatabaseConstants.PRODUCT_TABLE_ITEM_PROVIDER_COLUMN));
+                product.setPrice(rs.getString(DatabaseConstants.PRODUCT_TABLE_ITEM_PRICE_COLUMN));
+                product.setCurrentProductAmount(rs.getInt(DatabaseConstants.ORDERED_ITEMS_TABLE_ORDERED_UNITS_COLUMN));
+                productsList.add(product);
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            DatabaseAccessManager.closeConnection(conn);
+        }
+        return productsList;
+    }
+
+    public static Vector<Order> getListOfOrders(HashMap hashMap){
+        String sql = "SELECT order_id,product.provider,total_amount,order_status,order_date,delivery_date\n" +
+                "    FROM ordered_items JOIN product ON product.id=ordered_items.item_id\n" +
+                "    JOIN orders ON ordered_items.order_id=orders.id WHERE " + getDynamicWhereQueryBuilder(hashMap);
+
+        Connection conn = DatabaseAccessManager.getConnection();
+        Vector<Order> ordersList = new Vector<>();
+
+        try {
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+
+                Order order = new Order();
+                order.setOrderId(rs.getInt(DatabaseConstants.ORDERED_ITEMS_TABLE_ORDER_ID_COLUMN));
+                //order.setProviderId(rs.getString(DatabaseConstants.PRODUCT_TABLE_ITEM_PROVIDER_COLUMN));
+                order.setTotalAmount(rs.getDouble(DatabaseConstants.ORDERS_TABLE_TOTAL_AMOUNT_COLUMN));
+                order.setOrderStatus(OrderStatus.valueOf(rs.getString(DatabaseConstants.ORDERS_TABLE_ORDER_STATUS_COLUMN)));
+                order.setOrderDate(DateUtils.getDateByString(rs.getString(DatabaseConstants.ORDERS_TABLE_ORDER_DATE_COLUMN)));
+                order.setDeliveryDate(DateUtils.getDateByString(rs.getString(DatabaseConstants.ORDERS_TABLE_DELIVERY_DATE_COLUMN)));
+                ordersList.add(order);
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } catch (ParseException e) {
+            e.printStackTrace();
+        } finally {
+            DatabaseAccessManager.closeConnection(conn);
+        }
+        return ordersList;
+    }
 
     private static String getDynamicWhereQueryBuilder(HashMap hashMap) {
         StringBuilder whereQuery;
@@ -420,7 +495,7 @@ public class DatabaseController {
     }
 
     public static List<Product> getProductByProvider(String providerId) {
-        String sql = "SELECT* FROM product WHERE provider=" + providerId;
+        String sql = "SELECT * FROM product WHERE provider=" + providerId;
         Connection conn = DatabaseAccessManager.getConnection();
         Vector<Product> products = new Vector<>();
 
@@ -447,6 +522,32 @@ public class DatabaseController {
             DatabaseAccessManager.closeConnection(conn);
         }
         return products;
+    }
+
+    public static Product getProductByProductId(String productId) {
+        String sql = "SELECT * FROM product WHERE id =" + productId;
+        Connection conn = DatabaseAccessManager.getConnection();
+        Product product = new Product();
+
+        try {
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+                product.setProductId(rs.getString(DatabaseConstants.PRODUCT_TABLE_ITEM_ID_COLUMN));
+                product.setProductName(rs.getString(DatabaseConstants.PRODUCT_TABLE_ITEM_NAME_COLUMN));
+                product.setPrice(rs.getString(DatabaseConstants.PRODUCT_TABLE_ITEM_PRICE_COLUMN));
+                product.setExpirationDate(DateUtils.getDateByString(rs.getString(DatabaseConstants.PRODUCT_TABLE_ITEM_EXPIRATION_DATE_COLUMN)));
+                product.setProviderId(rs.getString(DatabaseConstants.PRODUCT_TABLE_ITEM_PROVIDER_COLUMN));
+                product.setCategory(Category.valueOf(rs.getString(DatabaseConstants.PRODUCT_TABLE_ITEM_CATEGORY_COLUMN)));
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } catch (ParseException e) {
+            e.printStackTrace();
+        } finally {
+            DatabaseAccessManager.closeConnection(conn);
+        }
+        return product;
     }
 
     public static void editUser(User user, int userId) {
