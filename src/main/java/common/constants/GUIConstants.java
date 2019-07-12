@@ -29,11 +29,13 @@ public class GUIConstants {
     public static final String SEARCH_ORDER = "Search Order";
     public static final String ADD_PRODUCT = "Add Product";
     public static final String PLACE_ORDER = "Place Order";
+    public static final String PLACE_ORDER_ERROR = "There was an error placing the order";
     public static final String SELECT_FIELD = "Select field";
     public static final String ZERO = "0";
 
     public static final String EMPTY_FIELD = "";
 
     public static final int INVENTORY_MATRIX_COLUMNS = 7;
+
 
 }

@@ -87,7 +87,9 @@ public class InventoryPanel extends IWorkPanel {
         searchButton = new JButton(GUIConstants.SEARCH);
         addButton = new JButton(GUIConstants.ADD_PRODUCT);
         model = new DefaultTableModel(null, inventoryColumnNames);
-        inventoryTable = new JTable(model);
+        inventoryTable = new JTable(model){ public boolean isCellEditable(int row, int column){
+            return false;
+        }};
         scrollTable = new JScrollPane(inventoryTable, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         searchPanel = new JPanel();
         tablePanel = new JPanel();
@@ -141,7 +143,7 @@ public class InventoryPanel extends IWorkPanel {
 
         setComboBoxes();
 
-        searchPanel.setBorder(BorderFactory.createTitledBorder("Inventory"));
+        searchPanel.setBorder(BorderFactory.createTitledBorder("Restaurant Inventory"));
         searchPanel.setLayout(new GridBagLayout());
         GridBagConstraints gcSearchPanel = new GridBagConstraints();
         gcSearchPanel.fill = GridBagConstraints.CENTER;
@@ -266,7 +268,8 @@ public class InventoryPanel extends IWorkPanel {
         alignFieldSizes();
     }
 
-    private void alignFieldSizes() {
+    @Override
+    protected void alignFieldSizes() {
         Dimension fieldSize = itemNameTF.getPreferredSize();
         providersList.setPreferredSize(fieldSize);
         categoryList.setPreferredSize(fieldSize);
@@ -275,7 +278,8 @@ public class InventoryPanel extends IWorkPanel {
         dateChooser.setPreferredSize(fieldSize);
     }
 
-    private void setComboBoxes() {
+    @Override
+    protected void setComboBoxes() {
         setCurrentProvider();//TODO: should be adjusted live and not only when running the app first
         setCurrentCategories(); //TODO: same here
         DefaultComboBoxModel providersModel = new DefaultComboBoxModel(providers);

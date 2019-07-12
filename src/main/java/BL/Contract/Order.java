@@ -5,6 +5,26 @@ import java.util.HashMap;
 import java.util.List;
 
 public class Order {
+    private int orderId;
+    private List<HashMap> orderedProducts = new ArrayList<>();
+    private Double totalAmount;
+    private int rating;
+    private Date OrderDate;
+    private Date deliveryDate;
+    private OrderStatus orderStatus;
+
+    public List<HashMap> getOrderedProducts(){
+        return  orderedProducts;
+    }
+
+    public void setOrderedProducts(Vector<Vector> data, int iProductId, int iOrderedUnits){
+        for (int i = 0; i < data.size(); i++) {
+            HashMap map = new HashMap();
+            map.put(data.get(i).get(iProductId),data.get(i).get(iOrderedUnits));
+            orderedProducts.add(map);
+        }
+    }
+
     public Date getDeliveryDate() {
         return deliveryDate;
     }
@@ -15,10 +35,6 @@ public class Order {
 
     public Integer getOrderId() {
         return orderId;
-    }
-
-    public void setOrderId(Integer orderId) {
-        this.orderId = orderId;
     }
 
     public Double getTotalAmount() {
