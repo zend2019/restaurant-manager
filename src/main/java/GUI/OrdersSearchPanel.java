@@ -435,10 +435,10 @@ public class OrdersSearchPanel extends IWorkPanel {
             searchParams.put(DatabaseConstants.ORDERS_TABLE_DELIVERY_DATE_COLUMN,StringUtils.getStringWithSingleQuotes(DateUtils.formatDateToString(deliveryDateChooser.getDate())));
 
         if(closedOrderCB.isSelected())
-            searchParams.put(DatabaseConstants.ORDERS_TABLE_ORDER_STATUS_COLUMN, OrderStatus.valueOf("delivered"));
+            searchParams.put(DatabaseConstants.ORDERS_TABLE_ORDER_STATUS_COLUMN, StringUtils.getStringWithSingleQuotes(OrderStatus.valueOf("Delivered").toString()));
 
         if(openOrderCB.isSelected())
-            searchParams.put(DatabaseConstants.ORDERS_TABLE_ORDER_STATUS_COLUMN,OrderStatus.valueOf("inProcess"));
+            searchParams.put(DatabaseConstants.ORDERS_TABLE_ORDER_STATUS_COLUMN,StringUtils.getStringWithSingleQuotes(OrderStatus.valueOf("inProcess").toString()));
         return searchParams;
     }
 
