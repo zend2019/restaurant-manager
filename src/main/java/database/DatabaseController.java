@@ -279,7 +279,7 @@ public class DatabaseController {
         return id;
     }
 
-    public static int getTopOrderId(){
+    public static int getTopOrderId() {
         int id = -1;
         String sql = "SELECT MAX(id) FROM orders";
         Connection conn = DatabaseAccessManager.getConnection();
@@ -342,13 +342,13 @@ public class DatabaseController {
     public static HashMap<String, Integer> getOrderdItemByOrderId(Integer orderId) {
 
         HashMap<String, Integer> result = new HashMap<>();
-        String sql = String.format("SELECT * FROM ordered_items WHERE %s = " + orderId,ORDERED_ITEMS_TABLE_ITEM_ID_COLUMN);
+        String sql = String.format("SELECT * FROM ordered_items WHERE %s = " + orderId, ORDERED_ITEMS_TABLE_ITEM_ID_COLUMN);
         Connection conn = DatabaseAccessManager.getConnection();
         try {
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(sql);
             while (rs.next()) {
-                result.put(rs.getString("item_id"),rs.getInt("amount"));
+                result.put(rs.getString("item_id"), rs.getInt("amount"));
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -358,7 +358,7 @@ public class DatabaseController {
         return result;
     }
 
-    public static void addOrderdItem (HashMap<String, Integer> products, int orderId){
+    public static void addOrderdItem(HashMap<String, Integer> products, int orderId) {
 
         String sql = "INSERT INTO ordered_items(order_id,item_id,amount) VALUES(?,?,?)";
 
@@ -456,9 +456,40 @@ public class DatabaseController {
         return productsList;
     }
 
+    public static Vector<Product> getListOfAllProducts() {
+        String sql = "SELECT * FROM product";
+        Connection conn = DatabaseAccessManager.getConnection();
+        Vector<Product> productsList = new Vector<>();
+
+        try {
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+
+                Product product = new Product();
+                product.setProductId(rs.getString(DatabaseConstants.PRODUCT_TABLE_ITEM_ID_COLUMN));
+                product.setProductName(rs.getString(DatabaseConstants.PRODUCT_TABLE_ITEM_NAME_COLUMN));
+                product.setPrice(rs.getString(DatabaseConstants.PRODUCT_TABLE_ITEM_PRICE_COLUMN));
+                product.setCategory(Category.valueOf(rs.getString(DatabaseConstants.PRODUCT_TABLE_ITEM_CATEGORY_COLUMN)));
+                product.setExpirationDate(DateUtils.getDateByString(rs.getString(DatabaseConstants.PRODUCT_TABLE_ITEM_EXPIRATION_DATE_COLUMN)));
+                product.setCurrentProductAmount(rs.getInt(DatabaseConstants.PRODUCT_TABLE_ITEM_CURRENT_AMOUNT_COLUMN));
+                product.setRequiredAmount(rs.getInt(DatabaseConstants.PRODUCT_TABLE_ITEM_REQUIRED_AMOUNT_COLUMN));
+                product.setProviderId(rs.getString(DatabaseConstants.PRODUCT_TABLE_ITEM_PROVIDER_COLUMN));
+                productsList.add(product);
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } catch (ParseException e) {
+            e.printStackTrace();
+        } finally {
+            DatabaseAccessManager.closeConnection(conn);
+        }
+        return productsList;
+    }
+
     public static Vector<Product> getListOfOrderedProductsByOrder(String orderId) {
         String sql = "SELECT item_name,category,provider,ordered_units,price\n" +
-                     "FROM ordered_items JOIN product ON product.id=ordered_items.item_id\n WHERE order_id = "+ orderId;
+                "FROM ordered_items JOIN product ON product.id=ordered_items.item_id\n WHERE order_id = " + orderId;
         Connection conn = DatabaseAccessManager.getConnection();
         Vector<Product> productsList = new Vector<>();
 
@@ -483,7 +514,7 @@ public class DatabaseController {
         return productsList;
     }
 
-    public static Vector<Order> getListOfOrders(HashMap hashMap){
+    public static Vector<Order> getListOfOrders(HashMap hashMap) {
         String sql = "SELECT order_id,product.provider,total_amount,order_status,order_date,delivery_date\n" +
                 "    FROM ordered_items JOIN product ON product.id=ordered_items.item_id\n" +
                 "    JOIN orders ON ordered_items.order_id=orders.id WHERE " + getDynamicWhereQueryBuilder(hashMap);

@@ -17,15 +17,15 @@ public class EditItemDialog extends JDialog {
     private DialogListener dialogListener;
     public JTextField numOfItemsTF = new JTextField();
 
-    public EditItemDialog(JFrame parent){
-        super(parent,"Edit item",false);
+    public EditItemDialog(JFrame parent) {
+        super(parent, "Edit item", false);
         setLayout(parent);
         setActionListeners();
     }
 
-    private void setLayout(JFrame parent){
+    private void setLayout(JFrame parent) {
         setLocationRelativeTo(parent);
-        setSize(250,120);
+        setSize(250, 120);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
         setLayout(new GridBagLayout());
@@ -40,35 +40,35 @@ public class EditItemDialog extends JDialog {
 
         gcMain.gridx = 0;
         gcMain.anchor = GridBagConstraints.LINE_END;
-        add(numOfItemsLabel,gcMain);
+        add(numOfItemsLabel, gcMain);
 
         gcMain.gridx = 1;
         gcMain.anchor = GridBagConstraints.LINE_START;
-        add(numOfItemsTF,gcMain);
+        add(numOfItemsTF, gcMain);
 
         gcMain.gridx = 2;
         gcMain.anchor = GridBagConstraints.CENTER;
-        add(addButton,gcMain);
+        add(addButton, gcMain);
 
         //Next Row//
-        gcMain.gridy ++;
+        gcMain.gridy++;
         gcMain.weightx = 1;
         gcMain.weighty = 1;
         gcMain.gridwidth = 3;
         gcMain.gridx = 0;
         gcMain.anchor = GridBagConstraints.CENTER;
 
-        add(exceedLimit,gcMain);
+        add(exceedLimit, gcMain);
         exceedLimit.setForeground(Color.red);
         exceedLimit.setVisible(false);
 
         ///// align fields sizes //////
-        Dimension dim = new Dimension(60,7);
+        Dimension dim = new Dimension(60, 7);
         addButton.setPreferredSize(dim);
         numOfItemsTF.setPreferredSize(dim);
     }
 
-    private void setActionListeners(){
+    private void setActionListeners() {
         setAddButton();
     }
 
@@ -78,7 +78,7 @@ public class EditItemDialog extends JDialog {
             public void actionPerformed(ActionEvent e) {
                 int itemsToAdd = valueOf(numOfItemsTF.getText());
                 //TODO: function that checks the items entered do not exceed limit
-                if(dialogListener != null){
+                if (dialogListener != null) {
                     dialogListener.setItemInOrder(itemsToAdd);
                 }
                 dispose();

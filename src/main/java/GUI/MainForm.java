@@ -8,6 +8,7 @@ import java.awt.event.ActionListener;
 public class MainForm extends JFrame {
     private JPanel containerPanel;
     private InventoryPanel inventoryPanel;
+    private ReportPanel reportPanel;
     private OrdersSearchPanel ordersSearchPanel;
     private OrdersAddPanel ordersAddPanel;
     private JTabbedPane OrdersTabs;
@@ -25,6 +26,8 @@ public class MainForm extends JFrame {
         ordersAddPanel = new OrdersAddPanel();
         OrdersTabs = new JTabbedPane();
         menuPanel = new MenuPanel();
+        reportPanel = new ReportPanel();
+
 
         //////////////// set the layout ////////////////
         OrdersTabs.add("Search Orders", ordersSearchPanel);
@@ -33,6 +36,7 @@ public class MainForm extends JFrame {
         containerPanel.setLayout(cl);
         containerPanel.add(inventoryPanel, "Inventory");
         containerPanel.add(OrdersTabs, "Orders");
+        containerPanel.add(reportPanel, "Reports");
         cl.show(containerPanel, "Inventory");
 
         ////////////// Menu items listeners ////////////////
@@ -48,6 +52,13 @@ public class MainForm extends JFrame {
                 cl.show(containerPanel, "Orders");
             }
         });
+        menuPanel.reports.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                cl.show(containerPanel, "Reports");
+            }
+        });
+
 
 
         add(menuPanel, BorderLayout.WEST);
@@ -58,12 +69,11 @@ public class MainForm extends JFrame {
         setResizable(false);
 
 
-
     }
 
     private void setScreenSize() {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        setSize((int) (screenSize.width*0.9), (int) (screenSize.height*0.9));
+        setSize((int) (screenSize.width * 0.9), (int) (screenSize.height * 0.9));
     }
 
 }

@@ -8,8 +8,8 @@ import java.awt.event.ActionListener;
 public class MenuPanel extends JPanel {
     public JButton inventory;
     public JButton orders;
+    public JButton reports;
     private JButton providers;
-    private JButton reports;
     private JButton settings;
 
     public MenuPanel(){
