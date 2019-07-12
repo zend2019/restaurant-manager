@@ -10,7 +10,6 @@ public class Order {
     private Date OrderDate;
     private Date deliveryDate;
     private OrderStatus orderStatus;
-
     public List<HashMap> getOrderedProducts(){
         return  orderedProducts;
     }

@@ -1,6 +1,5 @@
 package main.java.GUI;
 
-import main.java.BL.Contract.Logic.OrderManager;
 import main.java.BL.Contract.Order;
 import main.java.BL.Contract.OrderStatus;
 import main.java.BL.Contract.Product;
@@ -19,7 +18,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Vector;
@@ -83,7 +81,7 @@ public class OrdersAddPanel extends IWorkPanel{
         providerLabel = new JLabel(GUIConstants.PROVIDER);
         categoryLabel = new JLabel(GUIConstants.CATEGORY);
         itemNameLabel = new JLabel(GUIConstants.ITEM_NAME);
-        unitsLabel = new JLabel(GUIConstants.AVAILABLE_AMOUNT);
+        unitsLabel = new JLabel(GUIConstants.CURRENT_AMOUNT);
         orderSumLabel = new JLabel(GUIConstants.ORDER_SUM);
         orderSumFieldLabel = new JLabel(GUIConstants.ZERO);
         oneRequired = new JLabel(GUIConstants.ATLEAST_ONE_FIELD_REQUIRED);

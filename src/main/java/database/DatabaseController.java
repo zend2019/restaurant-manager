@@ -137,34 +137,45 @@ public class DatabaseController {
         }
     }
 
-    public static void addProduct(Product product) {
-        String id = product.getProductId();
-        String name = product.getProductName();
-        int category = getCategoryIdByName(StringUtils.getStringWithSingleQuotes(product.getCategory().toString()));
-        String price = product.getPrice();
-        String expirationDate = DateUtils.formatDateToString(product.getExpirationDate()); //todo string casting might cause issues...need to check
-        int currentAmount = product.getCurrentProductAmount();
-        int requiredAmount = product.getRequiredAmount();
-        String provider = product.getProviderId();
-        String sql = "INSERT INTO product(id,item_name,category,provider,price,expiration_date,current_amount,required_amount) VALUES(?,?,?,?,?,?,?,?)";
+    public static String  addProduct(Product product) {
+        String id = "-1";
+        String sql = "INSERT INTO product(item_name,category,provider,price,expiration_date,current_amount,required_amount) VALUES(?,?,?,?,?,?,?)";
         Connection conn = DatabaseAccessManager.getConnection();
         try {
             PreparedStatement pstmt = conn.prepareStatement(sql);
-            pstmt.setString(1, id);
-            pstmt.setString(2, name);
-            pstmt.setInt(3, category);
-            pstmt.setString(4, provider);
-            pstmt.setString(5, price);
-            pstmt.setString(6, expirationDate);
-            pstmt.setInt(7, currentAmount);
-            pstmt.setInt(8, requiredAmount);
+            pstmt.setString(1, product.getProductName());
+            pstmt.setString(2, product.getCategory().toString());
+            pstmt.setString(3, product.getProviderId());
+            pstmt.setString(4, product.getPrice());
+            pstmt.setString(5, DateUtils.formatDateToString(product.getExpirationDate() ));
+            pstmt.setInt(6, product.getCurrentProductAmount());
+            pstmt.setInt(7, product.getRequiredAmount());
 
             pstmt.executeUpdate();
+            id = getTopProductId();
+
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         } finally {
             DatabaseAccessManager.closeConnection(conn);
         }
+        return id;
+    }
+
+    private static String getTopProductId() {
+        String id = "-1";
+        String sql = "SELECT MAX(id) FROM product";
+        Connection conn = DatabaseAccessManager.getConnection();
+        try {
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
+            id = rs.getString("MAX(id)");
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            DatabaseAccessManager.closeConnection(conn);
+        }
+        return id;
     }
 
 
