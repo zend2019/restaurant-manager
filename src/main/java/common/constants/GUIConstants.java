@@ -26,6 +26,7 @@ public class GUIConstants {
     public static final String ORDER_DATE = "Order Date: ";
     public static final String ORDER_SUM = "Order total amount: ";
     public static final String SEARCH = "Search";
+    public static final String GET_DAYLY_REPORT = "Get Daily Inventory Reportr";
     public static final String SEARCH_ORDER = "Search Order";
     public static final String ADD_PRODUCT = "Add Product";
     public static final String PLACE_ORDER = "Place Order";

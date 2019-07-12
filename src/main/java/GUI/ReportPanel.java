@@ -55,7 +55,7 @@ public class ReportPanel extends IWorkPanel {
         oneRequired = new JLabel(GUIConstants.ATLEAST_ONE_FIELD_REQUIRED);
         noResults = new JLabel(GUIConstants.NO_RESULTS);
         searchCompleted = new JLabel(GUIConstants.SEARCH_COMPLETED);
-        searchButton = new JButton(GUIConstants.SEARCH);
+        searchButton = new JButton(GUIConstants.GET_DAYLY_REPORT);
         itemNameTF = new JTextField(10);
     }
 
