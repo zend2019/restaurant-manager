@@ -429,10 +429,10 @@ public class OrdersSearchPanel extends IWorkPanel {
             searchParams.put(DatabaseConstants.ORDERED_ITEMS_TABLE_ORDER_ID_COLUMN,orderIdTF.getText());
 
         if(orderDateChooser.getDate() != null)
-            searchParams.put(DatabaseConstants.ORDERS_TABLE_ORDER_DATE_COLUMN, DateUtils.formatDateToString(deliveryDateChooser.getDate()));
+            searchParams.put(DatabaseConstants.ORDERS_TABLE_ORDER_DATE_COLUMN, StringUtils.getStringWithSingleQuotes(DateUtils.formatDateToString(orderDateChooser.getDate())));
 
         if(deliveryDateChooser.getDate() != null)
-            searchParams.put(DatabaseConstants.ORDERS_TABLE_DELIVERY_DATE_COLUMN,DateUtils.formatDateToString(deliveryDateChooser.getDate()));
+            searchParams.put(DatabaseConstants.ORDERS_TABLE_DELIVERY_DATE_COLUMN,StringUtils.getStringWithSingleQuotes(DateUtils.formatDateToString(deliveryDateChooser.getDate())));
 
         if(closedOrderCB.isSelected())
             searchParams.put(DatabaseConstants.ORDERS_TABLE_ORDER_STATUS_COLUMN, OrderStatus.valueOf("delivered"));
