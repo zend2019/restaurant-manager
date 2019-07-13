@@ -21,8 +21,9 @@ public class MainForm extends JFrame {
     private CardLayout cl;
     private User user;
 
-    public MainForm(User logInUser) {
+    public MainForm(User logInUser) throws ClassNotFoundException, UnsupportedLookAndFeelException, InstantiationException, IllegalAccessException {
         super("Restaurant Manager");
+        UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
         ImageIcon img = new ImageIcon(Constants.LOGO_IMAGE);
         setIconImage(img.getImage());
         cl = new CardLayout();
@@ -74,6 +75,7 @@ public class MainForm extends JFrame {
         add(menuPanel, BorderLayout.WEST);
         add(containerPanel, BorderLayout.CENTER);
         setScreenSize();
+        setMenuPanelSize();
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
         setResizable(false);
@@ -84,6 +86,12 @@ public class MainForm extends JFrame {
     private void setScreenSize() {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         setSize((int) (screenSize.width * 0.9), (int) (screenSize.height * 0.9));
+    }
+
+    private void setMenuPanelSize() {
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        Dimension dim = new Dimension(120, (int) (screenSize.height * 0.9));
+        menuPanel.setPreferredSize(dim);
     }
 
 }
