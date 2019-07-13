@@ -7,7 +7,7 @@ import main.java.database.DatabaseController;
 
 import java.util.List;
 
-public class ProviderManaging implements IProviderManaging {
+public class ProviderController implements IProviderManaging {
 
     private IRestaurantRepository resturantRepository;
 

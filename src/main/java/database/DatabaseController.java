@@ -422,7 +422,7 @@ public class DatabaseController {
         return ordersList;
     }
 
-    private static String getDynamicWhereQueryBuilder(HashMap hashMap) {
+    public static String getDynamicWhereQueryBuilder(HashMap hashMap) {
         StringBuilder whereQuery;
         Iterator it = hashMap.entrySet().iterator();
         Map.Entry pair = (Map.Entry) it.next();
