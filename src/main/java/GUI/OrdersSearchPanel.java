@@ -317,7 +317,7 @@ public class OrdersSearchPanel extends IWorkPanel {
         Dimension fieldSize = orderIdTF.getPreferredSize();
         providersList.setPreferredSize(fieldSize);
         categoryList.setPreferredSize(fieldSize);
-        searchOrderButton.setPreferredSize(fieldSize);
+        //searchOrderButton.setPreferredSize(fieldSize);
         deliveryDateChooser.setPreferredSize(fieldSize);
         orderDateChooser.setPreferredSize(fieldSize);
     }
