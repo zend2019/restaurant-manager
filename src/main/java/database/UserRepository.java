@@ -1,5 +1,6 @@
 package main.java.database;
 
+import main.java.BL.Contract.Logic.UserFactory;
 import main.java.BL.Contract.User;
 
 import java.sql.*;
@@ -107,6 +108,7 @@ public class UserRepository {
         try {
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(sql);
+            int isManager = (rs.getInt("is_manager"));
             user.setId(rs.getInt("id"));
             user.setFirstName(rs.getString("first_name"));
             user.setLastName(rs.getString("last_name"));
@@ -114,6 +116,8 @@ public class UserRepository {
             user.setDateOfBirth(rs.getString("date_of_birth"));
             user.setUserName(rs.getString("username"));
             user.setPhoneNmuber(rs.getString("phone_number"));
+
+            user = UserFactory.GetUser(isManager, user);
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         } finally {

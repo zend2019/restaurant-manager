@@ -6,8 +6,6 @@ import main.java.database.UserRepository;
 public class Login implements ILogin {
     @Override
     public User LogInSystem(String userName, String password) {
-        //password = Integer.toString(password.hashCode());
-        UserRepository.getUserById(1);
         return UserRepository.LogIn(userName, password);
     }
 }

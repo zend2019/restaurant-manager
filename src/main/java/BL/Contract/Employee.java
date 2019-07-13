@@ -4,11 +4,11 @@ import java.util.Date;
 
 public class Employee extends User {
     public Date getHireDate() {
-        return HireDate;
+        return hireDate;
     }
 
     public void setHireDate(Date hireDate) {
-        HireDate = hireDate;
+        this.hireDate = hireDate;
     }
 
     public Department getDepartment() {
@@ -19,7 +19,7 @@ public class Employee extends User {
         this.department = department;
     }
 
-    private Date HireDate;
+    private Date hireDate;
     private Department department;
 
 }

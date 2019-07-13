@@ -1,6 +1,5 @@
 package main.java.BL.Contract;
 
-public class Manager extends User {
+public class Manager extends Employee {
 
-    
 }
