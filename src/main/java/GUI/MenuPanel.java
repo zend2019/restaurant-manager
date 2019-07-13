@@ -9,7 +9,6 @@ public class MenuPanel extends JPanel {
     public JButton inventory;
     public JButton orders;
     public JButton reports;
-    private JButton providers;
     private JButton settings;
 
     public MenuPanel(){
@@ -19,7 +18,6 @@ public class MenuPanel extends JPanel {
 
         inventory = new JButton("Inventory");
         orders = new JButton("Orders");
-        providers = new JButton("Providers");
         reports = new JButton("Reports");
         settings = new JButton("settings");
 
@@ -53,18 +51,9 @@ public class MenuPanel extends JPanel {
         gc.gridx = 0;
         gc.gridy ++;
         gc.anchor = GridBagConstraints.CENTER;
-        add(providers,gc);
-
-        /////// Fourth row ///////
-        gc.weightx = 1;
-        gc.weighty = 0.5;
-
-        gc.gridx = 0;
-        gc.gridy ++;
-        gc.anchor = GridBagConstraints.CENTER;
         add(reports,gc);
 
-        /////// Fifth row ///////
+        /////// Four row ///////
         gc.weightx = 1;
         gc.weighty = 0.5;
 

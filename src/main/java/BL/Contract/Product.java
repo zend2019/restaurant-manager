@@ -79,5 +79,9 @@ public class Product {
         this.productId = productId;
     }
 
+    public Integer getAmountOfLake() {
+        return this.requiredAmount - this.currentProductAmount;
+    }
+
 
 }

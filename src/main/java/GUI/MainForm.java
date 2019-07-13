@@ -1,5 +1,7 @@
 package main.java.GUI;
 
+import main.java.common.constants.Constants;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -11,13 +13,15 @@ public class MainForm extends JFrame {
     private OrdersSearchPanel ordersSearchPanel;
     private OrdersAddPanel ordersAddPanel;
     private JTabbedPane OrdersTabs;
+    private JTabbedPane reportsTabs;
     private MenuPanel menuPanel;
-    private ReportPanel reportPanel;
+    private DailyReportPanel dailyReportPanel;
+    private OutOfStockReport outOfStockReport;
     private CardLayout cl;
 
     public MainForm() {
         super("Restaurant Manager");
-        ImageIcon img = new ImageIcon("src/main/java/GUI/img/icon.png"); //TODO: switch with constant of relative path (src/main/java...)
+        ImageIcon img = new ImageIcon(Constants.LOGO_IMAGE);
         setIconImage(img.getImage());
         cl = new CardLayout();
         containerPanel = new JPanel();
@@ -26,16 +30,21 @@ public class MainForm extends JFrame {
         ordersAddPanel = new OrdersAddPanel();
         OrdersTabs = new JTabbedPane();
         menuPanel = new MenuPanel();
-        reportPanel = new ReportPanel();
+        dailyReportPanel = new DailyReportPanel();
+        reportsTabs = new JTabbedPane();
+        outOfStockReport = new OutOfStockReport();
 
         //////////////// set the layout ////////////////
         OrdersTabs.add("Search Orders", ordersSearchPanel);
         OrdersTabs.add("Add Order", ordersAddPanel);
 
+        reportsTabs.add("Daily Report", dailyReportPanel);
+        reportsTabs.add("Out of stock Report", outOfStockReport);
+
         containerPanel.setLayout(cl);
         containerPanel.add(inventoryPanel, "Inventory");
         containerPanel.add(OrdersTabs, "Orders");
-        containerPanel.add(reportPanel, "Reports");
+        containerPanel.add(reportsTabs, "Reports");
         cl.show(containerPanel, "Inventory");
 
         ////////////// Menu items listeners ////////////////

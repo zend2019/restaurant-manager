@@ -17,7 +17,7 @@ import java.awt.event.ActionListener;
 import java.util.HashMap;
 import java.util.Vector;
 
-public class ReportPanel extends IWorkPanel {
+public class DailyReportPanel extends IBaseWorkPanel {
     private JPanel searchPanel;
     private JPanel tablePanel;
     private JScrollPane scrollTable;
@@ -32,7 +32,7 @@ public class ReportPanel extends IWorkPanel {
     private String[] inventoryColumnNames = {"ID", "Item name", "Category", "Provider", "Current amount", "Required amount", "Expiration date"};
 
 
-    public ReportPanel() {
+    public DailyReportPanel() {
         initialization();
         setSearchPanelLayout();
         setTableLayout();
@@ -157,19 +157,10 @@ public class ReportPanel extends IWorkPanel {
         searchButton.setPreferredSize(fieldSize);
     }
 
-    @Override
-    protected void setComboBoxes() {
-
-    }
 
     @Override
     protected void setActionListeners() {
         setSearchButton();
-    }
-
-    @Override
-    protected void setValidationLabelsVisibility(boolean visibility) {
-
     }
 
     private String[][] convertProductVectorToInventoryMatrix(Vector<Product> productVector) {
@@ -195,13 +186,11 @@ public class ReportPanel extends IWorkPanel {
         searchButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                setValidationLabelsVisibility(false);
                 Vector<Product> x = DatabaseController.getListOfAllProducts();
                 if (x.size() == 0) {
                     model.setDataVector(convertProductVectorToInventoryMatrix(x), inventoryColumnNames);
                     noResults.setVisible(true);
                 } else {
-                    setValidationLabelsVisibility(false);
                     model.setDataVector(convertProductVectorToInventoryMatrix(x), inventoryColumnNames);
                     searchCompleted.setVisible(true);
                 }
