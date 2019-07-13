@@ -32,10 +32,3 @@ public class RestaurantRepository {
 
 
 }
-
-<<<<<<< HEAD
-    }
-=======
-
-
->>>>>>> master
