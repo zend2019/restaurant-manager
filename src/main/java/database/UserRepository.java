@@ -98,22 +98,28 @@ public class UserRepository {
 
     /* Function num #5 - Log in access */
 
-    public static boolean LogIn(String user, String password) {
-        String sql = String.format("SELECT * FROM user WHERE username =%s And password=%s ",
-                USER_TABLE_USERNAME_COLUMN, password);
+    public static User LogIn(String userName, String password) {
+        String sql = String.format("SELECT * FROM user WHERE username ='%s' And password = %s ",
+                userName, password);
+        User user = new User();
+        boolean result = false;
         Connection conn = DatabaseAccessManager.getConnection();
         try {
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(sql);
-            if (rs.first()) {
-                return true;
-            }
+            user.setId(rs.getInt("id"));
+            user.setFirstName(rs.getString("first_name"));
+            user.setLastName(rs.getString("last_name"));
+            user.setAge(rs.getInt("age"));
+            user.setDateOfBirth(rs.getString("date_of_birth"));
+            user.setUserName(rs.getString("username"));
+            user.setPhoneNmuber(rs.getString("phone_number"));
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         } finally {
             DatabaseAccessManager.closeConnection(conn);
         }
-        return false;
+        return user;
     }
 
 

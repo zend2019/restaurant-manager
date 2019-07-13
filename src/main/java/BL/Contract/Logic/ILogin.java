@@ -1,6 +1,8 @@
 package main.java.BL.Contract.Logic;
 
+import main.java.BL.Contract.User;
+
 public interface ILogin {
 
-    boolean LogInSystem (String userName, String Password);
+    User LogInSystem (String userName, String Password);
 }
