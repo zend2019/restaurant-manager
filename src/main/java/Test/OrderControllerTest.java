@@ -35,4 +35,13 @@ public class OrderControllerTest {
         return orderId;
     }
 
+    @Test
+    public void EditOrder(int orderId, Order order) {
+
+        Order existingOrder = null;
+        if (order == null)
+            throw new RestaurantManagerException("User already exist.");
+        OrderRepository.editOrder(orderId, order);
+
+    }
 }
