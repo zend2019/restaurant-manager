@@ -35,4 +35,5 @@ public class GUIConstants {
     public static final String EMPTY_FIELD = "";
     public static final int INVENTORY_MATRIX_COLUMNS = 7;
     public static final String GET_DAYLY_REPORT = "Get Daily Report";
+    public static final String OUT_OF_STOCK_REPORT = "Out Of Stock Report";
 }
