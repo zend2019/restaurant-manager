@@ -3,28 +3,28 @@ package main.java.BL.Contract.Logic;
 import main.java.BL.Contract.Category;
 import main.java.BL.Contract.Provider;
 import main.java.dataAccess.IRestaurantRepository;
-import main.java.database.DatabaseController;
+import main.java.database.ProviderRepository;
 
 import java.util.List;
 
-public class ProviderManaging implements IProviderManaging {
+public class ProviderController implements IProviderManaging {
 
     private IRestaurantRepository resturantRepository;
 
 
     @Override
     public void addProvider(Provider provider) {
-        DatabaseController.addProvider(provider);
+        ProviderRepository.addProvider(provider);
     }
 
     @Override
     public void deleteProvider(int providerId) {
-        DatabaseController.deleteProvider(String.valueOf(providerId));
+        ProviderRepository.deleteProvider(String.valueOf(providerId));
     }
 
     @Override
     public void editProvider(Provider provider, int providerId) {
-        DatabaseController.editProvider(provider,providerId);
+        ProviderRepository.editProvider(provider,providerId);
     }
 
     @Override
@@ -34,7 +34,7 @@ public class ProviderManaging implements IProviderManaging {
 
     @Override
     public List<Provider> GetProviderByCategory(Category category) {
-        return DatabaseController.getProviderByCategory(category);
+        return ProviderRepository.getProviderByCategory(category);
     }
 
 

@@ -3,11 +3,12 @@ import main.java.BL.Contract.Order;
 import main.java.BL.Contract.OrderStatus;
 import main.java.common.exceptions.RestaurantManagerException;
 import main.java.dataAccess.IRestaurantRepository;
-import main.java.database.DatabaseController;
+import main.java.database.OrderRepository;
+import org.junit.Test;
 
-public class OrderManager implements IOrderManager {
+public class OrderController implements IOrderManager {
 
-    public OrderManager(IRestaurantRepository restaurantRepository) {
+    public OrderController(IRestaurantRepository restaurantRepository) {
         this.restaurantRepository = restaurantRepository;
     }
 
@@ -20,23 +21,23 @@ public class OrderManager implements IOrderManager {
         if (currentBudget < order.getTotalAmount()) {
             throw new RestaurantManagerException("Your order is above the current budget");
         }
-        int orderId = DatabaseController.addOrder(order);
+        int orderId = OrderRepository.addOrder(order);
 
         return orderId;
     }
 
     @Override
     public Order GetOrder(int orderId) {
-        return DatabaseController.getOrderById(orderId);
+        return OrderRepository.getOrderById(orderId);
     }
 
     @Override
     public void EditOrder(int orderId, Order order) {
 
-        Order existingOrder = DatabaseController.getOrderById(orderId);
+        Order existingOrder = OrderRepository.getOrderById(orderId);
         if (order == null)
             throw new RestaurantManagerException("User already exist.");
-        DatabaseController.editOrder(orderId, order);
+        OrderRepository.editOrder(orderId, order);
 
     }
 
@@ -49,9 +50,9 @@ public class OrderManager implements IOrderManager {
 
     @Override
     public void AddRatingPerOrder(int rating, int orderId) {
-        Order order = DatabaseController.getOrderById(orderId);
+        Order order = OrderRepository.getOrderById(orderId);
         order.setRating(rating);
-        DatabaseController.editOrder(orderId, order);
+        OrderRepository.editOrder(orderId, order);
 
     }
 }

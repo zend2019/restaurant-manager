@@ -137,7 +137,7 @@ public class DatabaseController {
         }
     }
 
-    public static String  addProduct(Product product) {
+    public static String addProduct(Product product) {
         String id = "-1";
         String sql = "INSERT INTO product(item_name,category,provider,price,expiration_date,current_amount,required_amount) VALUES(?,?,?,?,?,?,?)";
         Connection conn = DatabaseAccessManager.getConnection();
@@ -147,7 +147,7 @@ public class DatabaseController {
             pstmt.setString(2, product.getCategory().toString());
             pstmt.setString(3, product.getProviderId());
             pstmt.setString(4, product.getPrice());
-            pstmt.setString(5, DateUtils.formatDateToString(product.getExpirationDate() ));
+            pstmt.setString(5, DateUtils.formatDateToString(product.getExpirationDate()));
             pstmt.setInt(6, product.getCurrentProductAmount());
             pstmt.setInt(7, product.getRequiredAmount());
 
@@ -227,7 +227,7 @@ public class DatabaseController {
 
 
     public static int addOrder(Order order) {
-        int id= -1;
+        int id = -1;
         String sql = "INSERT INTO orders(order_date,delivery_date,total_amount,order_status) VALUES(?,?,?,?)";
         Connection conn = DatabaseAccessManager.getConnection();
         try {
@@ -390,7 +390,7 @@ public class DatabaseController {
 
     public static Vector<Product> getListOfOrderedProductsByOrder(String orderId) {
         String sql = "SELECT item_name,category,provider,ordered_units,price\n" +
-                     "FROM ordered_items JOIN product ON product.id=ordered_items.item_id\n WHERE order_id = "+ orderId;
+                "FROM ordered_items JOIN product ON product.id=ordered_items.item_id\n WHERE order_id = " + orderId;
         Connection conn = DatabaseAccessManager.getConnection();
         Vector<Product> productsList = new Vector<>();
 
@@ -415,7 +415,7 @@ public class DatabaseController {
         return productsList;
     }
 
-    public static Vector<Order> getListOfOrders(HashMap hashMap){
+    public static Vector<Order> getListOfOrders(HashMap hashMap) {
         String sql = "SELECT order_id,product.provider,total_amount,order_status,order_date,delivery_date\n" +
                 "    FROM ordered_items JOIN product ON product.id=ordered_items.item_id\n" +
                 "    JOIN orders ON ordered_items.order_id=orders.id WHERE " + getDynamicWhereQueryBuilder(hashMap);
@@ -447,7 +447,7 @@ public class DatabaseController {
         return ordersList;
     }
 
-    private static String getDynamicWhereQueryBuilder(HashMap hashMap) {
+    public static String getDynamicWhereQueryBuilder(HashMap hashMap) {
         StringBuilder whereQuery;
         Iterator it = hashMap.entrySet().iterator();
         Map.Entry pair = (Map.Entry) it.next();
@@ -657,5 +657,69 @@ public class DatabaseController {
     }
 
     public static void editProvider(Provider provider, int providerId) {
+    }
+
+    public static Vector<Product> getListOfAllProducts() {
+        String sql = "SELECT * FROM product ";
+        Connection conn = DatabaseAccessManager.getConnection();
+        Vector<Product> productsList = new Vector<>();
+
+        try {
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+
+                Product product = new Product();
+                product.setProductId(rs.getString(DatabaseConstants.PRODUCT_TABLE_ITEM_ID_COLUMN));
+                product.setProductName(rs.getString(DatabaseConstants.PRODUCT_TABLE_ITEM_NAME_COLUMN));
+                product.setPrice(rs.getString(DatabaseConstants.PRODUCT_TABLE_ITEM_PRICE_COLUMN));
+                product.setCategory(Category.valueOf(rs.getString(DatabaseConstants.PRODUCT_TABLE_ITEM_CATEGORY_COLUMN)));
+                product.setExpirationDate(DateUtils.getDateByString(rs.getString(DatabaseConstants.PRODUCT_TABLE_ITEM_EXPIRATION_DATE_COLUMN)));
+                product.setCurrentProductAmount(rs.getInt(DatabaseConstants.PRODUCT_TABLE_ITEM_CURRENT_AMOUNT_COLUMN));
+                product.setRequiredAmount(rs.getInt(DatabaseConstants.PRODUCT_TABLE_ITEM_REQUIRED_AMOUNT_COLUMN));
+                product.setProviderId(rs.getString(DatabaseConstants.PRODUCT_TABLE_ITEM_PROVIDER_COLUMN));
+                productsList.add(product);
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } catch (ParseException e) {
+            e.printStackTrace();
+        } finally {
+            DatabaseAccessManager.closeConnection(conn);
+        }
+        return productsList;
+
+    }
+
+    public static boolean login(String user, String pass) {
+        String sql = String.format("SELECT id FROM user WHERE username ='%s' And password=%s",
+                user, pass);
+        Connection conn = DatabaseAccessManager.getConnection();
+        Vector<Product> productsList = new Vector<>();
+
+        try {
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+
+                Product product = new Product();
+                product.setProductId(rs.getString(DatabaseConstants.PRODUCT_TABLE_ITEM_ID_COLUMN));
+                product.setProductName(rs.getString(DatabaseConstants.PRODUCT_TABLE_ITEM_NAME_COLUMN));
+                product.setPrice(rs.getString(DatabaseConstants.PRODUCT_TABLE_ITEM_PRICE_COLUMN));
+                product.setCategory(Category.valueOf(rs.getString(DatabaseConstants.PRODUCT_TABLE_ITEM_CATEGORY_COLUMN)));
+                product.setExpirationDate(DateUtils.getDateByString(rs.getString(DatabaseConstants.PRODUCT_TABLE_ITEM_EXPIRATION_DATE_COLUMN)));
+                product.setCurrentProductAmount(rs.getInt(DatabaseConstants.PRODUCT_TABLE_ITEM_CURRENT_AMOUNT_COLUMN));
+                product.setRequiredAmount(rs.getInt(DatabaseConstants.PRODUCT_TABLE_ITEM_REQUIRED_AMOUNT_COLUMN));
+                product.setProviderId(rs.getString(DatabaseConstants.PRODUCT_TABLE_ITEM_PROVIDER_COLUMN));
+                productsList.add(product);
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } catch (ParseException e) {
+            e.printStackTrace();
+        } finally {
+            DatabaseAccessManager.closeConnection(conn);
+        }
+        return true;
     }
 }

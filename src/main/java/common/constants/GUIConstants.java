@@ -32,10 +32,8 @@ public class GUIConstants {
     public static final String PLACE_ORDER_ERROR = "There was an error placing the order";
     public static final String SELECT_FIELD = "Select field";
     public static final String ZERO = "0";
-
     public static final String EMPTY_FIELD = "";
-
     public static final int INVENTORY_MATRIX_COLUMNS = 7;
-
-
+    public static final String GET_DAYLY_REPORT = "Get Daily Report";
+    public static final String OUT_OF_STOCK_REPORT = "Out Of Stock Report";
 }

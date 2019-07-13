@@ -1,5 +1,8 @@
 package main.java.GUI;
 
+import main.java.BL.Contract.User;
+import main.java.common.constants.Constants;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -11,12 +14,16 @@ public class MainForm extends JFrame {
     private OrdersSearchPanel ordersSearchPanel;
     private OrdersAddPanel ordersAddPanel;
     private JTabbedPane OrdersTabs;
+    private JTabbedPane reportsTabs;
     private MenuPanel menuPanel;
+    private DailyReportPanel dailyReportPanel;
+    private OutOfStockReport outOfStockReport;
     private CardLayout cl;
+    private User user;
 
-    public MainForm() {
+    public MainForm(User logInUser) {
         super("Restaurant Manager");
-        ImageIcon img = new ImageIcon("src/main/java/GUI/img/icon.png"); //TODO: switch with constant of relative path (src/main/java...)
+        ImageIcon img = new ImageIcon(Constants.LOGO_IMAGE);
         setIconImage(img.getImage());
         cl = new CardLayout();
         containerPanel = new JPanel();
@@ -25,14 +32,22 @@ public class MainForm extends JFrame {
         ordersAddPanel = new OrdersAddPanel();
         OrdersTabs = new JTabbedPane();
         menuPanel = new MenuPanel();
+        dailyReportPanel = new DailyReportPanel();
+        reportsTabs = new JTabbedPane();
+        outOfStockReport = new OutOfStockReport();
+        user = logInUser;
 
         //////////////// set the layout ////////////////
         OrdersTabs.add("Search Orders", ordersSearchPanel);
         OrdersTabs.add("Add Order", ordersAddPanel);
 
+        reportsTabs.add("Daily Report", dailyReportPanel);
+        reportsTabs.add("Out of stock Report", outOfStockReport);
+
         containerPanel.setLayout(cl);
         containerPanel.add(inventoryPanel, "Inventory");
         containerPanel.add(OrdersTabs, "Orders");
+        containerPanel.add(reportsTabs, "Reports");
         cl.show(containerPanel, "Inventory");
 
         ////////////// Menu items listeners ////////////////
@@ -48,6 +63,12 @@ public class MainForm extends JFrame {
                 cl.show(containerPanel, "Orders");
             }
         });
+        menuPanel.reports.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                cl.show(containerPanel, "Reports");
+            }
+        });
 
 
         add(menuPanel, BorderLayout.WEST);
@@ -58,12 +79,11 @@ public class MainForm extends JFrame {
         setResizable(false);
 
 
-
     }
 
     private void setScreenSize() {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        setSize((int) (screenSize.width*0.9), (int) (screenSize.height*0.9));
+        setSize((int) (screenSize.width * 0.9), (int) (screenSize.height * 0.9));
     }
 
 }
