@@ -6,7 +6,7 @@ import main.java.database.DatabaseController;
 
 import java.util.List;
 
-public class ProductManager implements IProductManager {
+public class ProductController implements IProductManager {
     private IRestaurantRepository resturantRepository;
 
 
