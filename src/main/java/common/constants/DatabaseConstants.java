@@ -10,6 +10,7 @@ public class DatabaseConstants {
     public static final String USER_TABLE_DATE_OF_BIRTH_COLUMN = "date_of_birth";
     public static final String USER_TABLE_USERNAME_COLUMN = "username";
     public static final String USER_TABLE_PHONE_NUMBER_COLUMN = "phone_number";
+    public static final String USER_TABLE_IS_MANAGER_COLUMN = "is_manager";
 
     //Product table
     public static final String PRODUCT_TABLE_ITEM_ID_COLUMN = "id";
