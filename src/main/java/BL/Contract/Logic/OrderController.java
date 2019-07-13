@@ -5,9 +5,9 @@ import main.java.common.exceptions.RestaurantManagerException;
 import main.java.dataAccess.IRestaurantRepository;
 import main.java.database.DatabaseController;
 
-public class OrderManager implements IOrderManager {
+public class OrderController implements IOrderManager {
 
-    public OrderManager(IRestaurantRepository restaurantRepository) {
+    public OrderController(IRestaurantRepository restaurantRepository) {
         this.restaurantRepository = restaurantRepository;
     }
 

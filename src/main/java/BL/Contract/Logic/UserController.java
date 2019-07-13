@@ -5,10 +5,10 @@ import main.java.common.exceptions.RestaurantManagerException;
 import main.java.dataAccess.IRestaurantRepository;
 import main.java.database.DatabaseController;
 
-public class UserManager implements IUSerManager {
+public class UserController implements IUSerManager {
     private IRestaurantRepository resturantRepository;
 
-    public UserManager(IRestaurantRepository resturantRepository) {
+    public UserController(IRestaurantRepository resturantRepository) {
         this.resturantRepository = resturantRepository;
     }
 
