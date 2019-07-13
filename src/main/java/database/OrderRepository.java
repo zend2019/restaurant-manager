@@ -9,7 +9,6 @@ import java.util.Date;
 import static main.java.common.constants.DatabaseConstants.*;
 
 public class OrderRepository {
-}
 
 
     /* Function num #1 - Adding a new order */
@@ -97,7 +96,7 @@ public class OrderRepository {
 
     public static Vector<Order> getAllOrders() {
         Vector<Order> orders = new Vector<Order>();
-        String sql = "SELECT * FROM orders";
+        String sql = String.format("SELECT %s FROM orders", ORDERS_TABLE_ORDER_ID_COLUMN);
 
         Connection conn = DatabaseAccessManager.getConnection();
         try {
