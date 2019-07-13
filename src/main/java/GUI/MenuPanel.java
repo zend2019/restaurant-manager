@@ -19,7 +19,7 @@ public class MenuPanel extends JPanel {
         inventory = new JButton("Inventory");
         orders = new JButton("Orders");
         reports = new JButton("Reports");
-        settings = new JButton("settings");
+        settings = new JButton("Settings");
 
 
         setLayout(new GridBagLayout());
