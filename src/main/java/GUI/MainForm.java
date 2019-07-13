@@ -1,5 +1,6 @@
 package main.java.GUI;
 
+import main.java.BL.Contract.User;
 import main.java.common.constants.Constants;
 
 import javax.swing.*;
@@ -18,8 +19,9 @@ public class MainForm extends JFrame {
     private DailyReportPanel dailyReportPanel;
     private OutOfStockReport outOfStockReport;
     private CardLayout cl;
+    private User user;
 
-    public MainForm() {
+    public MainForm(User logInUser) {
         super("Restaurant Manager");
         ImageIcon img = new ImageIcon(Constants.LOGO_IMAGE);
         setIconImage(img.getImage());
@@ -33,6 +35,7 @@ public class MainForm extends JFrame {
         dailyReportPanel = new DailyReportPanel();
         reportsTabs = new JTabbedPane();
         outOfStockReport = new OutOfStockReport();
+        user = logInUser;
 
         //////////////// set the layout ////////////////
         OrdersTabs.add("Search Orders", ordersSearchPanel);
