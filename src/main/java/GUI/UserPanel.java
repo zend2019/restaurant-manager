@@ -65,6 +65,7 @@ public class UserPanel extends IWorkPanel {
         userNameLable = new JLabel("User Name");
         firstnameLable = new JLabel("First Name");
         lastNameLable = new JLabel("Last Name");
+        lastName= new JTextField();
         dateOfBirthLable = new JLabel("Fite");
         phoneNumberLable = new JLabel("Phone number");
         isManagerLable = new JLabel("Is Manager?");
@@ -74,10 +75,13 @@ public class UserPanel extends IWorkPanel {
         department = new JComboBox();
         itemAdded = new JLabel(GUIConstants.ITEM_ADDED);
         password = new JPasswordField();
+        isManager= new JCheckBox();
         userName = new JTextField(10);
         firstName = new JTextField(10);
         hireDate = new JDateChooser();
+        phoneNumber= new JTextField();
         addUserButton = new JButton("Add User");
+        dateOfBirth= new JDateChooser();
         allRequired = new JLabel(GUIConstants.ALL_FIELDS_REQUIRED);
         searchPanel = new JPanel();
         itemDialog = new EditItemDialog((JFrame) SwingUtilities.getWindowAncestor(this));
@@ -143,13 +147,7 @@ public class UserPanel extends IWorkPanel {
         gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_START;
         searchPanel.add(firstName, gcSearchPanel);
 
-        gcSearchPanel.gridx = 4;
-        gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_START;
-        searchPanel.add(passwordLable, gcSearchPanel);
 
-        gcSearchPanel.gridx = 5;
-        gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_START;
-        searchPanel.add(password, gcSearchPanel);
 
         /////// Next row ///////
         gcSearchPanel.gridy++;
@@ -195,6 +193,36 @@ public class UserPanel extends IWorkPanel {
         gcSearchPanel.gridx = 3;
         gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_START;
         searchPanel.add(hireDate, gcSearchPanel);
+
+        gcSearchPanel.gridx = 4;
+        gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_END;
+        searchPanel.add(phoneNumberLable, gcSearchPanel);
+
+        gcSearchPanel.gridx = 5;
+        gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_START;
+        searchPanel.add(phoneNumber, gcSearchPanel);
+
+        /////// Next row ///////
+        gcSearchPanel.gridy++;
+
+        gcSearchPanel.weightx = 0.5;
+        gcSearchPanel.weighty = 0.1;
+
+        gcSearchPanel.gridx = 0;
+        gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_END;
+        searchPanel.add(isManagerLable, gcSearchPanel);
+
+        gcSearchPanel.gridx = 1;
+        gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_START;
+        searchPanel.add(isManager, gcSearchPanel);
+
+        gcSearchPanel.gridx = 2;
+        gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_START;
+        searchPanel.add(passwordLable, gcSearchPanel);
+
+        gcSearchPanel.gridx = 3;
+        gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_START;
+        searchPanel.add(password, gcSearchPanel);
 
 
 /////// Next row ///////

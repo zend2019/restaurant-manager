@@ -106,7 +106,7 @@ public class UserRepository {
 
     /* Function num #5 - Log in access */
 
-    public static User LogIn(String userName, String password) {
+    public static boolean LogIn(String userName, String password) {
         String sql = String.format("SELECT * FROM user WHERE username ='%s' And password = %s ",
                 userName, password);
         User user = new User();

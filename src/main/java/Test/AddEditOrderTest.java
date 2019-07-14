@@ -1,11 +1,9 @@
 import main.java.BL.Contract.Order;
-import main.java.BL.Contract.OrderStatus;
 import main.java.common.exceptions.RestaurantManagerException;
-import main.java.dataAccess.IRestaurantRepository;
 import main.java.database.OrderRepository;
 import org.junit.*;
 
-public class OrderControllerTest {
+public class AddEditOrderTest {
 
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
@@ -35,13 +33,4 @@ public class OrderControllerTest {
         return orderId;
     }
 
-    @Test
-    public void EditOrder(int orderId, Order order) {
-
-        Order existingOrder = null;
-        if (order == null)
-            throw new RestaurantManagerException("User already exist.");
-        OrderRepository.editOrder(orderId, order);
-
-    }
 }

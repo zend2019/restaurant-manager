@@ -4,5 +4,5 @@ import main.java.BL.Contract.User;
 
 public interface ILogin {
 
-    User LogInSystem (String userName, String Password);
+    User LogInSystem(String userName, String password);
 }

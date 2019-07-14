@@ -1,5 +1,6 @@
 package main.java.BL.Contract.Logic;
 
+import main.java.BL.Contract.Employee;
 import main.java.BL.Contract.User;
 import main.java.common.exceptions.RestaurantManagerException;
 import main.java.dataAccess.IRestaurantRepository;
@@ -14,14 +15,14 @@ public class UserController implements IUSerManager {
 
 
     @Override
-    public void AddUser(User user) {
+    public void AddUser(Employee user, boolean isManager) {
         User existingUser = UserRepository.getUserById(user.getId());
         if (existingUser != null) {
             throw new RestaurantManagerException("User already exist.");
         }
         int pass = user.getPassword().hashCode();
         user.setPassword(Integer.toString(pass));
-        UserRepository.addUser(user);
+        UserRepository.addUser(user,isManager);
     }
 
     @Override
