@@ -1,18 +1,16 @@
 package main.java.GUI;
 
 import com.toedter.calendar.JDateChooser;
-import main.java.BL.Contract.Order;
-import main.java.BL.Contract.OrderStatus;
-import main.java.BL.Contract.Product;
+import main.java.BL.Contract.*;
 import main.java.common.DateUtils;
 import main.java.common.StringUtils;
 import main.java.common.constants.Constants;
 import main.java.common.constants.DatabaseConstants;
 import main.java.common.constants.GUIConstants;
 import main.java.database.DatabaseController;
+import main.java.database.UserRepository;
 
 import javax.swing.*;
-import javax.swing.border.BevelBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -23,8 +21,6 @@ import java.util.HashMap;
 import java.util.Vector;
 
 import static java.lang.Integer.valueOf;
-import static main.java.database.DatabaseController.getAllCategoryNames;
-import static main.java.database.DatabaseController.getAllProviderCompanyName;
 
 public class UserPanel extends IWorkPanel {
     private JLabel userNameLable;
@@ -35,25 +31,25 @@ public class UserPanel extends IWorkPanel {
     private JLabel isManagerLable;
     private JLabel departmentLable;
     private JLabel hireDateLable;
+    private JLabel itemAdded;
+    private JLabel passwordLable;
     private JComboBox department;
     private JTextField userName;
     private JTextField firstName;
     private JTextField phoneNumber;
+    private JPasswordField password;
     private JTextField lastName;
     private JCheckBox isManager;
-
+    private JLabel allRequired;
     private JDateChooser dateOfBirth;
+    private JDateChooser hireDate;
     private JButton addUserButton;
     private JScrollPane scrollItemsTable;
     private JScrollPane scrollOrderTable;
     private JPanel searchPanel;
     private EditItemDialog itemDialog;
     private OrderPlacedDialog orderPlacedDialog;
-    private Integer orderSum = 0;
-    private Vector<String> providers;
-    private Vector<String> categories;
-    private String orderItemId;
-    private int orderItemAmount;
+    private Vector<String> departments;
 
 
     public UserPanel() {
@@ -70,14 +66,19 @@ public class UserPanel extends IWorkPanel {
         firstnameLable = new JLabel("First Name");
         lastNameLable = new JLabel("Last Name");
         dateOfBirthLable = new JLabel("Fite");
-        phoneNumberLable = new JLabel(GUIConstants.ZERO);
-        isManagerLable = new JLabel(GUIConstants.ATLEAST_ONE_FIELD_REQUIRED);
-        departmentLable = new JLabel(GUIConstants.NO_RESULTS);
-        hireDateLable = new JLabel(GUIConstants.SEARCH_COMPLETED);
+        phoneNumberLable = new JLabel("Phone number");
+        isManagerLable = new JLabel("Is Manager?");
+        departmentLable = new JLabel("Department");
+        hireDateLable = new JLabel("Hire Date");
+        passwordLable = new JLabel("Password");
         department = new JComboBox();
+        itemAdded = new JLabel(GUIConstants.ITEM_ADDED);
+        password = new JPasswordField();
         userName = new JTextField(10);
         firstName = new JTextField(10);
+        hireDate = new JDateChooser();
         addUserButton = new JButton("Add User");
+        allRequired = new JLabel(GUIConstants.ALL_FIELDS_REQUIRED);
         searchPanel = new JPanel();
         itemDialog = new EditItemDialog((JFrame) SwingUtilities.getWindowAncestor(this));
         orderPlacedDialog = new OrderPlacedDialog((JFrame) SwingUtilities.getWindowAncestor(this));
@@ -144,7 +145,11 @@ public class UserPanel extends IWorkPanel {
 
         gcSearchPanel.gridx = 4;
         gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_START;
-        searchPanel.add(firstName, gcSearchPanel);
+        searchPanel.add(passwordLable, gcSearchPanel);
+
+        gcSearchPanel.gridx = 5;
+        gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_START;
+        searchPanel.add(password, gcSearchPanel);
 
         /////// Next row ///////
         gcSearchPanel.gridy++;
@@ -168,13 +173,30 @@ public class UserPanel extends IWorkPanel {
         gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_START;
         searchPanel.add(dateOfBirth, gcSearchPanel);
 
-        gcSearchPanel.gridx = 4;
-        gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_START;
+
+        /////// Next row ///////
+        gcSearchPanel.gridy++;
+
+        gcSearchPanel.weightx = 0.5;
+        gcSearchPanel.weighty = 0.1;
+
+        gcSearchPanel.gridx = 0;
+        gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_END;
         searchPanel.add(departmentLable, gcSearchPanel);
 
-        gcSearchPanel.gridx = 5;
+        gcSearchPanel.gridx = 1;
         gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_START;
         searchPanel.add(department, gcSearchPanel);
+
+        gcSearchPanel.gridx = 2;
+        gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_END;
+        searchPanel.add(hireDateLable, gcSearchPanel);
+
+        gcSearchPanel.gridx = 3;
+        gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_START;
+        searchPanel.add(hireDate, gcSearchPanel);
+
+
 /////// Next row ///////
         gcSearchPanel.gridy++;
 
@@ -184,6 +206,19 @@ public class UserPanel extends IWorkPanel {
         gcSearchPanel.gridx = 0;
         gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_START;
         searchPanel.add(addUserButton, gcSearchPanel);
+
+        //Validation labels
+        gcSearchPanel.gridx = 3;
+        gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_START;
+
+        allRequired.setForeground(Color.red);
+        allRequired.setVisible(false);
+        searchPanel.add(allRequired, gcSearchPanel);
+
+
+        itemAdded.setForeground(Color.blue);
+        itemAdded.setVisible(false);
+        searchPanel.add(itemAdded, gcSearchPanel);
 
         alignFieldSizes();
     }
@@ -198,131 +233,50 @@ public class UserPanel extends IWorkPanel {
     @Override
     protected void setComboBoxes() {
         setCurrentProvider();//TODO: should be adjusted live and not only when running the app first
-        setCurrentCategories(); //TODO: same here
-        DefaultComboBoxModel providersModel = new DefaultComboBoxModel(providers);
+        DefaultComboBoxModel providersModel = new DefaultComboBoxModel(departments);
         department.setModel(providersModel);
-        DefaultComboBoxModel categoryModel = new DefaultComboBoxModel(categories);
     }
 
     private void setCurrentProvider() {
-        providers = getAllProviderCompanyName();
-        providers.add(0, GUIConstants.SELECT_FIELD);
+        departments = UserRepository.getAllDepartment();
+        departments.add(0, GUIConstants.SELECT_FIELD);
     }
 
-    private void setCurrentCategories() {
-        categories = getAllCategoryNames();
-        categories.add(0, GUIConstants.SELECT_FIELD);
-    }
 
     @Override
     protected void setActionListeners() {
-        setSearchButton();
-        setPlaceOrderButton();
-        setEditUnitsListener();
-        setAddItemDialogListener();
-        setRemoveItemFromOrderListener();
+        setAddUserListener();
     }
 
-    private void setEditUnitsListener() {
-        itemsTable.addMouseListener(new MouseAdapter() {
-            public void mousePressed(MouseEvent mouseEvent) {
-                JTable table = (JTable) mouseEvent.getSource();
-                Point point = mouseEvent.getPoint();
-                int row = table.rowAtPoint(point);
-                if (mouseEvent.getClickCount() == 2 && table.getSelectedRow() != -1) {
-                    orderItemId = itemsTable.getValueAt(row, 0).toString();
-                    itemDialog.numOfItemsTF.setText("");
-                    itemDialog.setVisible(true);
-                }
-            }
-        });
-    }
-
-    //Used to pass information from Dialog back to the Panel
-    private void setAddItemDialogListener() {
-        itemDialog.setItemDialogListener(new DialogListener() {
-            @Override
-            public void setItemInOrder(int units) {
-                orderItemAmount = units;
-                System.out.println(orderItemAmount);
-                String[] productToAdd = convertProductToOrderArr(DatabaseController.getProductByProductId(orderItemId));
-                ordersTableModel.addRow(productToAdd);
-                orderSum += calculateItemSum(productToAdd[4], productToAdd[5]); //update the order sum by the price (TODO: update the test data)
-                setOrderSumFieldLabel(); //updates the sum label
-            }
-        });
-    }
-
-    private void setRemoveItemFromOrderListener() {
-        orderTable.addMouseListener(new MouseAdapter() {
-            public void mousePressed(MouseEvent mouseEvent) {
-                JTable table = (JTable) mouseEvent.getSource();
-                Point point = mouseEvent.getPoint();
-                int row = table.rowAtPoint(point);
-                if (mouseEvent.getClickCount() == 2 && table.getSelectedRow() != -1) {
-                    orderSum -= calculateItemSum(ordersTableModel.getValueAt(row, 4).toString(), ordersTableModel.getValueAt(row, 5).toString());
-                    setOrderSumFieldLabel(); //updates the sum label
-                    ordersTableModel.removeRow(row);
-                }
-            }
-        });
-    }
-
-    //TODO: consider moving to a utils class
-    private int calculateItemSum(String numOfItems, String itemPrice) {
-        int numItems = valueOf(numOfItems), price = valueOf(itemPrice);
-        return numItems * price;
-    }
-
-    private void setOrderSumFieldLabel() {
-        phoneNumberLable.setText(orderSum.toString());
-    }
-
-    private void setPlaceOrderButton() {
+    private void setAddUserListener() {
         addUserButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                Vector<Vector> data = ordersTableModel.getDataVector();
-                Order order = new Order();
-                order.setOrderedProducts(data, 0, 4);
-                order.setTotalAmount(orderSum.doubleValue());
-                order.setOrderStatus(OrderStatus.inProcess);
-                order.setOrderDate(new Date(System.currentTimeMillis()));
-                order.setDeliveryDate(new Date(System.currentTimeMillis()));
-                order.setOrderId(DatabaseController.addOrder(order));
-                if (order.getOrderId() == -1)
-                    placeOrderErrorLabel.setVisible(true);
-                else {
-                    //passing the order id to the dialog
-                    orderPlacedDialog.setPlacedOrderId(order.getOrderId());
-                    orderPlacedDialog.setVisible(true);
+                if (!checkAtleastOneNotEmpty()) {
+                    setValidationLabelsVisibility(false);
+                    allRequired.setVisible(true);
+                } else {
+                    setValidationLabelsVisibility(false);
+                    Employee employee;
+                    employee = getUserProperties();
+                    UserRepository.addUser(employee,isManager.isSelected());
+                    itemAdded.setVisible(true);
                 }
             }
         });
     }
 
-    private void setSearchButton() {
-        searchItemButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (checkAtleastOneNotEmpty()) {
-                    setValidationLabelsVisibility(false);
-                    Vector<Product> x = DatabaseController.getListOfProducts(buildSearchParameters());
-                    if (x.size() == 0) {
-                        itemsTableModel.setDataVector(convertProductVectorToProductMatrix(x), itemsColumnNames);
-                        departmentLable.setVisible(true);
-                    } else {
-                        setValidationLabelsVisibility(false);
-                        itemsTableModel.setDataVector(convertProductVectorToProductMatrix(x), itemsColumnNames);
-                        hireDateLable.setVisible(true);
-                    }
-                } else {
-                    setValidationLabelsVisibility(false);
-                    isManagerLable.setVisible(true);
-                }
-
-            }
-        });
+    private Employee getUserProperties() {
+        Employee user = new Employee();
+        user.setPassword(new String(password.getPassword()));
+        user.setDateOfBirth(dateOfBirth.getDateFormatString());
+        user.setFirstName(firstName.getText());
+        user.setLastName(lastName.getText());
+        user.setPhoneNmuber(phoneNumber.getText());
+        user.setUserName(userName.getText());
+        //user.setDepartment(Department[department.getSelectedIndex()]));
+        user.setHireDate(hireDate.getDate());
+        return user;
     }
 
     //"Item name","Category","Provider","Available units","Price per Item","Expiration date"
@@ -344,40 +298,14 @@ public class UserPanel extends IWorkPanel {
         return matrix;
     }
 
-    //{"ID", "Item name", "Category", "Provider", "Selected units", "Expiration date"};
-    private String[] convertProductToOrderArr(Product product) {
-        String[] productArr = {
-                product.getProductId(),
-                product.getProductName(),
-                String.valueOf(product.getCategory()),
-                DatabaseController.getProviderNameById(product.getProviderId()),
-                String.valueOf(orderItemAmount),
-                product.getPrice(),
-                DateUtils.formatDateToString(product.getExpirationDate())
-        };
-        return productArr;
-    }
-
-    private HashMap buildSearchParameters() {
-        HashMap searchParams = new HashMap();
-        if (!department.getSelectedItem().equals(GUIConstants.SELECT_FIELD))
-            searchParams.put("product." + DatabaseConstants.PRODUCT_TABLE_ITEM_PROVIDER_COLUMN, DatabaseController.getProviderIdByName(StringUtils.getStringWithSingleQuotes(department.getSelectedItem().toString())));
-
-        if (!categoryList.getSelectedItem().equals(GUIConstants.SELECT_FIELD))
-            searchParams.put(DatabaseConstants.PRODUCT_TABLE_ITEM_CATEGORY_COLUMN, StringUtils.getStringWithSingleQuotes(categoryList.getSelectedItem().toString()));
-
-        if (!firstName.getText().equals(GUIConstants.EMPTY_FIELD))
-            searchParams.put(DatabaseConstants.PRODUCT_TABLE_ITEM_NAME_COLUMN, StringUtils.getStringWithSingleQuotes(firstName.getText()));
-
-        if (!userName.getText().equals(GUIConstants.EMPTY_FIELD))
-            searchParams.put(DatabaseConstants.PRODUCT_TABLE_ITEM_CURRENT_AMOUNT_COLUMN, userName.getText());
-        return searchParams;
-    }
 
     private boolean checkAtleastOneNotEmpty() {
         if (!department.getSelectedItem().equals(GUIConstants.SELECT_FIELD) ||
-                !categoryList.getSelectedItem().equals(GUIConstants.SELECT_FIELD) ||
                 !firstName.getText().equals(GUIConstants.EMPTY_FIELD) ||
+                !lastName.getText().equals(GUIConstants.EMPTY_FIELD) ||
+                !phoneNumber.getText().equals(GUIConstants.EMPTY_FIELD) ||
+                !password.getText().equals(GUIConstants.EMPTY_FIELD) ||
+                !isManager.getText().equals(GUIConstants.EMPTY_FIELD) ||
                 !userName.getText().equals(GUIConstants.EMPTY_FIELD)
         )
             return true;
@@ -388,9 +316,7 @@ public class UserPanel extends IWorkPanel {
 
     @Override
     protected void setValidationLabelsVisibility(boolean visibility) {
-        isManagerLable.setVisible(visibility);
-        hireDateLable.setVisible(visibility);
-        departmentLable.setVisible(visibility);
-        placeOrderErrorLabel.setVisible(visibility);
+        allRequired.setVisible(visibility);
+        itemAdded.setVisible(visibility);
     }
 }

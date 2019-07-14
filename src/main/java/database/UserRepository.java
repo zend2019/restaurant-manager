@@ -1,9 +1,12 @@
 package main.java.database;
 
+import main.java.BL.Contract.Department;
+import main.java.BL.Contract.Employee;
 import main.java.BL.Contract.Logic.UserFactory;
 import main.java.BL.Contract.User;
 
 import java.sql.*;
+import java.util.Vector;
 
 import static main.java.common.constants.DatabaseConstants.*;
 
@@ -11,7 +14,7 @@ public class UserRepository {
 
     /* Function num #1 - Adding a new user */
 
-    public static void addUser(User user) {
+    public static void addUser(Employee user, boolean isManager) {
         int id = user.getId();
         String firstName = user.getFirstName();
         String lastName = user.getLastName();
@@ -20,6 +23,10 @@ public class UserRepository {
         String username = user.getUserName();
         String phoneNumber = user.getPhoneNmuber();
         String password = user.getPassword();
+        Department department = user.getDepartment();
+        String hireDate = user.getHireDate().toString();
+
+
 
         String sql = String.format("INSERT INTO user(id,first_name,last_name,age,date_of_birth,username,phone_number,password) VALUES(%s,%s,%s,%s,%s,%s,%s)",
                 USER_TABLE_ID_COLUMN,
@@ -124,6 +131,24 @@ public class UserRepository {
             DatabaseAccessManager.closeConnection(conn);
         }
         return user;
+    }
+
+    public static Vector<String> getAllDepartment() {
+        Vector<String> providersNames = new Vector<>();
+        String sql = "SELECT distinct department_name FROM department";
+        Connection conn = DatabaseAccessManager.getConnection();
+        try {
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
+            while (rs.next()) {
+                providersNames.add(rs.getString("department_name"));
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            DatabaseAccessManager.closeConnection(conn);
+        }
+        return providersNames;
     }
 
 
