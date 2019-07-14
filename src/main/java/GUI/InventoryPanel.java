@@ -273,9 +273,10 @@ public class InventoryPanel extends IWorkPanel {
         Dimension fieldSize = itemNameTF.getPreferredSize();
         providersList.setPreferredSize(fieldSize);
         categoryList.setPreferredSize(fieldSize);
-        addButton.setPreferredSize(fieldSize);
-        searchButton.setPreferredSize(fieldSize);
         dateChooser.setPreferredSize(fieldSize);
+
+        Dimension buttonSize = addButton.getPreferredSize();
+        searchButton.setPreferredSize(buttonSize);
     }
 
     @Override

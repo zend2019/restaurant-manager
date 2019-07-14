@@ -239,6 +239,13 @@ public class DatabaseController {
             pstmt.executeUpdate();
             id = getTopOrderId();
 
+            List<HashMap> listOfProducts = order.getOrderedProducts();
+            for (Map<String, String> entry : listOfProducts) {
+                for (String key : entry.keySet()) {
+                    addOrderedItem(id,key,entry.get(key));
+                }
+            }
+
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         } finally {
@@ -248,7 +255,25 @@ public class DatabaseController {
         return id;
     }
 
-    public static int getTopOrderId() {
+    public static void addOrderedItem(int orderId, String itemId, String orderedUnits)
+    {
+        String sql = "INSERT INTO ordered_items(order_id,item_id,ordered_units) VALUES(?,?,?)";
+        Connection conn = DatabaseAccessManager.getConnection();
+        try {
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, orderId);
+            pstmt.setString(2, itemId);
+            pstmt.setString(3, orderedUnits);
+            pstmt.executeUpdate();
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            DatabaseAccessManager.closeConnection(conn);
+        }
+    }
+
+    public static int getTopOrderId(){
         int id = -1;
         String sql = "SELECT MAX(id) FROM orders";
         Connection conn = DatabaseAccessManager.getConnection();

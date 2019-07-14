@@ -52,7 +52,7 @@ public class OutOfStockReport extends IBaseWorkPanel {
         oneRequired = new JLabel(GUIConstants.ATLEAST_ONE_FIELD_REQUIRED);
         noResults = new JLabel(GUIConstants.NO_RESULTS);
         searchCompleted = new JLabel(GUIConstants.SEARCH_COMPLETED);
-        searchButton = new JButton(GUIConstants.GET_DAYLY_REPORT);
+        searchButton = new JButton(GUIConstants.OUT_OF_STOCK_REPORT);
         itemNameTF = new JTextField(10);
     }
 
@@ -118,14 +118,11 @@ public class OutOfStockReport extends IBaseWorkPanel {
         gcSearchPanel.weightx = 0.5;
         gcSearchPanel.weighty = 0.1;
         gcSearchPanel.gridx = 0;
-        gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_END;
-
-        gcSearchPanel.gridx = 4;
         gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_START;
         searchPanel.add(searchButton, gcSearchPanel);
 
         //Validation labels
-        gcSearchPanel.gridx = 3;
+        gcSearchPanel.gridx = 1;
         gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_START;
 
         allRequired.setForeground(Color.red);
@@ -151,7 +148,7 @@ public class OutOfStockReport extends IBaseWorkPanel {
     @Override
     protected void alignFieldSizes() {
         Dimension fieldSize = itemNameTF.getPreferredSize();
-        searchButton.setPreferredSize(fieldSize);
+        //searchButton.setPreferredSize(fieldSize);
     }
 
     @Override

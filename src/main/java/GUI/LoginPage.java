@@ -3,6 +3,7 @@ package main.java.GUI;
 import main.java.BL.Contract.Logic.ILogin;
 import main.java.BL.Contract.Logic.Login;
 import main.java.BL.Contract.User;
+import main.java.common.constants.Constants;
 import main.java.common.constants.GUIConstants;
 
 import javax.swing.*;
@@ -23,9 +24,8 @@ public class LoginPage extends JFrame {
     private JLabel validationMessage;
     private ILogin login;
 
-    public LoginPage() {
+    public LoginPage() throws ClassNotFoundException, UnsupportedLookAndFeelException, InstantiationException, IllegalAccessException {
         super("Login form");
-
         initializer();
         setLoginAction();
         SerLayout();
@@ -33,20 +33,22 @@ public class LoginPage extends JFrame {
     }
 
     private void initializer() {
-
         loginButton = new JButton("Login");
         //loginButton.setBorder(BorderFactory.createEmptyBorder());
         //loginButton.setContentAreaFilled(false);
         userNameLabel = new JLabel("User Name: ");
-        userNameInput = new JTextField(15);
+        userNameInput = new JTextField(10);
         passwordLabel = new JLabel("Password: ");
-        passwordInput = new JPasswordField(15);
+        passwordInput = new JPasswordField(10);
         validationMessage = new JLabel("Login Failed");
         login = new Login();
+        ImageIcon img = new ImageIcon(Constants.LOGO_IMAGE);
+        setIconImage(img.getImage());
     }
 
-    private void SerLayout() {
-        setSize(500, 500);
+    private void SerLayout() throws ClassNotFoundException, UnsupportedLookAndFeelException, InstantiationException, IllegalAccessException {
+        UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
+        setSize(350, 250);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
 
@@ -59,12 +61,12 @@ public class LoginPage extends JFrame {
         gc.weighty = 0.1;
 
         gc.gridx = 0;
-        gc.gridy = 0;
+        gc.gridy = 1;
         gc.anchor = GridBagConstraints.LINE_END;
         add(userNameLabel, gc);
 
         gc.gridx = 1;
-        gc.gridy = 0;
+        gc.gridy = 1;
         gc.anchor = GridBagConstraints.LINE_START;
         add(userNameInput, gc);
 
@@ -73,31 +75,34 @@ public class LoginPage extends JFrame {
         gc.weighty = 0.1;
 
         gc.gridx = 0;
-        gc.gridy = 1;
+        gc.gridy = 2;
         gc.anchor = GridBagConstraints.LINE_END;
         add(passwordLabel, gc);
 
         gc.gridx = 1;
-        gc.gridy = 1;
+        gc.gridy = 2;
         gc.anchor = GridBagConstraints.LINE_START;
         add(passwordInput, gc);
 
         /////// Third row ///////
         gc.weightx = 1;
-        gc.weighty = 1.5;
+        gc.weighty = 0.5;
 
         gc.gridx = 1;
-        gc.gridy = 2;
-        gc.anchor = GridBagConstraints.FIRST_LINE_START;
+        gc.gridy = 3;
+        gc.anchor = GridBagConstraints.LINE_START;
         add(loginButton, gc);
 
         //Validation labels
-        gc.gridx = 3;
-        gc.anchor = GridBagConstraints.FIRST_LINE_START;
+        gc.gridx = 1;
+        gc.gridy = 4;
+        gc.anchor = GridBagConstraints.LINE_START;
+        add(validationMessage,gc);
 
-        add(validationMessage);
         validationMessage.setForeground(Color.red);
         validationMessage.setVisible(false);
+
+        //align field sizes
     }
 
     public void setLoginAction() {
@@ -112,7 +117,17 @@ public class LoginPage extends JFrame {
 
                     if (result.getFirstName() != null) {
                         setVisible(false);
-                        MainForm mainForm = new MainForm(result);
+                        try {
+                            MainForm mainForm = new MainForm(result);
+                        } catch (ClassNotFoundException e1) {
+                            e1.printStackTrace();
+                        } catch (UnsupportedLookAndFeelException e1) {
+                            e1.printStackTrace();
+                        } catch (InstantiationException e1) {
+                            e1.printStackTrace();
+                        } catch (IllegalAccessException e1) {
+                            e1.printStackTrace();
+                        }
                     } else {
                         validationMessage.setVisible(true);
                     }
