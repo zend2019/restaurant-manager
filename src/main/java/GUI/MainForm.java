@@ -30,7 +30,7 @@ public class MainForm extends JFrame {
 
         ImageIcon img = new ImageIcon(Constants.LOGO_IMAGE);
         setIconImage(img.getImage());
-        setBackground(Color.pink);
+        getContentPane().setBackground(Color.PINK);
 
         cl = new CardLayout();
         containerPanel = new JPanel();
@@ -42,8 +42,8 @@ public class MainForm extends JFrame {
         dailyReportPanel = new DailyReportPanel();
         reportsTabs = new JTabbedPane();
         outOfStockReport = new OutOfStockReport();
-        userPanel= new UserPanel();
-        settingTabs= new JTabbedPane();
+        userPanel = new UserPanel();
+        settingTabs = new JTabbedPane();
         user = logInUser;
 
         //////////////// set the layout ////////////////
@@ -53,15 +53,15 @@ public class MainForm extends JFrame {
         reportsTabs.add("Daily Report", dailyReportPanel);
         reportsTabs.add("Out of stock Report", outOfStockReport);
 
-        settingTabs.add("Add New User",userPanel);
+        settingTabs.add("Add New User", userPanel);
 
         containerPanel.setLayout(cl);
         containerPanel.add(inventoryPanel, "Inventory");
         containerPanel.add(OrdersTabs, "Orders");
         containerPanel.add(reportsTabs, "Reports");
 
-        if(user instanceof Manager){
-            containerPanel.add(settingTabs,"Settings");
+        if (user instanceof Manager) {
+            containerPanel.add(settingTabs, "Settings");
         }
         cl.show(containerPanel, "Inventory");
 

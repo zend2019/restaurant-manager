@@ -65,7 +65,7 @@ public class UserPanel extends IWorkPanel {
         userNameLable = new JLabel("User Name");
         firstnameLable = new JLabel("First Name");
         lastNameLable = new JLabel("Last Name");
-        lastName= new JTextField();
+        lastName = new JTextField();
         dateOfBirthLable = new JLabel("Fite");
         phoneNumberLable = new JLabel("Phone number");
         isManagerLable = new JLabel("Is Manager?");
@@ -75,13 +75,13 @@ public class UserPanel extends IWorkPanel {
         department = new JComboBox();
         itemAdded = new JLabel(GUIConstants.ITEM_ADDED);
         password = new JPasswordField();
-        isManager= new JCheckBox();
+        isManager = new JCheckBox();
         userName = new JTextField(10);
         firstName = new JTextField(10);
         hireDate = new JDateChooser();
-        phoneNumber= new JTextField();
+        phoneNumber = new JTextField();
         addUserButton = new JButton("Add User");
-        dateOfBirth= new JDateChooser();
+        dateOfBirth = new JDateChooser();
         allRequired = new JLabel(GUIConstants.ALL_FIELDS_REQUIRED);
         searchPanel = new JPanel();
         itemDialog = new EditItemDialog((JFrame) SwingUtilities.getWindowAncestor(this));
@@ -115,12 +115,10 @@ public class UserPanel extends IWorkPanel {
 
     }
 
-
     @Override
     protected void setSearchPanelLayout() {
         setComboBoxes();
-
-        searchPanel.setBorder(BorderFactory.createTitledBorder("Orders"));
+        searchPanel.setBorder(BorderFactory.createTitledBorder("Restaurant Inventory"));
         searchPanel.setLayout(new GridBagLayout());
         GridBagConstraints gcSearchPanel = new GridBagConstraints();
         gcSearchPanel.fill = GridBagConstraints.CENTER;
@@ -128,6 +126,33 @@ public class UserPanel extends IWorkPanel {
 
         /////// First row ///////
         gcSearchPanel.gridy = 0;
+        gcSearchPanel.weightx = 1;
+        gcSearchPanel.weighty = 0.1;
+        gcSearchPanel.gridx = 0;
+
+        /////// Next row //////
+        gcSearchPanel.gridy++;
+        gcSearchPanel.weightx = 0.5;
+        gcSearchPanel.weighty = 0.1;
+        gcSearchPanel.gridx = 0;
+        gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_END;
+        searchPanel.add(firstnameLable, gcSearchPanel);
+
+        gcSearchPanel.gridx = 1;
+        gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_START;
+        searchPanel.add(firstName, gcSearchPanel);
+
+        gcSearchPanel.gridx = 2;
+        gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_END;
+        searchPanel.add(lastNameLable, gcSearchPanel);
+
+        gcSearchPanel.gridx = 3;
+        gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_START;
+        searchPanel.add(lastName, gcSearchPanel);
+
+        /////// Next row ///////
+        gcSearchPanel.gridy++;
+
         gcSearchPanel.weightx = 0.5;
         gcSearchPanel.weighty = 0.1;
 
@@ -141,70 +166,42 @@ public class UserPanel extends IWorkPanel {
 
         gcSearchPanel.gridx = 2;
         gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_END;
-        searchPanel.add(firstnameLable, gcSearchPanel);
+        searchPanel.add(passwordLable, gcSearchPanel);
 
         gcSearchPanel.gridx = 3;
         gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_START;
-        searchPanel.add(firstName, gcSearchPanel);
+        searchPanel.add(password, gcSearchPanel);
 
-
-
-        /////// Next row ///////
-        gcSearchPanel.gridy++;
-
-        gcSearchPanel.weightx = 0.5;
-        gcSearchPanel.weighty = 0.1;
-
-        gcSearchPanel.gridx = 0;
-        gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_END;
-        searchPanel.add(lastNameLable, gcSearchPanel);
-
-        gcSearchPanel.gridx = 1;
-        gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_START;
-        searchPanel.add(lastName, gcSearchPanel);
-
-        gcSearchPanel.gridx = 2;
-        gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_END;
-        searchPanel.add(dateOfBirthLable, gcSearchPanel);
-
-        gcSearchPanel.gridx = 3;
-        gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_START;
-        searchPanel.add(dateOfBirth, gcSearchPanel);
-
-
-        /////// Next row ///////
-        gcSearchPanel.gridy++;
-
-        gcSearchPanel.weightx = 0.5;
-        gcSearchPanel.weighty = 0.1;
-
-        gcSearchPanel.gridx = 0;
-        gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_END;
-        searchPanel.add(departmentLable, gcSearchPanel);
-
-        gcSearchPanel.gridx = 1;
-        gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_START;
-        searchPanel.add(department, gcSearchPanel);
-
-        gcSearchPanel.gridx = 2;
-        gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_END;
-        searchPanel.add(hireDateLable, gcSearchPanel);
-
-        gcSearchPanel.gridx = 3;
-        gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_START;
-        searchPanel.add(hireDate, gcSearchPanel);
 
         gcSearchPanel.gridx = 4;
+        gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_START;
+        searchPanel.add(addUserButton, gcSearchPanel);
+
+        /////// Next row ///////
+        gcSearchPanel.gridy++;
+
+        gcSearchPanel.weightx = 0.5;
+        gcSearchPanel.weighty = 0.1;
+
+        gcSearchPanel.gridx = 0;
         gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_END;
         searchPanel.add(phoneNumberLable, gcSearchPanel);
 
-        gcSearchPanel.gridx = 5;
+        gcSearchPanel.gridx = 1;
         gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_START;
         searchPanel.add(phoneNumber, gcSearchPanel);
 
+        gcSearchPanel.gridx = 2;
+        gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_END;
+        searchPanel.add(departmentLable, gcSearchPanel);
+
+        gcSearchPanel.gridx = 3;
+        gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_START;
+        searchPanel.add(department, gcSearchPanel);
+
+
         /////// Next row ///////
         gcSearchPanel.gridy++;
-
         gcSearchPanel.weightx = 0.5;
         gcSearchPanel.weighty = 0.1;
 
@@ -217,26 +214,16 @@ public class UserPanel extends IWorkPanel {
         searchPanel.add(isManager, gcSearchPanel);
 
         gcSearchPanel.gridx = 2;
-        gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_START;
-        searchPanel.add(passwordLable, gcSearchPanel);
+        gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_END;
+        searchPanel.add(hireDateLable, gcSearchPanel);
 
         gcSearchPanel.gridx = 3;
         gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_START;
-        searchPanel.add(password, gcSearchPanel);
+        searchPanel.add(hireDate, gcSearchPanel);
 
-
-/////// Next row ///////
-        gcSearchPanel.gridy++;
-
-        gcSearchPanel.weightx = 0.5;
-        gcSearchPanel.weighty = 0.1;
-
-        gcSearchPanel.gridx = 0;
-        gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_START;
-        searchPanel.add(addUserButton, gcSearchPanel);
 
         //Validation labels
-        gcSearchPanel.gridx = 3;
+        gcSearchPanel.gridx = 4;
         gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_START;
 
         allRequired.setForeground(Color.red);
@@ -248,6 +235,7 @@ public class UserPanel extends IWorkPanel {
         itemAdded.setVisible(false);
         searchPanel.add(itemAdded, gcSearchPanel);
 
+
         alignFieldSizes();
     }
 
@@ -256,6 +244,10 @@ public class UserPanel extends IWorkPanel {
         Dimension fieldSize = userName.getPreferredSize();
         department.setPreferredSize(fieldSize);
         addUserButton.setPreferredSize(fieldSize);
+        phoneNumber.setPreferredSize(fieldSize);
+        password.setPreferredSize(fieldSize);
+        lastName.setPreferredSize(fieldSize);
+        hireDate.setPreferredSize(fieldSize);
     }
 
     @Override
@@ -287,7 +279,7 @@ public class UserPanel extends IWorkPanel {
                     setValidationLabelsVisibility(false);
                     Employee employee;
                     employee = getUserProperties();
-                    UserRepository.addUser(employee,isManager.isSelected());
+                    UserRepository.addUser(employee, isManager.isSelected());
                     itemAdded.setVisible(true);
                 }
             }
