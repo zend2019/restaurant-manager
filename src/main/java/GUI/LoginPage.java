@@ -10,9 +10,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 
 public class LoginPage extends JFrame {
     private JPanel LoginPanel;
@@ -29,7 +26,7 @@ public class LoginPage extends JFrame {
         initializer();
         setLoginAction();
         SerLayout();
-
+    setBackground(Color.red);
     }
 
     private void initializer() {
@@ -99,9 +96,9 @@ public class LoginPage extends JFrame {
         gc.anchor = GridBagConstraints.LINE_START;
         add(validationMessage,gc);
 
-        validationMessage.setForeground(Color.red);
+        //validationMessage.setForeground(Color.red);
         validationMessage.setVisible(false);
-
+        getContentPane().setBackground(Color.PINK);
         //align field sizes
     }
 

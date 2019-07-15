@@ -30,7 +30,7 @@ public class MainForm extends JFrame {
 
         ImageIcon img = new ImageIcon(Constants.LOGO_IMAGE);
         setIconImage(img.getImage());
-        getContentPane().setBackground(Color.PINK);
+        //getContentPane().setBackground(Color.PINK);
 
         cl = new CardLayout();
         containerPanel = new JPanel();
@@ -105,9 +105,9 @@ public class MainForm extends JFrame {
 
     private void setScreenSize() {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        setSize((int) (screenSize.width * 0.9), (int) (screenSize.height * 0.9));
+        setSize(1000, (int) (screenSize.height * 0.9));
     }
-
+//screenSize.width
     private void setMenuPanelSize() {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         Dimension dim = new Dimension(120, (int) (screenSize.height * 0.9));

@@ -74,10 +74,9 @@ public class DatabaseController {
         int id = user.getId();
         String firstName = user.getFirstName();
         String lastName = user.getLastName();
-        String age = Integer.toString(user.getAge());
         String dateOfBirth = user.getDateOfBirth();
         String username = user.getUserName();
-        String phoneNumber = user.getPhoneNmuber();
+        String phoneNumber = user.getPhoneNumber();
         String password = user.getPassword();
 
         String sql = "INSERT INTO user(id,first_name,last_name,age,date_of_birth,username,phone_number,password) VALUES(?,?,?,?,?,?,?)";
@@ -87,7 +86,6 @@ public class DatabaseController {
             pstmt.setInt(1, id);
             pstmt.setString(2, firstName);
             pstmt.setString(3, lastName);
-            pstmt.setString(4, age);
             pstmt.setString(5, dateOfBirth);
             pstmt.setString(6, username);
             pstmt.setString(7, phoneNumber);
@@ -322,10 +320,9 @@ public class DatabaseController {
             user.setId(rs.getInt("id"));
             user.setFirstName(rs.getString("first_name"));
             user.setLastName(rs.getString("last_name"));
-            user.setAge(rs.getInt("age"));
             user.setDateOfBirth(rs.getString("date_of_birth"));
             user.setUserName(rs.getString("username"));
-            user.setPhoneNmuber(rs.getString("phone_number"));
+            user.setPhoneNumber(rs.getString("phone_number"));
 //        }
         } catch (SQLException e) {
             System.out.println(e.getMessage());

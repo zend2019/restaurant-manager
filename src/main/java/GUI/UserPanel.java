@@ -32,6 +32,7 @@ public class UserPanel extends IWorkPanel {
     private JLabel departmentLable;
     private JLabel hireDateLable;
     private JLabel itemAdded;
+    private JLabel userAdded;
     private JLabel passwordLable;
     private JComboBox department;
     private JTextField userName;
@@ -74,6 +75,7 @@ public class UserPanel extends IWorkPanel {
         passwordLable = new JLabel("Password");
         department = new JComboBox();
         itemAdded = new JLabel(GUIConstants.ITEM_ADDED);
+        userAdded = new JLabel(GUIConstants.USER_ADDED);
         password = new JPasswordField();
         isManager = new JCheckBox();
         userName = new JTextField(10);
@@ -231,9 +233,9 @@ public class UserPanel extends IWorkPanel {
         searchPanel.add(allRequired, gcSearchPanel);
 
 
-        itemAdded.setForeground(Color.blue);
-        itemAdded.setVisible(false);
-        searchPanel.add(itemAdded, gcSearchPanel);
+        userAdded.setForeground(Color.blue);
+        userAdded.setVisible(false);
+        searchPanel.add(userAdded, gcSearchPanel);
 
 
         alignFieldSizes();
@@ -280,7 +282,7 @@ public class UserPanel extends IWorkPanel {
                     Employee employee;
                     employee = getUserProperties();
                     UserRepository.addUser(employee, isManager.isSelected());
-                    itemAdded.setVisible(true);
+                    userAdded.setVisible(true);
                 }
             }
         });
@@ -292,7 +294,7 @@ public class UserPanel extends IWorkPanel {
         user.setDateOfBirth(dateOfBirth.getDateFormatString());
         user.setFirstName(firstName.getText());
         user.setLastName(lastName.getText());
-        user.setPhoneNmuber(phoneNumber.getText());
+        user.setPhoneNumber(phoneNumber.getText());
         user.setUserName(userName.getText());
         //user.setDepartment(Department[department.getSelectedIndex()]));
         user.setHireDate(hireDate.getDate());
@@ -337,6 +339,6 @@ public class UserPanel extends IWorkPanel {
     @Override
     protected void setValidationLabelsVisibility(boolean visibility) {
         allRequired.setVisible(visibility);
-        itemAdded.setVisible(visibility);
+        userAdded.setVisible(visibility);
     }
 }

@@ -8,6 +8,7 @@ public class GUIConstants {
     public static final String ALL_FIELDS_REQUIRED = "All fields are required";
     public static final String ATLEAST_ONE_FIELD_REQUIRED = "At least One field is required";
     public static final String ITEM_ADDED = "Item was added";
+    public static final String USER_ADDED = "User was added";
     public static final String SEARCH_COMPLETED = "Search completed";
     public static final String NO_RESULTS = "No products matching the search";
     public static final String EXCEED_LIMIT = "Selection exceeded the limited amount";

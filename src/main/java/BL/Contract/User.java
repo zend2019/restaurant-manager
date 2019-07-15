@@ -5,19 +5,15 @@ public class User {
     private int id;
     private String FirstName;
     private String LastName;
-    private int Age;
     private String DateOfBirth;
     private String UserName;
     private String Password;
+    private String PhoneNumber;
+    private int IsManager;
+    private int Department;
+    private String HireDate;
 
-    public String getPassword() {
-        return Password;
-    }
-
-    public void setPassword(String password) {
-        Password = password;
-    }
-
+    /* 1 - Id */
     public int getId() {
         return id;
     }
@@ -26,6 +22,7 @@ public class User {
         this.id = id;
     }
 
+    /* 2 - First Name */
     public String getFirstName() {
         return FirstName;
     }
@@ -34,6 +31,7 @@ public class User {
         FirstName = firstName;
     }
 
+    /* 3 - Last Name */
     public String getLastName() {
         return LastName;
     }
@@ -42,14 +40,7 @@ public class User {
         LastName = lastName;
     }
 
-    public int getAge() {
-        return Age;
-    }
-
-    public void setAge(int age) {
-        Age = age;
-    }
-
+    /* 4 - Date Of Birth */
     public String getDateOfBirth() {
         return DateOfBirth;
     }
@@ -58,6 +49,7 @@ public class User {
         DateOfBirth = dateOfBirth;
     }
 
+    /* 5 - Username */
     public String getUserName() {
         return UserName;
     }
@@ -66,13 +58,30 @@ public class User {
         UserName = userName;
     }
 
-    public String getPhoneNmuber() {
-        return phoneNmuber;
+    /* 6 - Password */
+    public String getPassword() {
+        return Password;
+    }
+    public void setPassword(String password) {
+        Password = password;
     }
 
-    public void setPhoneNmuber(String phoneNmuber) {
-        this.phoneNmuber = phoneNmuber;
+    /* 7 - Phone Number */
+    public String getPhoneNumber() {
+        return PhoneNumber;
     }
 
-    public String phoneNmuber;
+    public void setPhoneNumber(String phoneNmuber) {
+        this.PhoneNumber = phoneNmuber;
+    }
+
+    /* 8 - Is Manager */
+    public int getIsManager() {
+        return IsManager;
+    }
+
+    public void setIsManager(int is_manager) {
+        this.IsManager = is_manager;
+    }
+
 }

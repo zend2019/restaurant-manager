@@ -15,21 +15,17 @@ public class UserRepository {
     /* Function num #1 - Adding a new user */
 
     public static void addUser(Employee user, boolean isManager) {
-        int id = user.getId();
+     //   int id = user.getId();
         String firstName = user.getFirstName();
         String lastName = user.getLastName();
-        String age = Integer.toString(user.getAge());
         String dateOfBirth = user.getDateOfBirth();
         String username = user.getUserName();
-        String phoneNumber = user.getPhoneNmuber();
+        String phoneNumber = user.getPhoneNumber();
         String password = user.getPassword();
         Department department = user.getDepartment();
         String hireDate = user.getHireDate().toString();
 
-
-
-        String sql = String.format("INSERT INTO user(id,first_name,last_name,date_of_birth,username,phone_number,password,is_manager,department,hire_date) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",
-                USER_TABLE_ID_COLUMN,
+        String sql = String.format("INSERT INTO user(first_name,last_name,date_of_birth,username,phone_number,password,is_manager,department,hire_date) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s)",
                 USER_TABLE_FIRST_NAME_COLUMN,
                 USER_TABLE_LAST_NAME_COLUMN,
                 USER_TABLE_DATE_OF_BIRTH_COLUMN,
@@ -43,14 +39,13 @@ public class UserRepository {
         Connection conn = DatabaseAccessManager.getConnection();
         try {
             PreparedStatement pstmt = conn.prepareStatement(sql);
-            pstmt.setInt(1, id);
-            pstmt.setString(2, firstName);
-            pstmt.setString(3, lastName);
-            pstmt.setString(4, age);
-            pstmt.setString(5, dateOfBirth);
-            pstmt.setString(6, username);
-            pstmt.setString(7, phoneNumber);
-            pstmt.setString(8, password);
+            // pstmt.setInt(1, id);
+            pstmt.setString(1, firstName);
+            pstmt.setString(2, lastName);
+            pstmt.setString(3, dateOfBirth);
+            pstmt.setString(4, username);
+            pstmt.setString(5, phoneNumber);
+            pstmt.setString(6, password);
             pstmt.executeUpdate();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -94,10 +89,9 @@ public class UserRepository {
             user.setId(rs.getInt("id"));
             user.setFirstName(rs.getString("first_name"));
             user.setLastName(rs.getString("last_name"));
-            user.setAge(rs.getInt("age"));
             user.setDateOfBirth(rs.getString("date_of_birth"));
             user.setUserName(rs.getString("username"));
-            user.setPhoneNmuber(rs.getString("phone_number"));
+            user.setPhoneNumber(rs.getString("phone_number"));
 //        }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -119,13 +113,12 @@ public class UserRepository {
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(sql);
             int isManager = (rs.getInt("is_manager"));
-            user.setId(rs.getInt("id"));
+            //user.setId(rs.getInt("id"));
             user.setFirstName(rs.getString("first_name"));
             user.setLastName(rs.getString("last_name"));
-            user.setAge(rs.getInt("age"));
             user.setDateOfBirth(rs.getString("date_of_birth"));
             user.setUserName(rs.getString("username"));
-            user.setPhoneNmuber(rs.getString("phone_number"));
+            user.setPhoneNumber(rs.getString("phone_number"));
 
             user = UserFactory.GetUser(isManager, user);
         } catch (SQLException e) {

@@ -13,9 +13,8 @@ public class MenuPanel extends JPanel {
 
     public MenuPanel(){
         Dimension dim = getPreferredSize();
-        dim.width = 250;
+        dim.width = 140;
         setPreferredSize(dim);
-
         inventory = new JButton("Inventory");
         orders = new JButton("Orders");
         reports = new JButton("Reports");
@@ -68,5 +67,8 @@ public class MenuPanel extends JPanel {
         reports.setPreferredSize(buttonDim);
         settings.setPreferredSize(buttonDim);
 
+        this.setBackground(Color.GREEN);
+        //this.setBounds(1,1,100,100);
+        //setSize(350, 250);
     }
 }
