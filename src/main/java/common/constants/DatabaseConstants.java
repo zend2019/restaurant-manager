@@ -6,12 +6,13 @@ public class DatabaseConstants {
     public static final String USER_TABLE_ID_COLUMN = "id";
     public static final String USER_TABLE_FIRST_NAME_COLUMN = "first_name";
     public static final String USER_TABLE_LAST_NAME_COLUMN = "last_name";
-    public static final String USER_TABLE_AGE_COLUMN = "age";
     public static final String USER_TABLE_DATE_OF_BIRTH_COLUMN = "date_of_birth";
     public static final String USER_TABLE_USERNAME_COLUMN = "username";
     public static final String USER_TABLE_PHONE_NUMBER_COLUMN = "phone_number";
     public static final String USER_TABLE_PASSWORD_COLUMN = "password";
     public static final String USER_TABLE_IS_MANAGER_COLUMN = "is_manager";
+    public static final String USER_TABLE_DEPARTMENT_COLUMN = "department";
+    public static final String USER_TABLE_HIRE_DATE_COLUMN = "hire_date";
 
     //Product table
     public static final String PRODUCT_TABLE_ITEM_ID_COLUMN = "id";

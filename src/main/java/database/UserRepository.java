@@ -28,14 +28,17 @@ public class UserRepository {
 
 
 
-        String sql = String.format("INSERT INTO user(id,first_name,last_name,age,date_of_birth,username,phone_number,password) VALUES(%s,%s,%s,%s,%s,%s,%s)",
+        String sql = String.format("INSERT INTO user(id,first_name,last_name,date_of_birth,username,phone_number,password,is_manager,department,hire_date) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",
                 USER_TABLE_ID_COLUMN,
                 USER_TABLE_FIRST_NAME_COLUMN,
                 USER_TABLE_LAST_NAME_COLUMN,
-                USER_TABLE_AGE_COLUMN,
                 USER_TABLE_DATE_OF_BIRTH_COLUMN,
                 USER_TABLE_USERNAME_COLUMN,
-                USER_TABLE_PHONE_NUMBER_COLUMN);
+                USER_TABLE_PHONE_NUMBER_COLUMN,
+                USER_TABLE_PASSWORD_COLUMN,
+                USER_TABLE_IS_MANAGER_COLUMN,
+                USER_TABLE_DEPARTMENT_COLUMN,
+                USER_TABLE_HIRE_DATE_COLUMN);
 
         Connection conn = DatabaseAccessManager.getConnection();
         try {
