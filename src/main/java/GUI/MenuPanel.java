@@ -68,7 +68,5 @@ public class MenuPanel extends JPanel {
         settings.setPreferredSize(buttonDim);
 
         this.setBackground(Color.BLACK);
-        //this.setBounds(1,1,100,100);
-        //setSize(350, 250);
     }
 }

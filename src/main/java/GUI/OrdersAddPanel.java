@@ -291,8 +291,8 @@ public class OrdersAddPanel extends IWorkPanel{
 
     @Override
     protected void setComboBoxes() {
-        setCurrentProvider();//TODO: should be adjusted live and not only when running the app first
-        setCurrentCategories(); //TODO: same here
+        setCurrentProvider();
+        setCurrentCategories();
         DefaultComboBoxModel providersModel = new DefaultComboBoxModel(providers);
         providersList.setModel(providersModel);
         DefaultComboBoxModel categoryModel = new DefaultComboBoxModel(categories);
@@ -383,7 +383,7 @@ public class OrdersAddPanel extends IWorkPanel{
                 System.out.println(orderItemAmount);
                 String[] productToAdd = convertProductToOrderArr(DatabaseController.getProductByProductId(orderItemId));
                 ordersTableModel.addRow(productToAdd);
-                orderSum += calculateItemSum(productToAdd[4],productToAdd[5]); //update the order sum by the price (TODO: update the test data)
+                orderSum += calculateItemSum(productToAdd[4],productToAdd[5]); //update the order sum by the price
                 setOrderSumFieldLabel(); //updates the sum label
             }
         });
@@ -404,7 +404,6 @@ public class OrdersAddPanel extends IWorkPanel{
         });
     }
 
-    //TODO: consider moving to a utils class
     private int calculateItemSum(String numOfItems, String itemPrice){
         int numItems = valueOf(numOfItems), price = valueOf(itemPrice);
         return numItems * price;

@@ -11,15 +11,6 @@ public class Employee extends User {
         this.hireDate = hireDate;
     }
 
-    public Department getDepartment() {
-        return department;
-    }
-
-    public void setDepartment(Department department) {
-        this.department = department;
-    }
-
     private Date hireDate;
-    private Department department;
 
 }

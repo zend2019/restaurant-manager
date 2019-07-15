@@ -1,9 +1,9 @@
 package main.java.database;
 
-import main.java.BL.Contract.Department;
 import main.java.BL.Contract.Employee;
 import main.java.BL.Contract.Logic.UserFactory;
 import main.java.BL.Contract.User;
+import main.java.common.DateUtils;
 
 import java.sql.*;
 import java.util.Vector;
@@ -15,17 +15,16 @@ public class UserRepository {
     /* Function num #1 - Adding a new user */
 
     public static void addUser(Employee user, boolean isManager) {
-     //   int id = user.getId();
+        //   int id = user.getId();
         String firstName = user.getFirstName();
         String lastName = user.getLastName();
-        String dateOfBirth = user.getDateOfBirth();
+        String dateOfBirth = DateUtils.formatDateToString(user.getDateOfBirth());
         String username = user.getUserName();
         String phoneNumber = user.getPhoneNumber();
         String password = user.getPassword();
-        Department department = user.getDepartment();
-        String hireDate = user.getHireDate().toString();
+        String hireDate = DateUtils.formatDateToString(user.getHireDate());
 
-        String sql = String.format("INSERT INTO user(%s,%s,%s,%s,%s,%s,%s,%s,%s) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s)",
+        String sql = String.format("INSERT INTO user(%s,%s,%s,%s,%s,%s,%s,%s,%s) VALUES('%s','%s','%s','%s','%s','%s',%s,'%s')",
                 USER_TABLE_FIRST_NAME_COLUMN,
                 USER_TABLE_LAST_NAME_COLUMN,
                 USER_TABLE_DATE_OF_BIRTH_COLUMN,
@@ -33,20 +32,12 @@ public class UserRepository {
                 USER_TABLE_PHONE_NUMBER_COLUMN,
                 USER_TABLE_PASSWORD_COLUMN,
                 USER_TABLE_IS_MANAGER_COLUMN,
-                USER_TABLE_DEPARTMENT_COLUMN,
                 USER_TABLE_HIRE_DATE_COLUMN,
-                firstName,lastName,dateOfBirth,username,phoneNumber,password,isManager,department,hireDate);
+                firstName, lastName, dateOfBirth, username, phoneNumber, password, isManager ? 1 : 0, hireDate);
 
         Connection conn = DatabaseAccessManager.getConnection();
         try {
             PreparedStatement pstmt = conn.prepareStatement(sql);
-            // pstmt.setInt(1, id);
-            pstmt.setString(1, firstName);
-            pstmt.setString(2, lastName);
-            pstmt.setString(3, dateOfBirth);
-            pstmt.setString(4, username);
-            pstmt.setString(5, phoneNumber);
-            pstmt.setString(6, password);
             pstmt.executeUpdate();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -86,14 +77,12 @@ public class UserRepository {
         try {
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(sql);
-//            while (rs.next()) {
             user.setId(rs.getInt("id"));
             user.setFirstName(rs.getString("first_name"));
             user.setLastName(rs.getString("last_name"));
-            user.setDateOfBirth(rs.getString("date_of_birth"));
+            user.setDateOfBirth(rs.getDate("date_of_birth"));
             user.setUserName(rs.getString("username"));
             user.setPhoneNumber(rs.getString("phone_number"));
-//        }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         } finally {
@@ -114,10 +103,8 @@ public class UserRepository {
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(sql);
             int isManager = (rs.getInt("is_manager"));
-            //user.setId(rs.getInt("id"));
             user.setFirstName(rs.getString("first_name"));
             user.setLastName(rs.getString("last_name"));
-            user.setDateOfBirth(rs.getString("date_of_birth"));
             user.setUserName(rs.getString("username"));
             user.setPhoneNumber(rs.getString("phone_number"));
 

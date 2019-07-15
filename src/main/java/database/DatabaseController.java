@@ -74,7 +74,7 @@ public class DatabaseController {
         int id = user.getId();
         String firstName = user.getFirstName();
         String lastName = user.getLastName();
-        String dateOfBirth = user.getDateOfBirth();
+        String dateOfBirth = DateUtils.formatDateToString(user.getDateOfBirth());
         String username = user.getUserName();
         String phoneNumber = user.getPhoneNumber();
         String password = user.getPassword();
@@ -320,7 +320,7 @@ public class DatabaseController {
             user.setId(rs.getInt("id"));
             user.setFirstName(rs.getString("first_name"));
             user.setLastName(rs.getString("last_name"));
-            user.setDateOfBirth(rs.getString("date_of_birth"));
+            user.setDateOfBirth(rs.getDate("date_of_birth"));
             user.setUserName(rs.getString("username"));
             user.setPhoneNumber(rs.getString("phone_number"));
 //        }
