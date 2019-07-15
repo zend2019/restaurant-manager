@@ -10,12 +10,10 @@ public class UserController implements IUSerManager {
 
     @Override
     public void AddUser(Employee user, boolean isManager) {
-        User existingUser = UserRepository.getUserById(user.getId());
-        if (existingUser != null) {
+        User existingUser = UserRepository.getUserByUserName(user.getUserName());
+        if (existingUser.getFirstName() != null) {
             throw new RestaurantManagerException("User already exist.");
         }
-        int pass = user.getPassword().hashCode();
-        user.setPassword(Integer.toString(pass));
         UserRepository.addUser(user,isManager);
     }
 

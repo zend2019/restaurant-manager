@@ -70,9 +70,9 @@ public class UserRepository {
 
     /* Function num #4 - Getting the username by its id */
 
-    public static User getUserById(int id) {
+    public static User getUserByUserName(String userName) {
         User user = new User();
-        String sql = String.format("SELECT * FROM user WHERE %s = " + id, USER_TABLE_ID_COLUMN);
+        String sql = String.format("SELECT * FROM user WHERE %s = " + userName, USER_TABLE_USERNAME_COLUMN);
         Connection conn = DatabaseAccessManager.getConnection();
         try {
             Statement stmt = conn.createStatement();
@@ -90,6 +90,29 @@ public class UserRepository {
         }
         return user;
     }
+
+
+    public static User getUserById(int userId) {
+        User user = new User();
+        String sql = String.format("SELECT * FROM user WHERE %s = " + userId, USER_TABLE_ID_COLUMN);
+        Connection conn = DatabaseAccessManager.getConnection();
+        try {
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
+            user.setId(rs.getInt("id"));
+            user.setFirstName(rs.getString("first_name"));
+            user.setLastName(rs.getString("last_name"));
+            user.setDateOfBirth(rs.getDate("date_of_birth"));
+            user.setUserName(rs.getString("username"));
+            user.setPhoneNumber(rs.getString("phone_number"));
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            DatabaseAccessManager.closeConnection(conn);
+        }
+        return user;
+    }
+
 
     /* Function num #5 - Log in access */
 

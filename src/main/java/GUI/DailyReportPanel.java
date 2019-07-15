@@ -1,6 +1,8 @@
 package main.java.GUI;
 
 import com.toedter.calendar.JDateChooser;
+import main.java.BL.Contract.Logic.IProductManager;
+import main.java.BL.Contract.Logic.ProductController;
 import main.java.BL.Contract.Product;
 import main.java.common.DateUtils;
 import main.java.common.StringUtils;
@@ -30,7 +32,7 @@ public class DailyReportPanel extends IBaseWorkPanel {
     private JButton searchButton;
     private JTextField itemNameTF;
     private String[] inventoryColumnNames = {"ID", "Item name", "Category", "Provider", "Current amount", "Required amount", "Expiration date"};
-
+    private IProductManager productManager;
 
     public DailyReportPanel() {
         initialization();
@@ -38,6 +40,7 @@ public class DailyReportPanel extends IBaseWorkPanel {
         setTableLayout();
         setMainLayout();
         setActionListeners();
+        productManager = new ProductController();
     }
 
     @Override
@@ -183,7 +186,7 @@ public class DailyReportPanel extends IBaseWorkPanel {
         searchButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                Vector<Product> x = DatabaseController.getListOfAllProducts();
+                Vector<Product> x = productManager.getListOfAllProducts();
                 if (x.size() == 0) {
                     model.setDataVector(convertProductVectorToInventoryMatrix(x), inventoryColumnNames);
                     noResults.setVisible(true);

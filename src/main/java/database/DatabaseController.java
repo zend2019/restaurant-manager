@@ -59,7 +59,7 @@ public class DatabaseController {
 //        order.setDeliveryDate(new SimpleDateFormat("dd/MM/yyyy").parse("01/01/1993"));
 //        order.setTotalAmount(22.56);
 //        addOrder(order);
-//        getUserById(1);
+//        getUserByUserName(1);
 //        getAllProviderCompanyName();
         HashMap hashMap = new HashMap();
 //        hashMap.put("id", "1");
