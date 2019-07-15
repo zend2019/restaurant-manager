@@ -326,7 +326,7 @@ public class UserPanel extends IWorkPanel {
                 !firstName.getText().equals(GUIConstants.EMPTY_FIELD) ||
                 !lastName.getText().equals(GUIConstants.EMPTY_FIELD) ||
                 !phoneNumber.getText().equals(GUIConstants.EMPTY_FIELD) ||
-                !password.getText().equals(GUIConstants.EMPTY_FIELD) ||
+                !password.getPassword().equals(GUIConstants.EMPTY_FIELD) ||
                 !isManager.getText().equals(GUIConstants.EMPTY_FIELD) ||
                 !userName.getText().equals(GUIConstants.EMPTY_FIELD)
         )
