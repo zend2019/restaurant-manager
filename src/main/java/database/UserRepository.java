@@ -24,7 +24,7 @@ public class UserRepository {
         String password = user.getPassword();
         String hireDate = DateUtils.formatDateToString(user.getHireDate());
 
-        String sql = String.format("INSERT INTO user(%s,%s,%s,%s,%s,%s,%s,%s,%s) VALUES('%s','%s','%s','%s','%s','%s',%s,'%s')",
+        String sql = String.format("INSERT INTO user(%s,%s,%s,%s,%s,%s,%s,%s) VALUES('%s','%s','%s','%s','%s','%s',%s,'%s')",
                 USER_TABLE_FIRST_NAME_COLUMN,
                 USER_TABLE_LAST_NAME_COLUMN,
                 USER_TABLE_DATE_OF_BIRTH_COLUMN,
@@ -72,7 +72,7 @@ public class UserRepository {
 
     public static User getUserByUserName(String userName) {
         User user = new User();
-        String sql = String.format("SELECT * FROM user WHERE %s = " + userName, USER_TABLE_USERNAME_COLUMN);
+        String sql = String.format("SELECT * FROM user WHERE %s = '%s'", USER_TABLE_USERNAME_COLUMN, userName);
         Connection conn = DatabaseAccessManager.getConnection();
         try {
             Statement stmt = conn.createStatement();

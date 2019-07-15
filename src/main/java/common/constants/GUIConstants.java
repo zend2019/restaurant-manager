@@ -37,4 +37,5 @@ public class GUIConstants {
     public static final int INVENTORY_MATRIX_COLUMNS = 7;
     public static final String GET_DAYLY_REPORT = "Get Daily Report";
     public static final String OUT_OF_STOCK_REPORT = "Out Of Stock Report";
+    public static final String USER_EXIST = "User name already exists";
 }

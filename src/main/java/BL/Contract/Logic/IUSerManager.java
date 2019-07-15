@@ -5,7 +5,7 @@ import main.java.BL.Contract.User;
 
 public interface IUSerManager {
 
-    void AddUser(Employee user, boolean isManager);
+    String AddUser(Employee user, boolean isManager);
 
     void UpdateUser (User user, int userId);
 

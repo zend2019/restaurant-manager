@@ -33,6 +33,7 @@ public class UserPanel extends IWorkPanel {
     private JLabel isManagerLable;
     private JLabel hireDateLable;
     private JLabel itemAdded;
+    private JLabel userExist;
     private JLabel userAdded;
     private JLabel passwordLable;
     private JTextField userName;
@@ -49,7 +50,6 @@ public class UserPanel extends IWorkPanel {
     private EditItemDialog itemDialog;
     private OrderPlacedDialog orderPlacedDialog;
     private IUSerManager userManager;
-
 
 
     public UserPanel() {
@@ -74,6 +74,7 @@ public class UserPanel extends IWorkPanel {
         passwordLable = new JLabel("Password");
         itemAdded = new JLabel(GUIConstants.ITEM_ADDED);
         userAdded = new JLabel(GUIConstants.USER_ADDED);
+        userExist = new JLabel(GUIConstants.USER_EXIST);
         password = new JPasswordField();
         isManager = new JCheckBox();
         userName = new JTextField(10);
@@ -233,7 +234,10 @@ public class UserPanel extends IWorkPanel {
 
         userAdded.setForeground(Color.blue);
         userAdded.setVisible(false);
+        userExist.setForeground(Color.red);
+        userExist.setVisible(false);
         searchPanel.add(userAdded, gcSearchPanel);
+        searchPanel.add(userExist, gcSearchPanel);
 
 
         alignFieldSizes();
@@ -271,8 +275,12 @@ public class UserPanel extends IWorkPanel {
                     setValidationLabelsVisibility(false);
                     Employee employee;
                     employee = getUserProperties();
-                    userManager.AddUser(employee, isManager.isSelected());
-                    userAdded.setVisible(true);
+                    String error = userManager.AddUser(employee, isManager.isSelected());
+                    if (error == "")
+                        userAdded.setVisible(true);
+                    else {
+                        userExist.setVisible(true);
+                    }
                 }
             }
         });
@@ -289,8 +297,6 @@ public class UserPanel extends IWorkPanel {
         user.setHireDate(hireDate.getDate());
         return user;
     }
-
-
 
 
     private boolean checkAtleastOneNotEmpty() {
