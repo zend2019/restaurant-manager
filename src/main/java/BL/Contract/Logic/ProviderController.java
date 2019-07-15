@@ -7,7 +7,7 @@ import main.java.database.ProviderRepository;
 
 import java.util.List;
 
-public class ProviderController implements IProviderManaging {
+    public class ProviderController implements IProviderManaging {
 
     private IRestaurantRepository resturantRepository;
 
@@ -42,5 +42,10 @@ public class ProviderController implements IProviderManaging {
         return ProviderRepository.getProviderNameById(providerId);
     }
 
+        @Override
+        public String getProviderIdByName(String providerName) {
+            return ProviderRepository.getProviderIdByName(providerName);
+        }
 
-}
+
+    }

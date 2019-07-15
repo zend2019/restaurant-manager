@@ -1,6 +1,10 @@
 package main.java.GUI;
 
 import com.toedter.calendar.JDateChooser;
+import main.java.BL.Contract.Logic.IOrderManager;
+import main.java.BL.Contract.Logic.IProviderManaging;
+import main.java.BL.Contract.Logic.OrderController;
+import main.java.BL.Contract.Logic.ProviderController;
 import main.java.BL.Contract.Order;
 import main.java.BL.Contract.OrderStatus;
 import main.java.BL.Contract.Product;
@@ -57,6 +61,8 @@ public class OrdersSearchPanel extends IWorkPanel {
     private JPanel tablesPanel;
     private Vector<String> providers;
     private Vector<String> categories;
+    private IOrderManager orderManager;
+    private IProviderManaging providerManaging;
 
     //Table Column FIELDS//
     private String[] itemsColumnNames = {"Item name", "Category", "Provider", "Ordered Amount", "Cost"};
@@ -68,6 +74,8 @@ public class OrdersSearchPanel extends IWorkPanel {
         setTableLayout();
         setMainLayout();
         setActionListeners();
+        orderManager = new OrderController();
+        providerManaging = new ProviderController();
     }
 
     @Override
@@ -109,6 +117,7 @@ public class OrdersSearchPanel extends IWorkPanel {
         ordersTablePanel = new JPanel();
         itemsTablePanel = new JPanel();
         tablesPanel = new JPanel();
+
     }
 
     @Override
@@ -350,7 +359,7 @@ public class OrdersSearchPanel extends IWorkPanel {
             public void valueChanged(ListSelectionEvent event) {
                 if (ordersTable.getSelectedRow() >= 0) {
                     String orderId = ordersTable.getValueAt(ordersTable.getSelectedRow(), 0).toString();
-                    Vector<Product> productList = DatabaseController.getListOfOrderedProductsByOrder(StringUtils.getStringWithSingleQuotes(orderId));
+                    Vector<Product> productList = orderManager.getListOfOrderedProductsByOrder(StringUtils.getStringWithSingleQuotes(orderId));
                     itemsTableModel.setDataVector(convertProductVectorToOrderedItemsMatrix(productList), itemsColumnNames);
                 }
             }
@@ -363,7 +372,7 @@ public class OrdersSearchPanel extends IWorkPanel {
             public void actionPerformed(ActionEvent e) {
                 if (checkAtleastOneNotEmpty()) {
                     setValidationLabelsVisibility(false);
-                    Vector<Order> x = DatabaseController.getListOfOrders(buildSearchParameters());
+                    Vector<Order> x = orderManager.getListOfOrders(buildSearchParameters());
                     if (x.size() == 0) {
                         ordersTableModel.setDataVector(convertOrderVectorToOrderMatrix(x), ordersColumnNames);
                         itemsTableModel.setDataVector(null, itemsColumnNames);
@@ -407,7 +416,7 @@ public class OrdersSearchPanel extends IWorkPanel {
             String[] array = {
                     productVector.get(i).getProductName(),
                     String.valueOf(productVector.get(i).getCategory()),
-                    DatabaseController.getProviderNameById(productVector.get(i).getProviderId()),
+                    providerManaging.getProviderNameById(productVector.get(i).getProviderId()),
                     String.valueOf(productVector.get(i).getCurrentProductAmount()),
                     productVector.get(i).getPrice()
             };
@@ -421,7 +430,7 @@ public class OrdersSearchPanel extends IWorkPanel {
     private HashMap buildSearchParameters() {
         HashMap searchParams = new HashMap();
         if (!providersList.getSelectedItem().equals(GUIConstants.SELECT_FIELD))
-            searchParams.put("product." + DatabaseConstants.PRODUCT_TABLE_ITEM_PROVIDER_COLUMN, DatabaseController.getProviderIdByName(StringUtils.getStringWithSingleQuotes(providersList.getSelectedItem().toString())));
+            searchParams.put("product." + DatabaseConstants.PRODUCT_TABLE_ITEM_PROVIDER_COLUMN, providerManaging.getProviderIdByName(StringUtils.getStringWithSingleQuotes(providersList.getSelectedItem().toString())));
 
         if (!categoryList.getSelectedItem().equals(GUIConstants.SELECT_FIELD))
             searchParams.put(DatabaseConstants.PRODUCT_TABLE_ITEM_CATEGORY_COLUMN, StringUtils.getStringWithSingleQuotes(categoryList.getSelectedItem().toString()));

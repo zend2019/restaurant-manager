@@ -1,15 +1,19 @@
 package main.java.BL.Contract.Logic;
+
 import main.java.BL.Contract.Order;
 import main.java.BL.Contract.OrderStatus;
+import main.java.BL.Contract.Product;
 import main.java.common.exceptions.RestaurantManagerException;
 import main.java.dataAccess.IRestaurantRepository;
 import main.java.database.OrderRepository;
 
+import java.util.HashMap;
+import java.util.Vector;
+
 
 public class OrderController implements IOrderManager {
 
-    public OrderController(IRestaurantRepository restaurantRepository) {
-        this.restaurantRepository = restaurantRepository;
+    public OrderController() {
     }
 
     private IRestaurantRepository restaurantRepository;
@@ -17,7 +21,7 @@ public class OrderController implements IOrderManager {
 
     @Override
     public int AddOrder(Order order) {
-        double currentBudget = restaurantRepository.GetBudget();
+        double currentBudget = 1000;
         if (currentBudget < order.getTotalAmount()) {
             throw new RestaurantManagerException("Your order is above the current budget");
         }
@@ -43,9 +47,9 @@ public class OrderController implements IOrderManager {
 
     @Override
     public void CompletedOrder(int orderId) {
-        Order order = restaurantRepository.GetOrder(orderId);
+        Order order = OrderRepository.getOrderById(orderId);
         order.setOrderStatus(OrderStatus.Completed);
-        restaurantRepository.EditOrder(orderId, order);
+        OrderRepository.editOrder(orderId, order);
     }
 
     @Override
@@ -55,4 +59,15 @@ public class OrderController implements IOrderManager {
         OrderRepository.editOrder(orderId, order);
 
     }
+
+    @Override
+    public Vector<Product> getListOfOrderedProductsByOrder(String orderId) {
+        return OrderRepository.getListOfOrderedProductsByOrder(orderId);
+    }
+
+    @Override
+    public Vector<Order> getListOfOrders(HashMap hashMap) {
+        return OrderRepository.getListOfOrders(hashMap);
+    }
 }
+;
