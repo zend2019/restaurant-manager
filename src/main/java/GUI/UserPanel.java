@@ -29,12 +29,10 @@ public class UserPanel extends IWorkPanel {
     private JLabel dateOfBirthLable;
     private JLabel phoneNumberLable;
     private JLabel isManagerLable;
-    private JLabel departmentLable;
     private JLabel hireDateLable;
     private JLabel itemAdded;
     private JLabel userAdded;
     private JLabel passwordLable;
-    private JComboBox department;
     private JTextField userName;
     private JTextField firstName;
     private JTextField phoneNumber;
@@ -67,13 +65,11 @@ public class UserPanel extends IWorkPanel {
         firstnameLable = new JLabel("First Name");
         lastNameLable = new JLabel("Last Name");
         lastName = new JTextField();
-        dateOfBirthLable = new JLabel("Fite");
+        dateOfBirthLable = new JLabel("Date of birth");
         phoneNumberLable = new JLabel("Phone number");
         isManagerLable = new JLabel("Is Manager?");
-        departmentLable = new JLabel("Department");
         hireDateLable = new JLabel("Hire Date");
         passwordLable = new JLabel("Password");
-        department = new JComboBox();
         itemAdded = new JLabel(GUIConstants.ITEM_ADDED);
         userAdded = new JLabel(GUIConstants.USER_ADDED);
         password = new JPasswordField();
@@ -195,11 +191,11 @@ public class UserPanel extends IWorkPanel {
 
         gcSearchPanel.gridx = 2;
         gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_END;
-        searchPanel.add(departmentLable, gcSearchPanel);
+        searchPanel.add(dateOfBirthLable, gcSearchPanel);
 
         gcSearchPanel.gridx = 3;
         gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_START;
-        searchPanel.add(department, gcSearchPanel);
+        searchPanel.add(dateOfBirth, gcSearchPanel);
 
 
         /////// Next row ///////
@@ -244,7 +240,7 @@ public class UserPanel extends IWorkPanel {
     @Override
     protected void alignFieldSizes() {
         Dimension fieldSize = userName.getPreferredSize();
-        department.setPreferredSize(fieldSize);
+        dateOfBirth.setPreferredSize(fieldSize);
         addUserButton.setPreferredSize(fieldSize);
         phoneNumber.setPreferredSize(fieldSize);
         password.setPreferredSize(fieldSize);
@@ -254,16 +250,8 @@ public class UserPanel extends IWorkPanel {
 
     @Override
     protected void setComboBoxes() {
-        setCurrentProvider();//TODO: should be adjusted live and not only when running the app first
-        DefaultComboBoxModel providersModel = new DefaultComboBoxModel(departments);
-        department.setModel(providersModel);
-    }
 
-    private void setCurrentProvider() {
-        departments = UserRepository.getAllDepartment();
-        departments.add(0, GUIConstants.SELECT_FIELD);
     }
-
 
     @Override
     protected void setActionListeners() {
@@ -291,7 +279,7 @@ public class UserPanel extends IWorkPanel {
     private Employee getUserProperties() {
         Employee user = new Employee();
         user.setPassword(new String(password.getPassword()));
-        user.setDateOfBirth(dateOfBirth.getDateFormatString());
+        user.setDateOfBirth(dateOfBirth.getDate());
         user.setFirstName(firstName.getText());
         user.setLastName(lastName.getText());
         user.setPhoneNumber(phoneNumber.getText());
@@ -322,11 +310,12 @@ public class UserPanel extends IWorkPanel {
 
 
     private boolean checkAtleastOneNotEmpty() {
-        if (!department.getSelectedItem().equals(GUIConstants.SELECT_FIELD) ||
-                !firstName.getText().equals(GUIConstants.EMPTY_FIELD) ||
+        if (!firstName.getText().equals(GUIConstants.EMPTY_FIELD) ||
                 !lastName.getText().equals(GUIConstants.EMPTY_FIELD) ||
                 !phoneNumber.getText().equals(GUIConstants.EMPTY_FIELD) ||
                 !password.getPassword().equals(GUIConstants.EMPTY_FIELD) ||
+                dateOfBirth.getDate() != null ||
+                hireDate.getDate() != null ||
                 !isManager.getText().equals(GUIConstants.EMPTY_FIELD) ||
                 !userName.getText().equals(GUIConstants.EMPTY_FIELD)
         )

@@ -1,16 +1,17 @@
 package main.java.BL.Contract;
 
+import java.util.Date;
+
 public class User {
 
     private int id;
     private String FirstName;
     private String LastName;
-    private String DateOfBirth;
+    private Date DateOfBirth;
     private String UserName;
     private String Password;
     private String PhoneNumber;
     private int IsManager;
-    private int Department;
     private String HireDate;
 
     /* 1 - Id */
@@ -41,11 +42,11 @@ public class User {
     }
 
     /* 4 - Date Of Birth */
-    public String getDateOfBirth() {
+    public Date getDateOfBirth() {
         return DateOfBirth;
     }
 
-    public void setDateOfBirth(String dateOfBirth) {
+    public void setDateOfBirth(Date dateOfBirth) {
         DateOfBirth = dateOfBirth;
     }
 
