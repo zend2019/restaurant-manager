@@ -25,7 +25,7 @@ public class UserRepository {
         Department department = user.getDepartment();
         String hireDate = user.getHireDate().toString();
 
-        String sql = String.format("INSERT INTO user(first_name,last_name,date_of_birth,username,phone_number,password,is_manager,department,hire_date) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s)",
+        String sql = String.format("INSERT INTO user(%s,%s,%s,%s,%s,%s,%s,%s,%s) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s)",
                 USER_TABLE_FIRST_NAME_COLUMN,
                 USER_TABLE_LAST_NAME_COLUMN,
                 USER_TABLE_DATE_OF_BIRTH_COLUMN,
@@ -34,7 +34,8 @@ public class UserRepository {
                 USER_TABLE_PASSWORD_COLUMN,
                 USER_TABLE_IS_MANAGER_COLUMN,
                 USER_TABLE_DEPARTMENT_COLUMN,
-                USER_TABLE_HIRE_DATE_COLUMN);
+                USER_TABLE_HIRE_DATE_COLUMN,
+                firstName,lastName,dateOfBirth,username,phoneNumber,password,isManager,department,hireDate);
 
         Connection conn = DatabaseAccessManager.getConnection();
         try {
