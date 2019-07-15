@@ -20,44 +20,46 @@ public class ProductRepository {
 
     /* Function num #1 - Adding a new product */
 
-    public static void addProduct(Product product) {
-        String id = product.getProductId();
-        String name = product.getProductName();
-        int category = getCategoryIdByName(StringUtils.getStringWithSingleQuotes(product.getCategory().toString()));
-        String price = product.getPrice();
-        String expirationDate = DateUtils.formatDateToString(product.getExpirationDate()); //todo string casting might cause issues...need to check
-        int currentAmount = product.getCurrentProductAmount();
-        int requiredAmount = product.getRequiredAmount();
-        String provider = product.getProviderId();
 
-        String sql = String.format("INSERT INTO product(id,item_name,category,provider,price,expiration_date,current_amount,required_amount) VALUES(%s,%s,%s,%s,%s,%s,%s,%s)",
-                PRODUCT_TABLE_ITEM_ID_COLUMN,
-                PRODUCT_TABLE_ITEM_NAME_COLUMN,
-                PRODUCT_TABLE_ITEM_CATEGORY_COLUMN,
-                PRODUCT_TABLE_ITEM_PROVIDER_COLUMN,
-                PRODUCT_TABLE_ITEM_PRICE_COLUMN,
-                PRODUCT_TABLE_ITEM_EXPIRATION_DATE_COLUMN,
-                PRODUCT_TABLE_ITEM_CURRENT_AMOUNT_COLUMN,
-                PRODUCT_TABLE_ITEM_REQUIRED_AMOUNT_COLUMN);
-
+    public static String addProduct(Product product) {
+        String id = "-1";
+        String sql = "INSERT INTO product(item_name,category,provider,price,expiration_date,current_amount,required_amount) VALUES(?,?,?,?,?,?,?)";
         Connection conn = DatabaseAccessManager.getConnection();
         try {
             PreparedStatement pstmt = conn.prepareStatement(sql);
-            pstmt.setString(1, id);
-            pstmt.setString(2, name);
-            pstmt.setInt(3, category);
-            pstmt.setString(4, provider);
-            pstmt.setString(5, price);
-            pstmt.setString(6, expirationDate);
-            pstmt.setInt(7, currentAmount);
-            pstmt.setInt(8, requiredAmount);
+            pstmt.setString(1, product.getProductName());
+            pstmt.setString(2, product.getCategory().toString());
+            pstmt.setString(3, product.getProviderId());
+            pstmt.setString(4, product.getPrice());
+            pstmt.setString(5, DateUtils.formatDateToString(product.getExpirationDate()));
+            pstmt.setInt(6, product.getCurrentProductAmount());
+            pstmt.setInt(7, product.getRequiredAmount());
 
             pstmt.executeUpdate();
+            id = getTopProductId();
+
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         } finally {
             DatabaseAccessManager.closeConnection(conn);
         }
+        return id;
+    }
+
+    private static String getTopProductId() {
+        String id = "-1";
+        String sql = "SELECT MAX(id) FROM product";
+        Connection conn = DatabaseAccessManager.getConnection();
+        try {
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
+            id = rs.getString("MAX(id)");
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            DatabaseAccessManager.closeConnection(conn);
+        }
+        return id;
     }
 
     /* Function num #2 - Editing an existing product */
@@ -252,4 +254,65 @@ public class ProductRepository {
         return products;
     }
 
+    public static Product getProductByProductId(String productId) {
+        String sql = "SELECT * FROM product WHERE id =" + productId;
+        Connection conn = DatabaseAccessManager.getConnection();
+        Product product = new Product();
+
+        try {
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+                product.setProductId(rs.getString(DatabaseConstants.PRODUCT_TABLE_ITEM_ID_COLUMN));
+                product.setProductName(rs.getString(DatabaseConstants.PRODUCT_TABLE_ITEM_NAME_COLUMN));
+                product.setPrice(rs.getString(DatabaseConstants.PRODUCT_TABLE_ITEM_PRICE_COLUMN));
+                product.setExpirationDate(DateUtils.getDateByString(rs.getString(DatabaseConstants.PRODUCT_TABLE_ITEM_EXPIRATION_DATE_COLUMN)));
+                product.setProviderId(rs.getString(DatabaseConstants.PRODUCT_TABLE_ITEM_PROVIDER_COLUMN));
+                product.setCategory(Category.valueOf(rs.getString(DatabaseConstants.PRODUCT_TABLE_ITEM_CATEGORY_COLUMN)));
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } catch (ParseException e) {
+            e.printStackTrace();
+        } finally {
+            DatabaseAccessManager.closeConnection(conn);
+        }
+        return product;
+    }
+
+    /*
+    SQLite Reset Primary Key Field (mostly will be used for auto autoincrement for ids) run the following queries:
+   delete from your_table;
+   delete from sqlite_sequence where name='your_table';
+    */
+    public static Vector<Product> getListOfProducts(HashMap hashMap) {
+        String sql = "SELECT * FROM product WHERE " + DatabaseController.getDynamicWhereQueryBuilder(hashMap);
+        Connection conn = DatabaseAccessManager.getConnection();
+        Vector<Product> productsList = new Vector<>();
+
+        try {
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+
+                Product product = new Product();
+                product.setProductId(rs.getString(DatabaseConstants.PRODUCT_TABLE_ITEM_ID_COLUMN));
+                product.setProductName(rs.getString(DatabaseConstants.PRODUCT_TABLE_ITEM_NAME_COLUMN));
+                product.setPrice(rs.getString(DatabaseConstants.PRODUCT_TABLE_ITEM_PRICE_COLUMN));
+                product.setCategory(Category.valueOf(rs.getString(DatabaseConstants.PRODUCT_TABLE_ITEM_CATEGORY_COLUMN)));
+                product.setExpirationDate(DateUtils.getDateByString(rs.getString(DatabaseConstants.PRODUCT_TABLE_ITEM_EXPIRATION_DATE_COLUMN)));
+                product.setCurrentProductAmount(rs.getInt(DatabaseConstants.PRODUCT_TABLE_ITEM_CURRENT_AMOUNT_COLUMN));
+                product.setRequiredAmount(rs.getInt(DatabaseConstants.PRODUCT_TABLE_ITEM_REQUIRED_AMOUNT_COLUMN));
+                product.setProviderId(rs.getString(DatabaseConstants.PRODUCT_TABLE_ITEM_PROVIDER_COLUMN));
+                productsList.add(product);
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } catch (ParseException e) {
+            e.printStackTrace();
+        } finally {
+            DatabaseAccessManager.closeConnection(conn);
+        }
+        return productsList;
+    }
 }

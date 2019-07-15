@@ -50,29 +50,67 @@ public class OrderRepository {
     }
 
     public static int addOrder(Order order) {
-        int id = order.getOrderId();
-        Date deliveryDate = order.getDeliveryDate();
-        Double totalAmount = order.getTotalAmount();
-        String sql = String.format("INSERT INTO orders(id,delivery_date,total_amount) VALUES(%s,%s,%s)",
-                ORDERS_TABLE_ORDER_ID_COLUMN,
-                ORDERS_TABLE_DELIVERY_DATE_COLUMN,
-                ORDERS_TABLE_TOTAL_AMOUNT_COLUMN);
-
-
+        int id = -1;
+        String sql = "INSERT INTO orders(order_date,delivery_date,total_amount,order_status) VALUES(?,?,?,?)";
         Connection conn = DatabaseAccessManager.getConnection();
         try {
             PreparedStatement pstmt = conn.prepareStatement(sql);
-            pstmt.setInt(1, id);
-            pstmt.setString(2, String.valueOf(deliveryDate));
-            pstmt.setDouble(3, totalAmount);
-
+            pstmt.setString(1, DateUtils.formatDateToString(order.getOrderDate()));
+            pstmt.setString(2, DateUtils.formatDateToString(order.getDeliveryDate()));
+            pstmt.setDouble(3, order.getTotalAmount());
+            pstmt.setString(4, order.getOrderStatus().toString());
             pstmt.executeUpdate();
+            id = getTopOrderId();
+
+            List<HashMap> listOfProducts = order.getOrderedProducts();
+            for (Map<String, String> entry : listOfProducts) {
+                for (String key : entry.keySet()) {
+                    addOrderedItem(id,key,entry.get(key));
+                }
+            }
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            DatabaseAccessManager.closeConnection(conn);
+        }
+
+        return id;
+    }
+
+
+    public static int getTopOrderId(){
+        int id = -1;
+        String sql = "SELECT MAX(id) FROM orders";
+        Connection conn = DatabaseAccessManager.getConnection();
+        try {
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
+            id = rs.getInt("MAX(id)");
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         } finally {
             DatabaseAccessManager.closeConnection(conn);
         }
         return id;
+    }
+
+    public static void addOrderedItem(int orderId, String itemId, String orderedUnits)
+    {
+        String sql = "INSERT INTO ordered_items(order_id,item_id,ordered_units) VALUES(?,?,?)";
+        Connection conn = DatabaseAccessManager.getConnection();
+        try {
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, orderId);
+            pstmt.setString(2, itemId);
+            pstmt.setString(3, orderedUnits);
+            pstmt.executeUpdate();
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            DatabaseAccessManager.closeConnection(conn);
+        }
     }
 
     /* Function num #3 - Getting an existing order by its id */

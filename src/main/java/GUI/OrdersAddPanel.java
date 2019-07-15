@@ -1,5 +1,6 @@
 package main.java.GUI;
 
+import main.java.BL.Contract.Logic.*;
 import main.java.BL.Contract.Order;
 import main.java.BL.Contract.OrderStatus;
 import main.java.BL.Contract.Product;
@@ -26,7 +27,7 @@ import static java.lang.Integer.valueOf;
 import static main.java.database.DatabaseController.getAllCategoryNames;
 import static main.java.database.DatabaseController.getAllProviderCompanyName;
 
-public class OrdersAddPanel extends IWorkPanel{
+public class OrdersAddPanel extends IWorkPanel {
     private JLabel providerLabel;
     private JLabel categoryLabel;
     private JLabel itemNameLabel;
@@ -61,19 +62,25 @@ public class OrdersAddPanel extends IWorkPanel{
     private Vector<String> categories;
     private String orderItemId;
     private int orderItemAmount;
+    private IProductManager productManager;
+    private IOrderManager orderManager;
+    private IProviderManaging providerManaging;
 
     //Tables column FIELDS//
-    private String[] itemsColumnNames = {"ID","Item name","Category","Provider","Available units","Price per Item","Expiration date"};
-    private String[] orderColumnNames = {"ID","Item name","Category","Provider","Selected units","Price per Item","Expiration date"};
+    private String[] itemsColumnNames = {"ID", "Item name", "Category", "Provider", "Available units", "Price per Item", "Expiration date"};
+    private String[] orderColumnNames = {"ID", "Item name", "Category", "Provider", "Selected units", "Price per Item", "Expiration date"};
 
 
-    public OrdersAddPanel(){
+    public OrdersAddPanel() {
         initialization();
         setSearchPanelLayout();
         setTableLayout();
         setPlaceOrderLayout();
         setMainLayout();
         setActionListeners();
+        productManager = new ProductController();
+        orderManager = new OrderController();
+        providerManaging = new ProviderController();
     }
 
     @Override
@@ -94,14 +101,18 @@ public class OrdersAddPanel extends IWorkPanel{
         itemNameTF = new JTextField(10);
         searchItemButton = new JButton(GUIConstants.SEARCH);
         placeOrderButton = new JButton(GUIConstants.PLACE_ORDER);
-        ordersTableModel = new DefaultTableModel(null,orderColumnNames);
-        itemsTableModel = new DefaultTableModel(null,itemsColumnNames);
-        itemsTable = new JTable(itemsTableModel){public boolean isCellEditable(int row, int column){
-            return false;
-        }};
-        orderTable = new JTable(ordersTableModel){public boolean isCellEditable(int row, int column){
+        ordersTableModel = new DefaultTableModel(null, orderColumnNames);
+        itemsTableModel = new DefaultTableModel(null, itemsColumnNames);
+        itemsTable = new JTable(itemsTableModel) {
+            public boolean isCellEditable(int row, int column) {
                 return false;
-            }};
+            }
+        };
+        orderTable = new JTable(ordersTableModel) {
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
         scrollItemsTable = new JScrollPane(itemsTable);
         scrollOrderTable = new JScrollPane(orderTable);
         searchPanel = new JPanel();
@@ -129,7 +140,7 @@ public class OrdersAddPanel extends IWorkPanel{
         add(searchPanel, gcMainPanel);
 
         gcMainPanel.ipady = 0;
-        gcMainPanel.gridy ++;
+        gcMainPanel.gridy++;
         gcMainPanel.weightx = 0.5;
         gcMainPanel.weighty = 0.1;
 
@@ -138,7 +149,7 @@ public class OrdersAddPanel extends IWorkPanel{
         add(tablesPanel, gcMainPanel);
 
         gcMainPanel.ipady = 0;
-        gcMainPanel.gridy ++;
+        gcMainPanel.gridy++;
         gcMainPanel.weightx = 0.5;
         gcMainPanel.weighty = 0.1;
 
@@ -161,17 +172,17 @@ public class OrdersAddPanel extends IWorkPanel{
         gcTablesPanel.gridy = 0;
         gcTablesPanel.weightx = 1;
         gcTablesPanel.weighty = 1;
-        tablesPanel.add(itemsTablePanel,gcTablesPanel);
+        tablesPanel.add(itemsTablePanel, gcTablesPanel);
 
         gcTablesPanel.gridx = 0;
         gcTablesPanel.gridy = 1;
         gcTablesPanel.weightx = 1;
         gcTablesPanel.weighty = 1;
-        tablesPanel.add(orderTablePanel,gcTablesPanel);
+        tablesPanel.add(orderTablePanel, gcTablesPanel);
     }
 
-    protected void setItemsTable(){
-        Dimension dim = new Dimension(300,200);
+    protected void setItemsTable() {
+        Dimension dim = new Dimension(300, 200);
         scrollItemsTable.setPreferredSize(dim);
 
         itemsTablePanel.setBorder(BorderFactory.createTitledBorder("Browse items - Double click the Item to add it to the order"));
@@ -185,11 +196,11 @@ public class OrdersAddPanel extends IWorkPanel{
         gcTablePanel.weightx = 1;
         gcTablePanel.weighty = 0.1;
         gcTablePanel.anchor = GridBagConstraints.FIRST_LINE_START;
-        itemsTablePanel.add(scrollItemsTable,gcTablePanel);
+        itemsTablePanel.add(scrollItemsTable, gcTablePanel);
     }
 
-    protected void setOrderTable(){
-        Dimension dim = new Dimension(300,200);
+    protected void setOrderTable() {
+        Dimension dim = new Dimension(300, 200);
         scrollOrderTable.setPreferredSize(dim);
 
         orderTablePanel.setBorder(BorderFactory.createTitledBorder("Order details - Double click the Item to remove it from the order"));
@@ -203,7 +214,7 @@ public class OrdersAddPanel extends IWorkPanel{
         gcTablePanel.weightx = 1;
         gcTablePanel.weighty = 0.1;
         gcTablePanel.anchor = GridBagConstraints.FIRST_LINE_START;
-        orderTablePanel.add(scrollOrderTable,gcTablePanel);
+        orderTablePanel.add(scrollOrderTable, gcTablePanel);
     }
 
     @Override
@@ -214,7 +225,7 @@ public class OrdersAddPanel extends IWorkPanel{
         searchPanel.setLayout(new GridBagLayout());
         GridBagConstraints gcSearchPanel = new GridBagConstraints();
         gcSearchPanel.fill = GridBagConstraints.CENTER;
-        gcSearchPanel.insets = new Insets(5,5,5,5);
+        gcSearchPanel.insets = new Insets(5, 5, 5, 5);
 
         /////// First row ///////
         gcSearchPanel.gridy = 0;
@@ -242,7 +253,7 @@ public class OrdersAddPanel extends IWorkPanel{
         searchPanel.add(searchItemButton, gcSearchPanel);
 
         /////// Next row ///////
-        gcSearchPanel.gridy ++;
+        gcSearchPanel.gridy++;
 
         gcSearchPanel.weightx = 0.5;
         gcSearchPanel.weighty = 0.1;
@@ -268,7 +279,7 @@ public class OrdersAddPanel extends IWorkPanel{
 
         oneRequired.setForeground(Color.red);
         oneRequired.setVisible(false);
-        searchPanel.add(oneRequired,gcSearchPanel);
+        searchPanel.add(oneRequired, gcSearchPanel);
 
         searchCompleted.setForeground(Color.blue);
         searchCompleted.setVisible(false);
@@ -304,17 +315,17 @@ public class OrdersAddPanel extends IWorkPanel{
         providers.add(0, GUIConstants.SELECT_FIELD);
     }
 
-    private void setCurrentCategories(){
+    private void setCurrentCategories() {
         categories = getAllCategoryNames();
         categories.add(0, GUIConstants.SELECT_FIELD);
     }
 
-    protected void setPlaceOrderLayout(){
+    protected void setPlaceOrderLayout() {
         placeOrderPanel.setLayout(new GridBagLayout());
         placeOrderPanel.setBorder(BorderFactory.createSoftBevelBorder(BevelBorder.RAISED));
         GridBagConstraints gcPlaceOrderPanel = new GridBagConstraints();
         gcPlaceOrderPanel.fill = GridBagConstraints.CENTER;
-        gcPlaceOrderPanel.insets = new Insets(5,5,5,5);
+        gcPlaceOrderPanel.insets = new Insets(5, 5, 5, 5);
 
         /////// First row ///////
         gcPlaceOrderPanel.gridy = 0;
@@ -323,7 +334,7 @@ public class OrdersAddPanel extends IWorkPanel{
         gcPlaceOrderPanel.gridx = 0;
 
         /////// Next row //////
-        gcPlaceOrderPanel.gridy ++;
+        gcPlaceOrderPanel.gridy++;
         gcPlaceOrderPanel.weightx = 0.5;
         gcPlaceOrderPanel.weighty = 0.1;
         gcPlaceOrderPanel.gridx = 0;
@@ -351,7 +362,7 @@ public class OrdersAddPanel extends IWorkPanel{
     }
 
     @Override
-    protected void setActionListeners(){
+    protected void setActionListeners() {
         setSearchButton();
         setPlaceOrderButton();
         setEditUnitsListener();
@@ -359,10 +370,10 @@ public class OrdersAddPanel extends IWorkPanel{
         setRemoveItemFromOrderListener();
     }
 
-    private void setEditUnitsListener(){
+    private void setEditUnitsListener() {
         itemsTable.addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent mouseEvent) {
-                JTable table =(JTable) mouseEvent.getSource();
+                JTable table = (JTable) mouseEvent.getSource();
                 Point point = mouseEvent.getPoint();
                 int row = table.rowAtPoint(point);
                 if (mouseEvent.getClickCount() == 2 && table.getSelectedRow() != -1) {
@@ -375,28 +386,28 @@ public class OrdersAddPanel extends IWorkPanel{
     }
 
     //Used to pass information from Dialog back to the Panel
-    private void setAddItemDialogListener(){
-        itemDialog.setItemDialogListener(new DialogListener(){
+    private void setAddItemDialogListener() {
+        itemDialog.setItemDialogListener(new DialogListener() {
             @Override
             public void setItemInOrder(int units) {
                 orderItemAmount = units;
                 System.out.println(orderItemAmount);
-                String[] productToAdd = convertProductToOrderArr(DatabaseController.getProductByProductId(orderItemId));
+                String[] productToAdd = convertProductToOrderArr(productManager.getProductByProductId(orderItemId));
                 ordersTableModel.addRow(productToAdd);
-                orderSum += calculateItemSum(productToAdd[4],productToAdd[5]); //update the order sum by the price
+                orderSum += calculateItemSum(productToAdd[4], productToAdd[5]); //update the order sum by the price
                 setOrderSumFieldLabel(); //updates the sum label
             }
         });
     }
 
-    private void setRemoveItemFromOrderListener(){
+    private void setRemoveItemFromOrderListener() {
         orderTable.addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent mouseEvent) {
-                JTable table =(JTable) mouseEvent.getSource();
+                JTable table = (JTable) mouseEvent.getSource();
                 Point point = mouseEvent.getPoint();
                 int row = table.rowAtPoint(point);
                 if (mouseEvent.getClickCount() == 2 && table.getSelectedRow() != -1) {
-                    orderSum -= calculateItemSum(ordersTableModel.getValueAt(row,4).toString(),ordersTableModel.getValueAt(row,5).toString());
+                    orderSum -= calculateItemSum(ordersTableModel.getValueAt(row, 4).toString(), ordersTableModel.getValueAt(row, 5).toString());
                     setOrderSumFieldLabel(); //updates the sum label
                     ordersTableModel.removeRow(row);
                 }
@@ -404,12 +415,12 @@ public class OrdersAddPanel extends IWorkPanel{
         });
     }
 
-    private int calculateItemSum(String numOfItems, String itemPrice){
+    private int calculateItemSum(String numOfItems, String itemPrice) {
         int numItems = valueOf(numOfItems), price = valueOf(itemPrice);
         return numItems * price;
     }
 
-    private void setOrderSumFieldLabel(){
+    private void setOrderSumFieldLabel() {
         orderSumFieldLabel.setText(orderSum.toString());
     }
 
@@ -419,16 +430,15 @@ public class OrdersAddPanel extends IWorkPanel{
             public void actionPerformed(ActionEvent e) {
                 Vector<Vector> data = ordersTableModel.getDataVector();
                 Order order = new Order();
-                order.setOrderedProducts(data,0,4);
+                order.setOrderedProducts(data, 0, 4);
                 order.setTotalAmount(orderSum.doubleValue());
                 order.setOrderStatus(OrderStatus.inProcess);
                 order.setOrderDate(new Date(System.currentTimeMillis()));
                 order.setDeliveryDate(new Date(System.currentTimeMillis()));
-                order.setOrderId(DatabaseController.addOrder(order));
-                if(order.getOrderId()== -1)
+                order.setOrderId(orderManager.AddOrder(order));
+                if (order.getOrderId() == -1)
                     placeOrderErrorLabel.setVisible(true);
-                else
-                {
+                else {
                     //passing the order id to the dialog
                     orderPlacedDialog.setPlacedOrderId(order.getOrderId());
                     orderPlacedDialog.setVisible(true);
@@ -441,20 +451,18 @@ public class OrdersAddPanel extends IWorkPanel{
         searchItemButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(checkAtleastOneNotEmpty()){
+                if (checkAtleastOneNotEmpty()) {
                     setValidationLabelsVisibility(false);
-                    Vector<Product> x = DatabaseController.getListOfProducts(buildSearchParameters());
-                    if(x.size() == 0) {
+                    Vector<Product> x = productManager.getListOfProducts(buildSearchParameters());
+                    if (x.size() == 0) {
                         itemsTableModel.setDataVector(convertProductVectorToProductMatrix(x), itemsColumnNames);
                         noResults.setVisible(true);
-                    }
-                    else{
+                    } else {
                         setValidationLabelsVisibility(false);
                         itemsTableModel.setDataVector(convertProductVectorToProductMatrix(x), itemsColumnNames);
                         searchCompleted.setVisible(true);
                     }
-                }
-                else{
+                } else {
                     setValidationLabelsVisibility(false);
                     oneRequired.setVisible(true);
                 }
@@ -471,7 +479,7 @@ public class OrdersAddPanel extends IWorkPanel{
                     productVector.get(i).getProductId(),
                     productVector.get(i).getProductName(),
                     String.valueOf(productVector.get(i).getCategory()),
-                    DatabaseController.getProviderNameById(productVector.get(i).getProviderId()),
+                    providerManaging.getProviderNameById(productVector.get(i).getProviderId()),
                     String.valueOf(productVector.get(i).getCurrentProductAmount()),
                     productVector.get(i).getPrice(),
                     DateUtils.formatDateToString(productVector.get(i).getExpirationDate())
@@ -484,38 +492,38 @@ public class OrdersAddPanel extends IWorkPanel{
 
     //{"ID", "Item name", "Category", "Provider", "Selected units", "Expiration date"};
     private String[] convertProductToOrderArr(Product product) {
-            String[] productArr = {
-                    product.getProductId(),
-                    product.getProductName(),
-                    String.valueOf(product.getCategory()),
-                    DatabaseController.getProviderNameById(product.getProviderId()),
-                    String.valueOf(orderItemAmount),
-                    product.getPrice(),
-                    DateUtils.formatDateToString(product.getExpirationDate())
-            };
+        String[] productArr = {
+                product.getProductId(),
+                product.getProductName(),
+                String.valueOf(product.getCategory()),
+                providerManaging.getProviderNameById(product.getProviderId()),
+                String.valueOf(orderItemAmount),
+                product.getPrice(),
+                DateUtils.formatDateToString(product.getExpirationDate())
+        };
         return productArr;
     }
 
     private HashMap buildSearchParameters() {
         HashMap searchParams = new HashMap();
-        if(!providersList.getSelectedItem().equals(GUIConstants.SELECT_FIELD))
-            searchParams.put("product."+DatabaseConstants.PRODUCT_TABLE_ITEM_PROVIDER_COLUMN, DatabaseController.getProviderIdByName(StringUtils.getStringWithSingleQuotes(providersList.getSelectedItem().toString())));
+        if (!providersList.getSelectedItem().equals(GUIConstants.SELECT_FIELD))
+            searchParams.put("product." + DatabaseConstants.PRODUCT_TABLE_ITEM_PROVIDER_COLUMN, providerManaging.getProviderIdByName(StringUtils.getStringWithSingleQuotes(providersList.getSelectedItem().toString())));
 
         if (!categoryList.getSelectedItem().equals(GUIConstants.SELECT_FIELD))
             searchParams.put(DatabaseConstants.PRODUCT_TABLE_ITEM_CATEGORY_COLUMN, StringUtils.getStringWithSingleQuotes(categoryList.getSelectedItem().toString()));
 
-        if(!itemNameTF.getText().equals(GUIConstants.EMPTY_FIELD))
-            searchParams.put(DatabaseConstants.PRODUCT_TABLE_ITEM_NAME_COLUMN,StringUtils.getStringWithSingleQuotes(itemNameTF.getText()));
+        if (!itemNameTF.getText().equals(GUIConstants.EMPTY_FIELD))
+            searchParams.put(DatabaseConstants.PRODUCT_TABLE_ITEM_NAME_COLUMN, StringUtils.getStringWithSingleQuotes(itemNameTF.getText()));
 
-        if(!unitsTF.getText().equals(GUIConstants.EMPTY_FIELD))
-            searchParams.put(DatabaseConstants.PRODUCT_TABLE_ITEM_CURRENT_AMOUNT_COLUMN,unitsTF.getText());
+        if (!unitsTF.getText().equals(GUIConstants.EMPTY_FIELD))
+            searchParams.put(DatabaseConstants.PRODUCT_TABLE_ITEM_CURRENT_AMOUNT_COLUMN, unitsTF.getText());
         return searchParams;
     }
 
-    private boolean checkAtleastOneNotEmpty(){
-        if(     !providersList.getSelectedItem().equals(GUIConstants.SELECT_FIELD) ||
+    private boolean checkAtleastOneNotEmpty() {
+        if (!providersList.getSelectedItem().equals(GUIConstants.SELECT_FIELD) ||
                 !categoryList.getSelectedItem().equals(GUIConstants.SELECT_FIELD) ||
-                !itemNameTF.getText().equals(GUIConstants.EMPTY_FIELD )||
+                !itemNameTF.getText().equals(GUIConstants.EMPTY_FIELD) ||
                 !unitsTF.getText().equals(GUIConstants.EMPTY_FIELD)
         )
             return true;

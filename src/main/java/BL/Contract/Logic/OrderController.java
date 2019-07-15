@@ -21,10 +21,10 @@ public class OrderController implements IOrderManager {
 
     @Override
     public int AddOrder(Order order) {
-        double currentBudget = 1000;
-        if (currentBudget < order.getTotalAmount()) {
-            throw new RestaurantManagerException("Your order is above the current budget");
-        }
+//        double currentBudget = 1000;
+////        if (currentBudget < order.getTotalAmount()) {
+////            throw new RestaurantManagerException("Your order is above the current budget");
+////        }
         int orderId = OrderRepository.addOrder(order);
 
         return orderId;
