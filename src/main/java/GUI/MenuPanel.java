@@ -67,7 +67,7 @@ public class MenuPanel extends JPanel {
         reports.setPreferredSize(buttonDim);
         settings.setPreferredSize(buttonDim);
 
-        this.setBackground(Color.GREEN);
+        this.setBackground(Color.BLACK);
         //this.setBounds(1,1,100,100);
         //setSize(350, 250);
     }
