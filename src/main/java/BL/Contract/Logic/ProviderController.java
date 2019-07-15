@@ -37,5 +37,10 @@ public class ProviderController implements IProviderManaging {
         return ProviderRepository.getProviderByCategory(category);
     }
 
+    @Override
+    public String getProviderNameById(String providerId) {
+        return ProviderRepository.getProviderNameById(providerId);
+    }
+
 
 }

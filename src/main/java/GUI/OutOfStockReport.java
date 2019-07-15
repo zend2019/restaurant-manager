@@ -1,10 +1,12 @@
 package main.java.GUI;
 
+import main.java.BL.Contract.Logic.IProductManager;
+import main.java.BL.Contract.Logic.IProviderManaging;
+import main.java.BL.Contract.Logic.ProductController;
+import main.java.BL.Contract.Logic.ProviderController;
 import main.java.BL.Contract.Product;
-import main.java.common.DateUtils;
 import main.java.common.constants.Constants;
 import main.java.common.constants.GUIConstants;
-import main.java.database.DatabaseController;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -18,7 +20,7 @@ public class OutOfStockReport extends IBaseWorkPanel {
     private JPanel searchPanel;
     private JPanel tablePanel;
     private JScrollPane scrollTable;
-    private JTable prodectTable;
+    private JTable productTable;
     private DefaultTableModel model;
     private JLabel allRequired;
     private JLabel oneRequired;
@@ -27,6 +29,8 @@ public class OutOfStockReport extends IBaseWorkPanel {
     private JButton searchButton;
     private JTextField itemNameTF;
     private String[] inventoryColumnNames = {"ID", "Item name", "Category", "Provider", "Amount To Order"};
+    private IProviderManaging providerManaging;
+    private IProductManager productManager;
 
     public OutOfStockReport() {
         initialization();
@@ -34,6 +38,9 @@ public class OutOfStockReport extends IBaseWorkPanel {
         setTableLayout();
         setMainLayout();
         setActionListeners();
+        providerManaging = new ProviderController();
+        productManager = new ProductController();
+
     }
 
 
@@ -42,12 +49,12 @@ public class OutOfStockReport extends IBaseWorkPanel {
         searchPanel = new JPanel();
         tablePanel = new JPanel();
         model = new DefaultTableModel(null, inventoryColumnNames);
-        prodectTable = new JTable(model) {
+        productTable = new JTable(model) {
             public boolean isCellEditable(int row, int column) {
                 return false;
             }
         };
-        scrollTable = new JScrollPane(prodectTable, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollTable = new JScrollPane(productTable, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         allRequired = new JLabel(GUIConstants.ALL_FIELDS_REQUIRED);
         oneRequired = new JLabel(GUIConstants.ATLEAST_ONE_FIELD_REQUIRED);
         noResults = new JLabel(GUIConstants.NO_RESULTS);
@@ -163,7 +170,7 @@ public class OutOfStockReport extends IBaseWorkPanel {
                     productVector.get(i).getProductId(),
                     productVector.get(i).getProductName(),
                     String.valueOf(productVector.get(i).getCategory()),
-                    DatabaseController.getProviderNameById(productVector.get(i).getProviderId()),
+                    providerManaging.getProviderNameById(productVector.get(i).getProviderId()),
                     String.valueOf(productVector.get(i).getAmountOfLake()),
             };
             matrix[i] = array;
@@ -176,7 +183,7 @@ public class OutOfStockReport extends IBaseWorkPanel {
         searchButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                Vector<Product> x = DatabaseController.getListOfAllProducts();
+                Vector<Product> x = productManager.getListOfAllProducts();
                 if (x.size() == 0) {
                     model.setDataVector(convertProductVectorToInventoryMatrix(x), inventoryColumnNames);
                     noResults.setVisible(true);

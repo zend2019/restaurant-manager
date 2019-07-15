@@ -103,13 +103,9 @@ public class ProviderRepository {
 
 
         /* Function num #5 - Getting provider name by its id */
-
         public static String getProviderNameById(String providerId) {
             String providerName = "";
-            String sql = String.format("SELECT %s FROM provider WHERE %s = " + providerId,
-                    PROVIDER_TABLE_COMPANY_NAME_COLUMN,
-                    PROVIDER_TABLE_PROVIDER_ID_COLUMN);
-
+            String sql = "SELECT " + PROVIDER_TABLE_COMPANY_NAME_COLUMN + " FROM provider WHERE " + PROVIDER_TABLE_PROVIDER_ID_COLUMN + "=" + providerId;
             Connection conn = DatabaseAccessManager.getConnection();
             try {
                 PreparedStatement pstmt = conn.prepareStatement(sql);
@@ -122,7 +118,6 @@ public class ProviderRepository {
             }
             return providerName;
         }
-
 
 
     }

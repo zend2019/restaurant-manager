@@ -3,15 +3,9 @@ package main.java.BL.Contract.Logic;
 import main.java.BL.Contract.Employee;
 import main.java.BL.Contract.User;
 import main.java.common.exceptions.RestaurantManagerException;
-import main.java.dataAccess.IRestaurantRepository;
 import main.java.database.UserRepository;
 
 public class UserController implements IUSerManager {
-    private IRestaurantRepository restaurantRepository;
-
-    public UserController(IRestaurantRepository restaurantRepository) {
-        this.restaurantRepository = restaurantRepository;
-    }
 
 
     @Override

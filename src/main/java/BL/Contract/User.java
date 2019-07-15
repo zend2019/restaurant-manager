@@ -12,7 +12,7 @@ public class User {
     private String Password;
     private String PhoneNumber;
     private int IsManager;
-    private String HireDate;
+
 
     /* 1 - Id */
     public int getId() {

@@ -5,8 +5,10 @@ import main.java.BL.Contract.Product;
 import main.java.BL.Contract.Provider;
 
 import java.util.List;
+import java.util.Vector;
 
 public interface IProductManager {
 
     List<Product> GetProductByProvider(String providerId);
+    Vector<Product> getListOfAllProducts();
 }

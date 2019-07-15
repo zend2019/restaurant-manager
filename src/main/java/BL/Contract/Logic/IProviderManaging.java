@@ -11,4 +11,5 @@ public interface IProviderManaging {
     void editProvider(Provider provider,int providerId);
     void getRatingProvider(int providerId);
     List<Provider> GetProviderByCategory(Category category);
+    String getProviderNameById(String providerId);
 }

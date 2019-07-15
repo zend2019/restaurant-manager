@@ -2,6 +2,8 @@ package main.java.GUI;
 
 import com.toedter.calendar.JDateChooser;
 import main.java.BL.Contract.*;
+import main.java.BL.Contract.Logic.IUSerManager;
+import main.java.BL.Contract.Logic.UserController;
 import main.java.common.DateUtils;
 import main.java.common.StringUtils;
 import main.java.common.constants.Constants;
@@ -43,12 +45,11 @@ public class UserPanel extends IWorkPanel {
     private JDateChooser dateOfBirth;
     private JDateChooser hireDate;
     private JButton addUserButton;
-    private JScrollPane scrollItemsTable;
-    private JScrollPane scrollOrderTable;
     private JPanel searchPanel;
     private EditItemDialog itemDialog;
     private OrderPlacedDialog orderPlacedDialog;
-    private Vector<String> departments;
+    private IUSerManager userManager;
+
 
 
     public UserPanel() {
@@ -57,6 +58,7 @@ public class UserPanel extends IWorkPanel {
         setTableLayout();
         setMainLayout();
         setActionListeners();
+        userManager = new UserController();
     }
 
     @Override
@@ -269,7 +271,7 @@ public class UserPanel extends IWorkPanel {
                     setValidationLabelsVisibility(false);
                     Employee employee;
                     employee = getUserProperties();
-                    UserRepository.addUser(employee, isManager.isSelected());
+                    userManager.AddUser(employee, isManager.isSelected());
                     userAdded.setVisible(true);
                 }
             }
@@ -284,29 +286,11 @@ public class UserPanel extends IWorkPanel {
         user.setLastName(lastName.getText());
         user.setPhoneNumber(phoneNumber.getText());
         user.setUserName(userName.getText());
-        //user.setDepartment(Department[department.getSelectedIndex()]));
         user.setHireDate(hireDate.getDate());
         return user;
     }
 
-    //"Item name","Category","Provider","Available units","Price per Item","Expiration date"
-    private String[][] convertProductVectorToProductMatrix(Vector<Product> productVector) {
-        String[][] matrix = new String[productVector.size()][Constants.PRODUCTS_MATRIX_COLUMNS];
-        for (int i = 0; i < productVector.size(); i++) {
-            String[] array = {
-                    productVector.get(i).getProductId(),
-                    productVector.get(i).getProductName(),
-                    String.valueOf(productVector.get(i).getCategory()),
-                    DatabaseController.getProviderNameById(productVector.get(i).getProviderId()),
-                    String.valueOf(productVector.get(i).getCurrentProductAmount()),
-                    productVector.get(i).getPrice(),
-                    DateUtils.formatDateToString(productVector.get(i).getExpirationDate())
-            };
-            matrix[i] = array;
-        }
 
-        return matrix;
-    }
 
 
     private boolean checkAtleastOneNotEmpty() {

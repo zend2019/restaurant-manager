@@ -168,9 +168,8 @@ public class ProductRepository {
 
     /* Function num #6 - Getting a list of all products */
 
-    public static Vector<Product> getListOfProducts(HashMap hashMap) {
-        String sql = "SELECT* FROM product WHERE " + DatabaseController.getDynamicWhereQueryBuilder(hashMap);
-
+    public static Vector<Product> getListOfAllProducts() {
+        String sql = "SELECT * FROM product ";
         Connection conn = DatabaseAccessManager.getConnection();
         Vector<Product> productsList = new Vector<>();
 
@@ -198,8 +197,8 @@ public class ProductRepository {
             DatabaseAccessManager.closeConnection(conn);
         }
         return productsList;
-    }
 
+    }
     /* Function num #7 - Getting a list of all products' name */
 
     public static Vector<String> getAllProductsNames() {
