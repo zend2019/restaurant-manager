@@ -17,7 +17,7 @@ public class AddOrderTest {
 
     @Test
     //addOrderedItem(Order order)
-    public static void addOrderedItem() {
+    public void addOrderedItem() {
         double currentBudget = 120;
         //TotalAmount = 300
         if (currentBudget < 300) {
