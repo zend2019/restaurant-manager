@@ -31,8 +31,6 @@ public class LoginPage extends JFrame {
 
     private void initializer() {
         loginButton = new JButton("Login");
-        //loginButton.setBorder(BorderFactory.createEmptyBorder());
-        //loginButton.setContentAreaFilled(false);
         userNameLabel = new JLabel("User Name: ");
         userNameInput = new JTextField(10);
         passwordLabel = new JLabel("Password: ");

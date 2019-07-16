@@ -28,11 +28,6 @@ public class LoginTest {
         login= new Login();
     }
 
-    @AfterClass
-    public static void tearDownAfterClass() throws Exception {
-        UserRepository.deleteUserByUderName(userName);
-    }
-
     @Before
     public void testInitalize() {
         needDeleteUser = false;
