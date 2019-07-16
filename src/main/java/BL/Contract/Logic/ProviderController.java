@@ -2,15 +2,11 @@ package main.java.BL.Contract.Logic;
 
 import main.java.BL.Contract.Category;
 import main.java.BL.Contract.Provider;
-import main.java.dataAccess.IRestaurantRepository;
 import main.java.database.ProviderRepository;
 
 import java.util.List;
 
     public class ProviderController implements IProviderManaging {
-
-    private IRestaurantRepository resturantRepository;
-
 
     @Override
     public void addProvider(Provider provider) {

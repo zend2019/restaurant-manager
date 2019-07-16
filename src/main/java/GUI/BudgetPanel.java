@@ -1,10 +1,8 @@
 package main.java.GUI;
 
-import main.java.BL.Contract.Employee;
 import main.java.BL.Contract.Logic.IResturantManaging;
 import main.java.BL.Contract.Logic.ResturantController;
 import main.java.common.constants.GUIConstants;
-import main.java.dataAccess.IRestaurantRepository;
 
 import javax.swing.*;
 import java.awt.*;

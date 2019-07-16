@@ -2,7 +2,9 @@ package main.java.GUI;
 
 import com.toedter.calendar.JDateChooser;
 import main.java.BL.Contract.Logic.IProductManager;
+import main.java.BL.Contract.Logic.IProviderManaging;
 import main.java.BL.Contract.Logic.ProductController;
+import main.java.BL.Contract.Logic.ProviderController;
 import main.java.BL.Contract.Product;
 import main.java.common.DateUtils;
 import main.java.common.StringUtils;
@@ -33,6 +35,7 @@ public class DailyReportPanel extends IBaseWorkPanel {
     private JTextField itemNameTF;
     private String[] inventoryColumnNames = {"ID", "Item name", "Category", "Provider", "Current amount", "Required amount", "Expiration date"};
     private IProductManager productManager;
+    private IProviderManaging providerManaging;
 
     public DailyReportPanel() {
         initialization();
@@ -41,6 +44,7 @@ public class DailyReportPanel extends IBaseWorkPanel {
         setMainLayout();
         setActionListeners();
         productManager = new ProductController();
+        providerManaging = new ProviderController();
     }
 
     @Override
@@ -170,7 +174,7 @@ public class DailyReportPanel extends IBaseWorkPanel {
                     productVector.get(i).getProductId(),
                     productVector.get(i).getProductName(),
                     String.valueOf(productVector.get(i).getCategory()),
-                    DatabaseController.getProviderNameById(productVector.get(i).getProviderId()),
+                    providerManaging.getProviderNameById(productVector.get(i).getProviderId()),
                     String.valueOf(productVector.get(i).getCurrentProductAmount()),
                     String.valueOf(productVector.get(i).getRequiredAmount()),
                     DateUtils.formatDateToString(productVector.get(i).getExpirationDate())

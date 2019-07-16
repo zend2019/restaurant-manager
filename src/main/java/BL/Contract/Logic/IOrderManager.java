@@ -12,12 +12,6 @@ public interface IOrderManager {
 
     Order GetOrder (int orderId);
 
-    void EditOrder (int orderId, Order order);
-
-    void CompletedOrder (int orderId);
-
-    void AddRatingPerOrder (int rating, int orderId);
-
     Vector<Product> getListOfOrderedProductsByOrder(String orderId);
 
     Vector<Order> getListOfOrders(HashMap hashMap);

@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Vector;
 
 import static main.java.common.constants.DatabaseConstants.*;
-import static main.java.database.DatabaseController.getCategoryIdByName;
+import static main.java.database.CategoryRepository.getCategoryIdByName;
 
 public class ProductRepository {
 

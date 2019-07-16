@@ -13,7 +13,6 @@ import static main.java.common.constants.DatabaseConstants.*;
 public class UserRepository {
 
     /* Function num #1 - Adding a new user */
-
     public static void addUser(Employee user, boolean isManager) {
         String firstName = user.getFirstName();
         String lastName = user.getLastName();
@@ -65,8 +64,6 @@ public class UserRepository {
 
     public static void deleteUserByUderName(String userName) {
         String sql = String.format("DELETE from user where %s ='%s'", USER_TABLE_USERNAME_COLUMN, userName);
-
-
         Connection conn = DatabaseAccessManager.getConnection();
         try {
             Statement stmt = conn.createStatement();

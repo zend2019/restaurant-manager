@@ -27,8 +27,8 @@ import java.util.HashMap;
 import java.util.Vector;
 
 import static java.lang.String.valueOf;
-import static main.java.database.DatabaseController.getAllCategoryNames;
-import static main.java.database.DatabaseController.getAllProviderCompanyName;
+import static main.java.database.CategoryRepository.getAllCategoryNames;
+import static main.java.database.ProviderRepository.getAllProviderCompanyName;
 
 public class OrdersSearchPanel extends IWorkPanel {
     private JLabel providerLabel;

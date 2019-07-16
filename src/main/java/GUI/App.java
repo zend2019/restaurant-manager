@@ -8,6 +8,5 @@ public class App {
 
     public static void main(String[] arg) throws ClassNotFoundException, UnsupportedLookAndFeelException, InstantiationException, IllegalAccessException {
         LoginPage page = new LoginPage();
-        //MainForm main = new MainForm();
     }
 }

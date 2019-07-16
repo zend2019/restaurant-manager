@@ -260,6 +260,4 @@ public class OrderRepository {
         return ordersList;
     }
 
-    public static void editOrder(int orderId, Order order) {
-    }
 }
