@@ -32,7 +32,7 @@ public class MainForm extends JFrame {
         ImageIcon img = new ImageIcon(Constants.LOGO_IMAGE);
         setIconImage(img.getImage());
         //getContentPane().setBackground(Color.PINK);
-        boolean isManager = user instanceof Manager;
+        boolean isManager = logInUser instanceof Manager;
         cl = new CardLayout();
         containerPanel = new JPanel();
         inventoryPanel = new InventoryPanel();

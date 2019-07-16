@@ -15,7 +15,6 @@ public class UserRepository {
     /* Function num #1 - Adding a new user */
 
     public static void addUser(Employee user, boolean isManager) {
-        //   int id = user.getId();
         String firstName = user.getFirstName();
         String lastName = user.getLastName();
         String dateOfBirth = DateUtils.formatDateToString(user.getDateOfBirth());
@@ -50,7 +49,22 @@ public class UserRepository {
     /* Function num #2 - Deleting an existing user */
 
     public static void deleteUser(int userId) {
-        String sql = String.format("DELETE from user where %s =" + userId, USER_TABLE_ID_COLUMN);
+        String sql = String.format("DELETE from user where %s =" + userId, USER_TABLE_USERNAME_COLUMN);
+
+
+        Connection conn = DatabaseAccessManager.getConnection();
+        try {
+            Statement stmt = conn.createStatement();
+            stmt.execute(sql);
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            DatabaseAccessManager.closeConnection(conn);
+        }
+    }
+
+    public static void deleteUserByUderName(String userName) {
+        String sql = String.format("DELETE from user where %s ='%s'", USER_TABLE_USERNAME_COLUMN, userName);
 
 
         Connection conn = DatabaseAccessManager.getConnection();

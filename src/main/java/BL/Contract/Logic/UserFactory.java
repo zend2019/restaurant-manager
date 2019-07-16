@@ -12,12 +12,14 @@ public class UserFactory {
                 Manager manager = new Manager();
                 manager.setFirstName(user.getFirstName());
                 manager.setLastName(user.getLastName());
+                manager.setUserName(user.getUserName());
                 return manager;
 
             case 0:
                 Employee employee = new Employee();
                 employee.setFirstName(user.getFirstName());
                 employee.setLastName(user.getLastName());
+                employee.setUserName(user.getUserName());
                 return employee;
 
         }

@@ -20,7 +20,7 @@ public class OrderRepository {
 
     /* Function num #1 - Adding a new order */
 
-    public static void addOrderdItem (HashMap<String, Integer> products, int orderId){
+    public static void addOrderdItem(HashMap<String, Integer> products, int orderId) {
 
         String sql = String.format("INSERT INTO ordered_items(order_id,item_id,ordered_units) VALUES(%s,%s,%s)",
                 ORDERED_ITEMS_TABLE_ORDER_ID_COLUMN,
@@ -44,9 +44,27 @@ public class OrderRepository {
         }
     }
 
-    /* Function num #2 - Editing an existing order */
 
-    public static void editOrder(int orderId, Order order) {
+    public static void deleteOrder(int orderId) {
+        String sql = String.format("DELETE from orders where %s =%s", ORDERS_TABLE_ORDER_ID_COLUMN, orderId);
+        Connection conn = DatabaseAccessManager.getConnection();
+        try {
+            Statement stmt = conn.createStatement();
+            stmt.execute(sql);
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        sql = String.format("DELETE from ordered_items where %s =%s", ORDERED_ITEMS_TABLE_ORDER_ID_COLUMN, orderId);
+        try {
+            Statement stmt = conn.createStatement();
+            stmt.execute(sql);
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            DatabaseAccessManager.closeConnection(conn);
+        }
+
     }
 
     public static int addOrder(Order order) {
@@ -65,7 +83,7 @@ public class OrderRepository {
             List<HashMap> listOfProducts = order.getOrderedProducts();
             for (Map<String, String> entry : listOfProducts) {
                 for (String key : entry.keySet()) {
-                    addOrderedItem(id,key,entry.get(key));
+                    addOrderedItem(id, key, entry.get(key));
                 }
             }
 
@@ -79,7 +97,7 @@ public class OrderRepository {
     }
 
 
-    public static int getTopOrderId(){
+    public static int getTopOrderId() {
         int id = -1;
         String sql = "SELECT MAX(id) FROM orders";
         Connection conn = DatabaseAccessManager.getConnection();
@@ -95,8 +113,7 @@ public class OrderRepository {
         return id;
     }
 
-    public static void addOrderedItem(int orderId, String itemId, String orderedUnits)
-    {
+    public static void addOrderedItem(int orderId, String itemId, String orderedUnits) {
         String sql = "INSERT INTO ordered_items(order_id,item_id,ordered_units) VALUES(?,?,?)";
         Connection conn = DatabaseAccessManager.getConnection();
         try {
@@ -174,7 +191,7 @@ public class OrderRepository {
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(sql);
             while (rs.next()) {
-                result.put(rs.getString("item_id"),rs.getInt("amount"));
+                result.put(rs.getString("item_id"), rs.getInt("amount"));
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -183,6 +200,7 @@ public class OrderRepository {
         }
         return result;
     }
+
     public static Vector<Product> getListOfOrderedProductsByOrder(String orderId) {
         String sql = "SELECT item_name,category,provider,ordered_units,price\n" +
                 "FROM ordered_items JOIN product ON product.id=ordered_items.item_id\n WHERE order_id = " + orderId;
@@ -240,5 +258,8 @@ public class OrderRepository {
             DatabaseAccessManager.closeConnection(conn);
         }
         return ordersList;
+    }
+
+    public static void editOrder(int orderId, Order order) {
     }
 }

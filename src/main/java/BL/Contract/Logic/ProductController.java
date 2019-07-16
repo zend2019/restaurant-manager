@@ -35,6 +35,10 @@ public class ProductController implements IProductManager {
 
     @Override
     public String addProduct(Product product) {
+        if (product.getRequiredAmount() == 0) {
+            return "-1";
+        }
+
         return ProductRepository.addProduct(product);
     }
 
