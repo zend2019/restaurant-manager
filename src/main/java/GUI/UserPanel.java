@@ -268,7 +268,7 @@ public class UserPanel extends IWorkPanel {
         addUserButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (checkAtleastOneNotEmpty()) {
+                if (!checkAtleastOneNotEmpty()) {
                     setValidationLabelsVisibility(false);
                     allRequired.setVisible(true);
                 } else {
@@ -300,14 +300,13 @@ public class UserPanel extends IWorkPanel {
 
 
     private boolean checkAtleastOneNotEmpty() {
-        if (firstName.getText().equals(GUIConstants.EMPTY_FIELD) ||
-                lastName.getText().equals(GUIConstants.EMPTY_FIELD) ||
-                phoneNumber.getText().equals(GUIConstants.EMPTY_FIELD) ||
-                password.getPassword().equals(GUIConstants.EMPTY_FIELD) ||
-                dateOfBirth.getDate() == null ||
-                hireDate.getDate() == null ||
-                isManager.getText().equals(GUIConstants.EMPTY_FIELD) ||
-                userName.getText().equals(GUIConstants.EMPTY_FIELD)
+        if (!firstName.getText().equals(GUIConstants.EMPTY_FIELD) &&
+                !lastName.getText().equals(GUIConstants.EMPTY_FIELD) &&
+                !phoneNumber.getText().equals(GUIConstants.EMPTY_FIELD) &&
+                !password.getPassword().equals(GUIConstants.EMPTY_FIELD) &&
+                dateOfBirth.getDate() != null &&
+                hireDate.getDate() != null &&
+                !userName.getText().equals(GUIConstants.EMPTY_FIELD)
         )
             return true;
 
