@@ -80,7 +80,7 @@ public class OutOfStockReport extends IBaseWorkPanel {
         add(searchPanel, gcMainPanel);
 
         gcMainPanel.ipady = 0;
-        Common.NextRow(gcMainPanelS, 0.5, 0.1, 0);
+        Common.NextRow(gcMainPanel, 0.5, 0.1, 0);
         gcMainPanel.anchor = GridBagConstraints.LINE_START;
         add(tablePanel, gcMainPanel);
     }
