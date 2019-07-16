@@ -1,4 +1,6 @@
 package main.java.BL.Contract.Logic;
+
+import main.java.BL.Contract.User;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -9,11 +11,11 @@ import static org.junit.Assert.assertEquals;
 
 public class LoginTest {
 
-    static LoginTest junit;
+    static Login login;
 
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
-        junit = new LoginTest();
+        login = new Login();
     }
 
     @AfterClass
@@ -23,9 +25,9 @@ public class LoginTest {
 
     @Test
     public void testValidation() throws Exception {
-        LoginTest junit = new LoginTest();
-        //boolean result = junit.login("admin","1234");
-         //assertEquals(true, result);
+
+        User result = login.LogInSystem("admin", "1234");
+        assertEquals(true, result);
     }
 
-    }
+}
