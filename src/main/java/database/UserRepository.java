@@ -141,7 +141,9 @@ public class UserRepository {
             user.setUserName(rs.getString("username"));
             user.setPhoneNumber(rs.getString("phone_number"));
 
+            //using factory to create the currect type of user.
             user = UserFactory.GetUser(isManager, user);
+
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         } finally {

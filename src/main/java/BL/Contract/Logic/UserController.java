@@ -2,6 +2,7 @@ package main.java.BL.Contract.Logic;
 
 import main.java.BL.Contract.Employee;
 import main.java.BL.Contract.User;
+import main.java.common.constants.GUIConstants;
 import main.java.common.exceptions.RestaurantManagerException;
 import main.java.database.UserRepository;
 
@@ -13,7 +14,7 @@ public class UserController implements IUSerManager {
         User existingUser = UserRepository.getUserByUserName(user.getUserName());
         String firstName=existingUser.getFirstName();
         if (firstName != null) {
-            return "User already exist.";
+            return GUIConstants.USER_EXIST;
         }
         UserRepository.addUser(user,isManager);
         return "";
