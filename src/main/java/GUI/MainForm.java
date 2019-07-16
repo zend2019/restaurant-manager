@@ -32,19 +32,19 @@ public class MainForm extends JFrame {
         ImageIcon img = new ImageIcon(Constants.LOGO_IMAGE);
         setIconImage(img.getImage());
         //getContentPane().setBackground(Color.PINK);
-
+        boolean isManager = user instanceof Manager;
         cl = new CardLayout();
         containerPanel = new JPanel();
         inventoryPanel = new InventoryPanel();
         ordersSearchPanel = new OrdersSearchPanel();
         ordersAddPanel = new OrdersAddPanel();
         OrdersTabs = new JTabbedPane();
-        menuPanel = new MenuPanel();
+        menuPanel = new MenuPanel(isManager);
         dailyReportPanel = new DailyReportPanel();
         reportsTabs = new JTabbedPane();
         outOfStockReport = new OutOfStockReport();
         userPanel = new UserPanel();
-        budgetPanel= new BudgetPanel();
+        budgetPanel = new BudgetPanel();
 
         settingTabs = new JTabbedPane();
 
@@ -65,7 +65,7 @@ public class MainForm extends JFrame {
         containerPanel.add(OrdersTabs, "Orders");
         containerPanel.add(reportsTabs, "Reports");
 
-        if (user instanceof Manager) {
+        if (isManager) {
             containerPanel.add(settingTabs, "Settings");
         }
         cl.show(containerPanel, "Inventory");
@@ -89,12 +89,14 @@ public class MainForm extends JFrame {
                 cl.show(containerPanel, "Reports");
             }
         });
-        menuPanel.settings.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                cl.show(containerPanel, "Settings");
-            }
-        });
+        if (isManager) {
+            menuPanel.settings.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    cl.show(containerPanel, "Settings");
+                }
+            });
+        }
 
 
         add(menuPanel, BorderLayout.WEST);
@@ -112,7 +114,8 @@ public class MainForm extends JFrame {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         setSize(1000, (int) (screenSize.height * 0.9));
     }
-//screenSize.width
+
+    //screenSize.width
     private void setMenuPanelSize() {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         Dimension dim = new Dimension(120, (int) (screenSize.height * 0.9));
