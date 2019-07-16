@@ -12,6 +12,9 @@ import static org.junit.Assert.assertEquals;
 public class LoginTest {
 
     static Login login;
+    private String userName="admin";
+    private String pass="admin";
+
 
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
@@ -24,10 +27,19 @@ public class LoginTest {
 
 
     @Test
-    public void testValidation() throws Exception {
+    public void login_existUserName_success() throws Exception {
 
-        User result = login.LogInSystem("admin", "1234");
-        assertEquals(true, result);
+        User result = login.LogInSystem(userName, pass);
+        assertEquals(userName, result.getUserName());
     }
+
+    @Test
+    public void login_noExistUserName_FaildLogin() throws Exception {
+
+        User result = login.LogInSystem("notExist", pass);
+        assertEquals(null, result.getUserName());
+    }
+
+
 
 }

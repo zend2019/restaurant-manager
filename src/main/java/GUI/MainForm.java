@@ -23,6 +23,7 @@ public class MainForm extends JFrame {
     private CardLayout cl;
     private User user;
     private UserPanel userPanel;
+    private BudgetPanel budgetPanel;
 
     public MainForm(User logInUser) throws ClassNotFoundException, UnsupportedLookAndFeelException, InstantiationException, IllegalAccessException {
         super("Restaurant Manager");
@@ -43,7 +44,10 @@ public class MainForm extends JFrame {
         reportsTabs = new JTabbedPane();
         outOfStockReport = new OutOfStockReport();
         userPanel = new UserPanel();
+        budgetPanel= new BudgetPanel();
+
         settingTabs = new JTabbedPane();
+
         user = logInUser;
 
         //////////////// set the layout ////////////////
@@ -54,6 +58,7 @@ public class MainForm extends JFrame {
         reportsTabs.add("Out of stock Report", outOfStockReport);
 
         settingTabs.add("Add New User", userPanel);
+        settingTabs.add("Add Budget", budgetPanel);
 
         containerPanel.setLayout(cl);
         containerPanel.add(inventoryPanel, "Inventory");
