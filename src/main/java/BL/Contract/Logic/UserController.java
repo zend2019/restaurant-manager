@@ -19,14 +19,6 @@ public class UserController implements IUSerManager {
         return "";
     }
 
-    @Override
-    public void UpdateUser(User user, int userId) {
-        User existingUser = UserRepository.getUserById(user.getId());
-        if (existingUser != null) {
-            throw new RestaurantManagerException("User already exist.");
-        }
-        UserRepository.editUser(user, userId);
-    }
 
     @Override
     public void DeleteUser(int userId) {

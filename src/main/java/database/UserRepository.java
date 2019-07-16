@@ -46,12 +46,8 @@ public class UserRepository {
         }
     }
 
-    /* Function num #2 - Editing an existing user */
 
-    public static void editUser(User user, int userId) {
-    }
-
-    /* Function num #3 - Deleting an existing user */
+    /* Function num #2 - Deleting an existing user */
 
     public static void deleteUser(int userId) {
         String sql = String.format("DELETE from user where %s =" + userId, USER_TABLE_ID_COLUMN);
@@ -68,7 +64,7 @@ public class UserRepository {
         }
     }
 
-    /* Function num #4 - Getting the username by its id */
+    /* Function num #3 - Getting the username by its id */
 
     public static User getUserByUserName(String userName) {
         User user = new User();
@@ -114,7 +110,7 @@ public class UserRepository {
     }
 
 
-    /* Function num #5 - Log in access */
+    /* Function num #4 - Log in access */
 
     public static User LogIn(String userName, String password) {
         String sql = String.format("SELECT * FROM user WHERE username ='%s' And password = %s ",
