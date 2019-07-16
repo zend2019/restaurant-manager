@@ -16,6 +16,7 @@ public class LoginTest {
     private String password = "1234";
     private String userNoExist = "alon";
 
+
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
         login = new Login();

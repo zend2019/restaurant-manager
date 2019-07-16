@@ -30,8 +30,8 @@ public class RestaurantRepository {
     }
 
     public static Restaurant getRestaurant() {
-        Restaurant restaurant= new Restaurant();
-        String sql = String.format("Select %s  from restaurant ", RESTAURANT_TABLE_BUDGET_COLUMN);
+        Restaurant restaurant = new Restaurant();
+        String sql = String.format("Select %s,%s  from restaurant ", RESTAURANT_TABLE_BUDGET_COLUMN, RESTAURANT_TABLE_ID_COLUMN);
 
         Connection conn = DatabaseAccessManager.getConnection();
         try {
@@ -39,12 +39,32 @@ public class RestaurantRepository {
             ResultSet rs = pstmt.executeQuery();
             rs.next();
             restaurant.setBudget(rs.getDouble(RESTAURANT_TABLE_BUDGET_COLUMN));
+            restaurant.setId(rs.getInt(RESTAURANT_TABLE_ID_COLUMN));
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         } finally {
             DatabaseAccessManager.closeConnection(conn);
         }
         return restaurant;
+    }
+
+    public static void updateBudget(int resturantId, double budget, boolean add) {
+        Restaurant restaurant = getRestaurant();
+
+        if (add) {
+            budget = restaurant.getBudget() + budget;
+        }
+        String sql = String.format("update restaurant set %s=%s where %s=%s", RESTAURANT_TABLE_BUDGET_COLUMN, budget, RESTAURANT_TABLE_ID_COLUMN, restaurant.getId());
+
+        Connection conn = DatabaseAccessManager.getConnection();
+        try {
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            DatabaseAccessManager.closeConnection(conn);
+        }
     }
 
 

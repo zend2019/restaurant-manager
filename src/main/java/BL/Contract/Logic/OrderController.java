@@ -3,6 +3,7 @@ package main.java.BL.Contract.Logic;
 import main.java.BL.Contract.Order;
 import main.java.BL.Contract.OrderStatus;
 import main.java.BL.Contract.Product;
+import main.java.BL.Contract.Restaurant;
 import main.java.common.exceptions.RestaurantManagerException;
 import main.java.dataAccess.IRestaurantRepository;
 import main.java.database.OrderRepository;
@@ -14,18 +15,18 @@ import java.util.Vector;
 
 public class OrderController implements IOrderManager {
 
-    public OrderController() {
-    }
-
-
     @Override
     public int AddOrder(Order order) {
-        double currentBudget = RestaurantRepository.getRestaurant().getBudget();
+        Restaurant restaurant = RestaurantRepository.getRestaurant();
+        double currentBudget = restaurant.getBudget();
         if (currentBudget < order.getTotalAmount()) {
             // Not enogth mbudget to order;
             return -1;
         }
         int orderId = OrderRepository.addOrder(order);
+        //update current budget
+        RestaurantRepository.updateBudget(restaurant.getId(), currentBudget - order.getTotalAmount(), false);
+
 
         return orderId;
     }

@@ -11,7 +11,7 @@ public class MenuPanel extends JPanel {
     public JButton reports;
     public JButton settings;
 
-    public MenuPanel(){
+    public MenuPanel(boolean showSetting) {
         Dimension dim = getPreferredSize();
         dim.width = 140;
         setPreferredSize(dim);
@@ -38,7 +38,7 @@ public class MenuPanel extends JPanel {
         gc.weighty = 0.1;
 
         gc.gridx = 0;
-        gc.gridy ++;
+        gc.gridy++;
         gc.anchor = GridBagConstraints.CENTER;
         add(orders, gc);
 
@@ -47,19 +47,20 @@ public class MenuPanel extends JPanel {
         gc.weighty = 0.1;
 
         gc.gridx = 0;
-        gc.gridy ++;
+        gc.gridy++;
         gc.anchor = GridBagConstraints.CENTER;
-        add(reports,gc);
+        add(reports, gc);
 
-        /////// Four row ///////
         gc.weightx = 1;
         gc.weighty = 2;
 
         gc.gridx = 0;
-        gc.gridy ++;
+        gc.gridy++;
         gc.anchor = GridBagConstraints.PAGE_END;
-        add(settings,gc);
-
+        if (showSetting) {
+            /////// Four row ///////
+            add(settings, gc);
+        }
 
         //align sizes
         Dimension buttonDim = inventory.getPreferredSize();
