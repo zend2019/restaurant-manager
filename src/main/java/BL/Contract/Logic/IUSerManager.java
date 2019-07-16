@@ -7,7 +7,5 @@ public interface IUSerManager {
 
     String AddUser(Employee user, boolean isManager);
 
-    void UpdateUser (User user, int userId);
-
     void DeleteUser (int userId);
 }

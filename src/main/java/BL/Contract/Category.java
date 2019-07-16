@@ -4,9 +4,9 @@ public enum Category {
     Dairy(1),
     Meat(2),
     Fruit(3),
-    Vegetable(4),
-    Uniform(5),
-    Office(6);
+    Vegetables(4),
+    Bakery(5),
+    Alcohol(6);
 
     private int value;
 
