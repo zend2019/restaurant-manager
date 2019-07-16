@@ -7,6 +7,7 @@ import main.java.BL.Contract.Logic.IProviderManaging;
 import main.java.BL.Contract.Logic.ProductController;
 import main.java.BL.Contract.Logic.ProviderController;
 import main.java.BL.Contract.Product;
+import main.java.GUI.commonUI.Common;
 import main.java.common.DateUtils;
 import main.java.common.StringUtils;
 import main.java.common.constants.Constants;
@@ -160,16 +161,11 @@ public class InventoryPanel extends IWorkPanel {
         gcSearchPanel.insets = new Insets(5, 5, 5, 5);
 
         /////// First row ///////
-        gcSearchPanel.gridy = 0;
-        gcSearchPanel.weightx = 1;
-        gcSearchPanel.weighty = 0.1;
-        gcSearchPanel.gridx = 0;
+        Common.FirstRow(gcSearchPanel);
 
         /////// Next row //////
-        gcSearchPanel.gridy++;
-        gcSearchPanel.weightx = 0.5;
-        gcSearchPanel.weighty = 0.1;
-        gcSearchPanel.gridx = 0;
+        Common.NextRow(gcSearchPanel,0.5,0.1,0);
+
         gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_END;
         searchPanel.add(providerLabel, gcSearchPanel);
 
@@ -239,11 +235,8 @@ public class InventoryPanel extends IWorkPanel {
         searchPanel.add(availableAmountTF, gcSearchPanel);
 
         /////// Next row ///////
-        gcSearchPanel.gridy++;
-        gcSearchPanel.weightx = 0.5;
-        gcSearchPanel.weighty = 0.1;
+        Common.NextRow(gcSearchPanel,0.5,0.1,0);
 
-        gcSearchPanel.gridx = 0;
         gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_END;
         searchPanel.add(dateLabel, gcSearchPanel);
 

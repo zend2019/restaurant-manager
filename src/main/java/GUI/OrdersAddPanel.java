@@ -4,6 +4,7 @@ import main.java.BL.Contract.Logic.*;
 import main.java.BL.Contract.Order;
 import main.java.BL.Contract.OrderStatus;
 import main.java.BL.Contract.Product;
+import main.java.GUI.commonUI.Common;
 import main.java.common.DateUtils;
 import main.java.common.StringUtils;
 import main.java.common.constants.Constants;
@@ -328,16 +329,11 @@ public class OrdersAddPanel extends IWorkPanel {
         gcPlaceOrderPanel.insets = new Insets(5, 5, 5, 5);
 
         /////// First row ///////
-        gcPlaceOrderPanel.gridy = 0;
-        gcPlaceOrderPanel.weightx = 1;
-        gcPlaceOrderPanel.weighty = 0.1;
-        gcPlaceOrderPanel.gridx = 0;
+        Common.FirstRow(gcPlaceOrderPanel);
+
 
         /////// Next row //////
-        gcPlaceOrderPanel.gridy++;
-        gcPlaceOrderPanel.weightx = 0.5;
-        gcPlaceOrderPanel.weighty = 0.1;
-        gcPlaceOrderPanel.gridx = 0;
+        Common.NextRow(gcPlaceOrderPanel,0.5,0.1,0);
         gcPlaceOrderPanel.anchor = GridBagConstraints.FIRST_LINE_END;
         placeOrderPanel.add(orderSumLabel, gcPlaceOrderPanel);
 

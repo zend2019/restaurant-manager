@@ -8,6 +8,7 @@ import main.java.BL.Contract.Logic.ProviderController;
 import main.java.BL.Contract.Order;
 import main.java.BL.Contract.OrderStatus;
 import main.java.BL.Contract.Product;
+import main.java.GUI.commonUI.Common;
 import main.java.common.DateUtils;
 import main.java.common.StringUtils;
 import main.java.common.constants.Constants;
@@ -214,11 +215,7 @@ public class OrdersSearchPanel extends IWorkPanel {
         gcSearchPanel.insets = new Insets(5, 5, 5, 5);
 
         /////// First row ///////
-        gcSearchPanel.gridy = 0;
-        gcSearchPanel.weightx = 0.5;
-        gcSearchPanel.weighty = 0.1;
-
-        gcSearchPanel.gridx = 0;
+        Common.FirstRow(gcSearchPanel);
         gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_END;
         searchPanel.add(providerLabel, gcSearchPanel);
 

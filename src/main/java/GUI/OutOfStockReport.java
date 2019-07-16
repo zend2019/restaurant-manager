@@ -5,6 +5,7 @@ import main.java.BL.Contract.Logic.IProviderManaging;
 import main.java.BL.Contract.Logic.ProductController;
 import main.java.BL.Contract.Logic.ProviderController;
 import main.java.BL.Contract.Product;
+import main.java.GUI.commonUI.Common;
 import main.java.common.constants.Constants;
 import main.java.common.constants.GUIConstants;
 
@@ -79,11 +80,7 @@ public class OutOfStockReport extends IBaseWorkPanel {
         add(searchPanel, gcMainPanel);
 
         gcMainPanel.ipady = 0;
-        gcMainPanel.gridy++;
-        gcMainPanel.weightx = 0.5;
-        gcMainPanel.weighty = 0.1;
-
-        gcMainPanel.gridx = 0;
+        Common.NextRow(gcMainPanelS, 0.5, 0.1, 0);
         gcMainPanel.anchor = GridBagConstraints.LINE_START;
         add(tablePanel, gcMainPanel);
     }
@@ -115,16 +112,9 @@ public class OutOfStockReport extends IBaseWorkPanel {
         gcSearchPanel.insets = new Insets(5, 5, 5, 5);
 
         /////// First row ///////
-        gcSearchPanel.gridy = 0;
-        gcSearchPanel.weightx = 1;
-        gcSearchPanel.weighty = 0.1;
-        gcSearchPanel.gridx = 0;
-
+        Common.FirstRow(gcSearchPanel);
         /////// Next row //////
-        gcSearchPanel.gridy++;
-        gcSearchPanel.weightx = 0.5;
-        gcSearchPanel.weighty = 0.1;
-        gcSearchPanel.gridx = 0;
+        Common.NextRow(gcSearchPanel, 0.5, 0.1, 0);
         gcSearchPanel.anchor = GridBagConstraints.FIRST_LINE_START;
         searchPanel.add(searchButton, gcSearchPanel);
 
