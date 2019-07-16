@@ -6,6 +6,7 @@ import main.java.BL.Contract.Product;
 import main.java.common.exceptions.RestaurantManagerException;
 import main.java.dataAccess.IRestaurantRepository;
 import main.java.database.OrderRepository;
+import main.java.database.RestaurantRepository;
 
 import java.util.HashMap;
 import java.util.Vector;
@@ -16,15 +17,14 @@ public class OrderController implements IOrderManager {
     public OrderController() {
     }
 
-    private IRestaurantRepository restaurantRepository;
-
 
     @Override
     public int AddOrder(Order order) {
-//        double currentBudget = 1000;
-////        if (currentBudget < order.getTotalAmount()) {
-////            throw new RestaurantManagerException("Your order is above the current budget");
-////        }
+        double currentBudget = RestaurantRepository.getRestaurant().getBudget();
+        if (currentBudget < order.getTotalAmount()) {
+            // Not enogth mbudget to order;
+            return -1;
+        }
         int orderId = OrderRepository.addOrder(order);
 
         return orderId;

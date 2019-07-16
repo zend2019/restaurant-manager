@@ -52,5 +52,6 @@ public class DatabaseConstants {
     //Restaurant table
     public static final String RESTAURANT_TABLE_ID_COLUMN = "id";
     public static final String RESTAURANT_TABLE_NAME_COLUMN = "name";
+    public static final String RESTAURANT_TABLE_BUDGET_COLUMN = "budget";
 
 }

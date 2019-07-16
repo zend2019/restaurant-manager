@@ -4,6 +4,7 @@ public class Restaurant {
 
     private int id;
     private String name;
+    private double budget;
 
     public int getId() {
         return id;
@@ -21,4 +22,11 @@ public class Restaurant {
         this.name = name;
     }
 
+    public double getBudget() {
+        return budget;
+    }
+
+    public void setBudget(double budget) {
+        this.budget = budget;
+    }
 }

@@ -431,6 +431,7 @@ public class OrdersAddPanel extends IWorkPanel {
                 order.setOrderStatus(OrderStatus.inProcess);
                 order.setOrderDate(new Date(System.currentTimeMillis()));
                 order.setDeliveryDate(new Date(System.currentTimeMillis()));
+
                 order.setOrderId(orderManager.AddOrder(order));
                 if (order.getOrderId() == -1)
                     placeOrderErrorLabel.setVisible(true);
